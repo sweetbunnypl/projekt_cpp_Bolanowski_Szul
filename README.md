@@ -3,6 +3,7 @@ Projekt zaliczeniowy napisany w C++
 
 
 Gra typu "rougelike" w połączeniu z elementami strzelanki, oparta o grafikę dwuwymiarową z kamerą top-down. Gracz przechodząc kolejne poziomy planszy będzie miał możliwość rozwoju swojej postaci. Wraz z poziomami wzrastać będzie również poziom trudności. W grze będzie występował system zbierania punktów i wymieniania ich w sklepie. Gracz będzie także stawać przed różnymi wyzwaniami typu zagadki logiczne.
+Naszymi inspiracjami są gry The Binding of Issac oraz Enter the Gungeon
 
 Podział pracy:
 Nasza praca oparta będzie o system "branchów" githuba dlatego elementy projektu typu szkielet gry oraz podstawowe mechaniki będziemy wykonywać razem, natomiast poszczególnie będziemy robić:
