@@ -1,6 +1,7 @@
 # projekt_cpp_Bolanowski_Szul
 Projekt zaliczeniowy napisany w C++
 
+--------
 
 Gra typu "rougelike" w połączeniu z elementami strzelanki, oparta o grafikę dwuwymiarową z kamerą top-down. Gracz przechodząc kolejne poziomy planszy będzie miał możliwość rozwoju swojej postaci. Wraz z poziomami wzrastać będzie również poziom trudności. W grze będzie występował system zbierania punktów i wymieniania ich w sklepie. Gracz będzie także stawać przed różnymi wyzwaniami typu zagadki logiczne.
 Naszymi inspiracjami są gry The Binding of Issac oraz Enter the Gungeon
