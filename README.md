@@ -10,6 +10,8 @@ Nasza praca oparta będzie o system "branchów" githuba dlatego elementy projekt
 Karol Bolanowski - główne menu gry
 Michał Szul - system tworzenia poziomów, AI przeciwników, grafika
 
+--------
+
 Do zrobienia:
 - mapa z losowo generowanymi poziomami
 - system rozwoju postaci
