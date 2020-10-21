@@ -10,11 +10,11 @@ Karol Bolanowski - główne menu gry
 Michał Szul - system tworzenia poziomów, AI przeciwników, grafika
 
 Do zrobienia:
-> mapa z losowo generowanymi poziomami
-> system rozwoju postaci
-> system zakupywania przedmiotów za zdobyte punkty
-> przeciwnicy i ich zachowanie
-> ...
+ mapa z losowo generowanymi poziomami
+ system rozwoju postaci
+ system zakupywania przedmiotów za zdobyte punkty
+ przeciwnicy i ich zachowanie
+ ...
 
 Użyte technologie:
 Naszym założeniem jest oparcie projektu w głównej mierze o bibliotekę SFML, lecz w trakcie tworzenia projektu możliwe, że użyjemy bibliotek opartych lub współpracujących z SFML'em w celu spójniejszego działania aplikacji oraz uproszczenia kodu.
@@ -22,14 +22,14 @@ Naszym założeniem jest oparcie projektu w głównej mierze o bibliotekę SFML,
 --------
 
 RAPORTY:
-> 03.11.2020 - raport I
-> 17.11.2020 - raport II
-> 01.12.2020 - raport III
-> 15.12.2020 - raport IV
-> 12.01.2021 - prototyp
-> 02.02.2021 - deadline
+ 03.11.2020 - raport I
+ 17.11.2020 - raport II
+ 01.12.2020 - raport III
+ 15.12.2020 - raport IV
+ 12.01.2021 - prototyp
+ 02.02.2021 - deadline
 
 --------
 
 NAPOTKANE PROBLEMY:
-> ...
+ ...
