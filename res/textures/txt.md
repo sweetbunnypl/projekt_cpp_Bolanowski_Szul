@@ -1,0 +1,1 @@
+Tutaj znajdują się użyte w projekcie pliki graficzne z teksturami.
