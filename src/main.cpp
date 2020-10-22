@@ -1,27 +1,10 @@
-#include <iostream>
-#include <SFML/Graphics.hpp>
+#include "game.h"
 
-int main(int argc, char *argv[])
+int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800,600), "Hello");
+    Game game;
 
-    while (window.isOpen())
-    {
-        sf::Event event;
-
-        while (window.pollEvent(event))
-        {
-            if ( event.type == sf::Event::Closed)
-            {
-                window.close();
-            }
-        }
-
-        window.clear();
-
-        window.display();
-
-    }
+    game.run();
 
     return 0;
 }
