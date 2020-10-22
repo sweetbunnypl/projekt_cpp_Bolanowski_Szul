@@ -2,16 +2,16 @@
 
 // initialization of window
 void Game::initWindow(){
-    unsigned width_window = 1280;
-    unsigned height_window = 720;
+    unsigned widthWindow = 1280;
+    unsigned heightWindow = 720;
 
     std::string title = "GAME";
 
-    sf::VideoMode window_bunds(width_window, height_window);
+    sf::VideoMode windowBunds(widthWindow, heightWindow);
 
     int fps = 60;
 
-    this->window = new sf::RenderWindow(window_bunds, title);
+    this->window = new sf::RenderWindow(windowBunds, title);
     this->window->setFramerateLimit(fps);
 }
 

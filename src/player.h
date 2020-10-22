@@ -6,19 +6,21 @@
 class Player
 {
 private:
-    sf::Vector2f coordinates;
-    sf::Sprite player_texture;
-    int player_health;
-    int points;
+    sf::RectangleShape body;
+
+    // never gets below zero
+    unsigned int row;
+    float playerSpeed;
+
+    // true or false
+    bool faceRight;
 
 public:
-    Player();
+    Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float playerSpeed);
     ~Player();
 
-    int movement(sf::Vector2f coordinates);
-    int health(int player_health);
-    int pointsSystem(int points);
-    void player_death();
+    void Update(float deltaTime);
+    void Draw(sf::RenderWindow &window);
 
 };
 
