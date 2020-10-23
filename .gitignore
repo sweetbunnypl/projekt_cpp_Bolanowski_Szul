@@ -57,6 +57,7 @@ Thumbs.db
 *.ncb
 *.sdf
 *.opensdf
+*.opendb
 *.vcxproj
 *vcxproj.*
 
