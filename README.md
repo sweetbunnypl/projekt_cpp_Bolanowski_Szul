@@ -29,6 +29,7 @@ RAPORTY:
 - 03.11.2020 - raport I
 
 basic player movement -> branch Szul_movement
+
 proste menu -> branch Bolanowski
 
 - 07.11.2020 - raport II
