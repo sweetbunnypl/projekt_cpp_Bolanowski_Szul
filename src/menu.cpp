@@ -62,12 +62,22 @@ void Menu::MoveUp() {
 		MenuIndex--;
 		text[MenuIndex].setFillColor(sf::Color::White);
 	}
+	else {
+		text[MenuIndex].setFillColor(sf::Color::Red);
+		MenuIndex = MAX_NUMBER_OF_ITEMS - 1;
+		text[MenuIndex].setFillColor(sf::Color::White);
+	}
 }
 
 void Menu::MoveDown() {
 	if (MenuIndex + 1 < MAX_NUMBER_OF_ITEMS) {
 		text[MenuIndex].setFillColor(sf::Color::Red);
 		MenuIndex++;
+		text[MenuIndex].setFillColor(sf::Color::White);
+	}
+	else {
+		text[MenuIndex].setFillColor(sf::Color::Red);
+		MenuIndex = 0;
 		text[MenuIndex].setFillColor(sf::Color::White);
 	}
 }
