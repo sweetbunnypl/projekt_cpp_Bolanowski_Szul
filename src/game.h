@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "libs.h"
+#include "player.h"
 
 class Game{
 private:
@@ -10,6 +11,8 @@ private:
     sf::Event event;
     void initWindow();
 
+    Player player;
+
 public:
     // constructor and destructor
     Game();
@@ -17,6 +20,7 @@ public:
 
     // initialization of methods
     void updateSFMLevents();
+    void updatePlayerMovement();
     void update();
     void render();
     void run();

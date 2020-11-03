@@ -3,6 +3,10 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <vector>
+#include <cmath>
+
 #include <SFML/System.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
