@@ -28,7 +28,7 @@ Naszym założeniem jest oparcie projektu w głównej mierze o bibliotekę SFML,
 RAPORTY:
 - 03.11.2020 - raport I
 
-basic player movement -> branch Szul_movement
+basic player movement, tekstura postaci -> branch Szul_movement
 
 proste menu -> branch Bolanowski
 
