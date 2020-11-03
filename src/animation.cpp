@@ -1,14 +1,15 @@
 #include "animation.h"
 
-Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime)
+Animation::Animation()
 {
-    this->imageCount = imageCount;
-    this->switchTime = switchTime;
+    sf::Texture* playerTexture;
+    sf::Vector2u imageCount;
+    float switchTime;
     totalTime = 0.0f;
     currentImage.x = 0;
 
-    uvRect.width  = texture->getSize().x / float(imageCount.x);
-    uvRect.height = texture->getSize().y / float(imageCount.y);
+    uvRect.width  = playerTexture->getSize().x / float(imageCount.x);
+    uvRect.height = playerTexture->getSize().y / float(imageCount.y);
 
 }
 

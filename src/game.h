@@ -9,9 +9,9 @@ private:
     // variables
     sf::RenderWindow *window;
     sf::Event event;
-    void initWindow();
-
     Player player;
+
+    void initWindow();
 
 public:
     // constructor and destructor
@@ -20,6 +20,7 @@ public:
 
     // initialization of methods
     void updateSFMLevents();
+    void updatePlayer();
     void updatePlayerMovement();
     void update();
     void render();

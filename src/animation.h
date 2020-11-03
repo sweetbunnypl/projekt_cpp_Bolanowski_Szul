@@ -6,14 +6,6 @@
 
 class Animation
 {
-public:
-    Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime);
-    ~Animation();
-
-    sf::IntRect uvRect;
-
-    void update(int row, float deltaTime);
-
 private:
     sf::Vector2u imageCount;
     sf::Vector2u currentImage;
@@ -21,6 +13,13 @@ private:
     float totalTime;
     float switchTime;
 
+public:
+    Animation();
+    ~Animation();
+
+    sf::IntRect uvRect;
+
+    void update(int row, float deltaTime);
 
 };
 

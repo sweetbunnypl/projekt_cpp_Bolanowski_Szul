@@ -1,17 +1,30 @@
 #include "player.h"
 
-void Player::initVariables()
+void::Player::initTexture()
 {
-
+    if (!this->playerTexture.loadFromFile("res/textures/kotek.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
 }
 
-void::Player::initShape()
+void::Player::initSprite()
 {
+    this->playerSprite.setTexture(this->playerTexture);
+}
+
+
+Player::Player()
+{
+
 //    this->playerShape.setFillColor(sf::Color::Blue);
 //    this->playerShape.setSize(sf::Vector2f(100.f, 100.f));
-    this->playerTexture.loadFromFile("res/textures/kotek.png");
-    this->playerSprite.setTexture(playerTexture);
+//    this->playerTexture.loadFromFile("res/textures/kotek.png");
+//    this->playerSprite.setTexture(playerTexture);
 //    this->playerSprite.setScale(0.15, 0.15);
+
+    this->initTexture();
+    this->initSprite();
     this->textureSize = playerTexture.getSize();
     textureSize.x /= 3;
     textureSize.y /= 4;
@@ -40,14 +53,6 @@ void::Player::initShape()
     this->playerSprite.setTextureRect(sf::IntRect(textureSize.x * 1, textureSize.y * 3, textureSize.x, textureSize.y));
     // 4.3
     this->playerSprite.setTextureRect(sf::IntRect(textureSize.x * 2, textureSize.y * 3, textureSize.x, textureSize.y));
-
-}
-
-Player::Player()
-{
-    this->initVariables();
-    this->initShape();
-
 }
 
 Player::~Player()
@@ -55,9 +60,33 @@ Player::~Player()
 
 }
 
+void::Player::updateMovement()
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+    {
+        // move top
+        this->playerSprite.move(0.f,-5.f);
+    }
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+    {
+        // move bottom
+        this->playerSprite.move(0.f,5.f);
+    }
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+    {
+        // move left
+        this->playerSprite.move(-5.f,0.f);
+    }
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+    {
+        // move right
+        this->playerSprite.move(5.f,0.f);
+    }
+}
+
 void::Player::update()
 {
-
+    this->updateMovement();
 }
 
 void::Player::render(sf::RenderTarget * target)

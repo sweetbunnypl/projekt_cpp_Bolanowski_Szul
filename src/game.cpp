@@ -36,29 +36,15 @@ void Game::updateSFMLevents(){
     }
 }
 
-void::Game::updatePlayerMovement()
+void::Game::updatePlayer()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-    {
-
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-    {
-        // move bottom
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-    {
-        // move left
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-    {
-        // move right
-    }
+    this->player.update();
 }
 
 // update state of game
 void Game::update(){
     this->updateSFMLevents();
+    this->updatePlayer();
 
     // mouse position
     // relative to the window

@@ -27,18 +27,25 @@
 class Player
 {
 private:
-    sf::RectangleShape playerShape;
     sf::Texture playerTexture;
+    sf::RectangleShape playerShape;
     sf::Sprite playerSprite;
     sf::Vector2u textureSize;
 
-    void initVariables();
-    void initShape();
+    unsigned int row;
+    float playerSpeed;
+    bool faceRight;
+
+//    void initVariables();
+//    void initShape();
 
 public:
     Player();
     virtual ~Player();
 
+    void initTexture();
+    void initSprite();
+    void updateMovement();
     void update();
     void render(sf::RenderTarget* target);
 
