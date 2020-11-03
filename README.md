@@ -32,7 +32,7 @@ basic player movement, tekstura postaci -> branch Szul_movement
 
 proste menu -> branch Bolanowski
 
-- 07.11.2020 - raport II
+- 17.11.2020 - raport II
 - 11.12.2020 - raport III
 - 15.12.2020 - raport IV
 - 12.01.2021 - prototyp
