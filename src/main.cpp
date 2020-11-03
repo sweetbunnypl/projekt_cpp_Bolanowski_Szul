@@ -1,10 +1,13 @@
 #include "game.h"
+#include "menu.h"
 
 int main()
 {
     Game game;
-    printf("hej");
-    game.run();
+    //Menu menu;
+    //printf("hej");
+    game.runMenu();
+    //menu.run();
 
     return 0;
 }
