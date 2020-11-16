@@ -2,7 +2,7 @@
 
 void::Player::initTexture()
 {
-    if (!this->playerTexture.loadFromFile("res/textures/kotek.png"))
+    if (!this->playerTexture.loadFromFile("res/textures/playertexture.png"))
     {
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
