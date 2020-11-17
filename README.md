@@ -28,11 +28,19 @@ Naszym założeniem jest oparcie projektu w głównej mierze o bibliotekę SFML,
 RAPORTY:
 - 03.11.2020 - raport I
 
-basic player movement, tekstura postaci -> branch Szul_movement
+branch Szul_movement:
+- basic player movement
+- tekstura postaci
 
-proste menu -> branch Bolanowski
+branch Bolanowski:
+- proste menu
 
 - 17.11.2020 - raport II
+
+branch Bolanowski (commit bedzie do końca tygodnia):
+- drobne ulepszenia graficzne menu
+- dodanie opcji w menu
+
 - 11.12.2020 - raport III
 - 15.12.2020 - raport IV
 - 12.01.2021 - prototyp
