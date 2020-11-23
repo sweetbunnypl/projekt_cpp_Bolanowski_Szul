@@ -20,8 +20,8 @@ public:
     void updateSFMLeventsMenu();
     void drawMenu();
     // variables
-    unsigned width_window = 1280;
-    unsigned height_window = 720;
+    unsigned width_window = width_window_test; //1280;
+    unsigned height_window = height_window_test; //720;
     sf::Font font;
     sf::RenderWindow *window;
     Menu* menu;

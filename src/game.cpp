@@ -7,11 +7,12 @@ void Game::initWindow(){
 
     sf::VideoMode window_bunds(width_window, height_window);
 
-    int fps = 60;
+    int fps = 240;
 
     this->window = new sf::RenderWindow(window_bunds, title);
     this->window->setFramerateLimit(fps);
 }
+
 void Game::initMenu() {
 	this->menu = new Menu(this->window->getSize().x, this->window->getSize().y);
 }
@@ -80,22 +81,7 @@ void Game::updateSFMLeventsMenu() {
 				break;
 
 			case sf::Keyboard::Return:
-				switch (menu->GetPressedItem())
-				{
-				case 0:
-					printf("Ktos nacisnal Play");
-					break;
-				case 1:
-					printf("Ktos nacisnal Options");
-					break;
-				case 2:
-					printf("Ktos nacisnal Creators");
-					break;
-				case 3:
-					this->window->close();
-				default:
-					break;
-				}
+				menu->renderButtons(this->window);
 			}
 			break;
 			// window closed
