@@ -5,7 +5,7 @@ Menu::Menu(float width_window, float height_window)
 {
 	//sf::Texture gif_bcg[7];
 	//sf::Sprite gif_bcg_s[7];
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i <= 7; i++) {
 		std::string path = "res/textures/gif/frame_"+std::to_string(i)+".png";
 		if (!gif_bcg[i].loadFromFile(path)) printf("nie wczytano t³a %d", i);
 		gif_bcg_s[i].setTexture(gif_bcg[i]);
@@ -96,9 +96,10 @@ void Menu::drawMenu(sf::RenderWindow* window)
 	else if (pause < dt*4 and pause >= dt*3) window->draw(gif_bcg_s[3]);
 	else if (pause < dt*5 and pause >= dt*4) window->draw(gif_bcg_s[4]);
 	else if (pause < dt*6 and pause >= dt*5) window->draw(gif_bcg_s[5]);
+	else if (pause < dt*7 and pause >= dt*6) window->draw(gif_bcg_s[6]);
+	else if (pause < dt*8 and pause >= dt*7) window->draw(gif_bcg_s[7]);
 	else {
 		pause = 0;
-		window->draw(gif_bcg_s[6]);
 	}
 
 	rectangle.setSize(sf::Vector2f(400, height_window_test));

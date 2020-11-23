@@ -41,8 +41,8 @@ public:
     //background
     //sf::Texture bcg;
     //sf::Sprite bcg_s;
-    sf::Texture gif_bcg[7];
-    sf::Sprite gif_bcg_s[7];
+    sf::Texture gif_bcg[8];
+    sf::Sprite gif_bcg_s[8];
 
     std::string main_menu_txt[4] = { "PLAY", "CREATORS", "HELP", "EXIT" };
     std::string main_menu_txt2[4] = { "- PLAY -", "- CREATORS -", "- HELP -", "- EXIT -" };
