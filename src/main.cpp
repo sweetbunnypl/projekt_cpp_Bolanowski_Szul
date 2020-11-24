@@ -2,9 +2,9 @@
 
 int main()
 {
-    Game game;
-    printf("hej");
-    game.run();
+	Game game;
 
-    return 0;
+	game.run();
+	
+	return 0;
 }
