@@ -21,13 +21,7 @@ Menu::Menu(float width_window, float height_window)
 		MAIN_MENU = true;
 		CREATORS = false;
 		HELP = false;
-		for (int i = 0; i < MAX_NUMBER_OF_ITEMS; i++) {
-			text[i].setString(main_menu_txt[i]);
-		}
-		this->getButtons(MAX_NUMBER_OF_ITEMS);
-		text[0].setString(main_menu_txt2[0]);
-		text[0].setCharacterSize(90);
-		text[0].setPosition(sf::Vector2f((width_window_test / 2) - (text[0].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1)) - (text[0].getGlobalBounds().height / 2)));
+		renderButtons2(main_menu_txt, main_menu_txt2);
 	};
 
 	//background do tekstu
@@ -40,43 +34,7 @@ Menu::~Menu()
 {
 
 }
-/*
-void Menu::run(sf::RenderWindow* window) {
-	while (this->window->isOpen())
-	{
-		this->update();
-		this->Menu::render();
-	}
-}
 
-void Menu::render(sf::RenderWindow* window) {
-	this->window->clear();
-	this->draw();
-	this->window->display();
-}
-*/
-void Menu::getButtons(int i)
-{
-	for (int k = 0; k < i; k++)
-	{
-		text[k].setFont(font);
-		text[k].setCharacterSize(70);
-		text[k].setStyle(sf::Text::Regular);
-		text[k].setFillColor(sf::Color::White);
-		text[k].setPosition(sf::Vector2f((width_window_test / 2) - (text[k].getGlobalBounds().width / 2), (height_window_test / (i+1) * (k+1)) - (text[k].getGlobalBounds().height / 2)));
-
-		//rectangle[k].setSize(sf::Vector2f(text[k].getGlobalBounds().width, text[k].getGlobalBounds().height));
-		//rectangle[k].setOutlineColor(sf::Color::Red);
-		//rectangle[k].setPosition(sf::Vector2f((width_window / 2) - (text[k].getGlobalBounds().width / 2), (height_window / (i + 1) * (k + 1)) - (text[k].getGlobalBounds().height / 2)));
-
-		//float f = (height_window / (i + 1) * (k + 1)) - (text[k].getGlobalBounds().width / 2);
-		//printf("%f; ", f);
-		//printf("%f,%f; ", );
-	}
-
-}
-
-//alternatywna funkcja do powyzszej
 void Menu::createButton(std::string button_name, int which, int of_how_many, int font_size = 70) {
 	text[which].setFont(font);
 	text[which].setCharacterSize(font_size);
@@ -89,7 +47,7 @@ void Menu::createButton(std::string button_name, int which, int of_how_many, int
 void Menu::drawMenu(sf::RenderWindow* window)
 {
 	pause++;
-	printf("%d\n", pause);
+	//printf("%d\n", pause);
 	int dt = 30;
 	if (pause < dt) window->draw(gif_bcg_s[0]);
 	else if (pause < dt*2 and pause >= dt) window->draw(gif_bcg_s[1]);
@@ -197,14 +155,18 @@ void Menu::renderButtons(sf::RenderWindow* window) {
 			break;
 		}
 	}
-	if (not MAIN_MENU and CREATORS and not HELP) {
+	else if (not MAIN_MENU and CREATORS and not HELP) {
 		switch (GetPressedItem())
 		{
 		case 0:
 			printf("Ktos nacisnal Bolanowski");
+			//link otwiera sie tylko pod windowsem
+			system("start https://github.com/sweetbunnypl/");
 			break;
 		case 1:
 			printf("Ktos nacisnal Szul");
+			//link otwiera sie tylko pod windowsem
+			system("start https://github.com/SonOfGrabarz");
 			break;
 		case 2:
 			printf("Ktos nacisnal nic");

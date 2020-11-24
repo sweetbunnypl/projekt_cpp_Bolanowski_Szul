@@ -7,7 +7,7 @@
 //#include "game.h"
 
 class Menu
-//    :public Game
+    //    :public Game
 {
 public:
     // constructor and destructor
@@ -15,7 +15,7 @@ public:
     ~Menu();
     // functions only in menu
     void MoveUp();
-    void getButtons(int i);
+    //void getButtons(int i);
     void MoveDown();
     void drawMenu(sf::RenderWindow* window);
     int GetPressedItem() { return MenuIndex; }
