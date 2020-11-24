@@ -14,9 +14,6 @@ Menu::Menu(float width_window, float height_window)
 		//gif_bcg_s[i].setTextureRect(sf::IntRect(0, 0, 1000, 1000));
 	};
 
-	//if (!bcg.loadFromFile("res/textures/3.png")) printf("nie wczytano t³a");
-	//bcg_s.setTexture(bcg);
-
 	if (!font.loadFromFile("res/fonts/ostrich-regular.ttf")) printf("nie wczytalo czcionki");
 	else {
 		//if(play_pressed):
@@ -27,15 +24,16 @@ Menu::Menu(float width_window, float height_window)
 		for (int i = 0; i < MAX_NUMBER_OF_ITEMS; i++) {
 			text[i].setString(main_menu_txt[i]);
 		}
-		//text[0].setString(main_menu_txt[0]);
-		//text[1].setString("CREATORS");
-		//text[2].setString("HELP");
-		//text[3].setString("EXIT");
 		this->getButtons(MAX_NUMBER_OF_ITEMS);
 		text[0].setString(main_menu_txt2[0]);
 		text[0].setCharacterSize(90);
-		//text[0].setFillColor(sf::Color::White);
+		text[0].setPosition(sf::Vector2f((width_window_test / 2) - (text[0].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1)) - (text[0].getGlobalBounds().height / 2)));
 	};
+
+	//background do tekstu
+	rectangle.setSize(sf::Vector2f(400, height_window_test));
+	rectangle.setFillColor(sf::Color(0, 0, 0, 170));
+	rectangle.setPosition(width_window_test / 2 - 200, 0);
 }
 
 Menu::~Menu()
@@ -78,15 +76,18 @@ void Menu::getButtons(int i)
 
 }
 
+//alternatywna funkcja do powyzszej
+void Menu::createButton(std::string button_name, int which, int of_how_many, int font_size = 70) {
+	text[which].setFont(font);
+	text[which].setCharacterSize(font_size);
+	text[which].setStyle(sf::Text::Regular);
+	text[which].setFillColor(sf::Color::White);
+	text[which].setString(button_name);
+	text[which].setPosition(sf::Vector2f((width_window_test / 2) - (text[which].getGlobalBounds().width / 2), (height_window_test / (of_how_many+1) * (which+1)) - (text[which].getGlobalBounds().height / 2)));
+}
 
 void Menu::drawMenu(sf::RenderWindow* window)
 {
-	//sf::Texture bcg;
-	//if (!bcg.loadFromFile("res/textures/3.png")) printf("nie wczytano t³a");
-	//sf::Sprite bcg_s;
-	//bcg_s.setTexture(bcg);
-	//bcg_s.setPosition(sf::Vector2f((width_window_test/2) - (bcg.getSize().x/2),(height_window_test/2) - (bcg.getSize().y/2)));
-	//bcg_s.setTextureRect(sf::IntRect(0, 0, 1000, 1000));
 	pause++;
 	printf("%d\n", pause);
 	int dt = 30;
@@ -100,11 +101,9 @@ void Menu::drawMenu(sf::RenderWindow* window)
 	else if (pause < dt*8 and pause >= dt*7) window->draw(gif_bcg_s[7]);
 	else {
 		pause = 0;
+		window->draw(gif_bcg_s[0]);
 	}
 
-	rectangle.setSize(sf::Vector2f(400, height_window_test));
-	rectangle.setFillColor(sf::Color(0, 0, 0, 170));
-	rectangle.setPosition(width_window_test/2-200, 0);
 	window->draw(rectangle);
 
 	//window->draw(bcg_s);
@@ -119,47 +118,55 @@ void Menu::drawMenu(sf::RenderWindow* window)
 
 //R U C H
 void Menu::MoveUp() {
-	if (MAIN_MENU) {
+	if (MAIN_MENU and not CREATORS and not HELP) {
 		if (MenuIndex - 1 >= 0) {
-			text[MenuIndex].setString(main_menu_txt[MenuIndex]);
-			text[MenuIndex].setCharacterSize(70);
-			text[MenuIndex].setPosition(sf::Vector2f((width_window_test / 2) - (text[MenuIndex].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1) * (MenuIndex + 1)) - (text[MenuIndex].getGlobalBounds().height / 2)));
+			createButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
 			MenuIndex--;
-			text[MenuIndex].setString(main_menu_txt2[MenuIndex]);
-			text[MenuIndex].setCharacterSize(82);
-			text[MenuIndex].setPosition(sf::Vector2f((width_window_test / 2) - (text[MenuIndex].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1) * (MenuIndex + 1)) - (text[MenuIndex].getGlobalBounds().height / 2)));
+			createButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
 		}
 		else {
-			text[MenuIndex].setString(main_menu_txt[MenuIndex]);
-			text[MenuIndex].setCharacterSize(70);
-			text[MenuIndex].setPosition(sf::Vector2f((width_window_test / 2) - (text[MenuIndex].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1) * (MenuIndex + 1)) - (text[MenuIndex].getGlobalBounds().height / 2)));
+			createButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
 			MenuIndex = MAX_NUMBER_OF_ITEMS - 1;
-			text[MenuIndex].setString(main_menu_txt2[MenuIndex]);
-			text[MenuIndex].setCharacterSize(82);
-			text[MenuIndex].setPosition(sf::Vector2f((width_window_test / 2) - (text[MenuIndex].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1) * (MenuIndex + 1)) - (text[MenuIndex].getGlobalBounds().height / 2)));
+			createButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+		}
+	}
+	else if (not MAIN_MENU and CREATORS and not HELP) {
+		if (MenuIndex - 1 >= 0) {
+			createButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
+			MenuIndex--;
+			createButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+		}
+		else {
+			createButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
+			MenuIndex = MAX_NUMBER_OF_ITEMS - 1;
+			createButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
 		}
 	}
 }
 
 void Menu::MoveDown() {
-	if (MAIN_MENU) {
+	if (MAIN_MENU and not CREATORS and not HELP) {
 		if (MenuIndex + 1 < MAX_NUMBER_OF_ITEMS) {
-			text[MenuIndex].setString(main_menu_txt[MenuIndex]);
-			text[MenuIndex].setCharacterSize(70);
-			text[MenuIndex].setPosition(sf::Vector2f((width_window_test / 2) - (text[MenuIndex].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1) * (MenuIndex + 1)) - (text[MenuIndex].getGlobalBounds().height / 2)));
+			createButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
 			MenuIndex++;
-			text[MenuIndex].setString(main_menu_txt2[MenuIndex]);
-			text[MenuIndex].setCharacterSize(82);
-			text[MenuIndex].setPosition(sf::Vector2f((width_window_test / 2) - (text[MenuIndex].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1) * (MenuIndex + 1)) - (text[MenuIndex].getGlobalBounds().height / 2)));
+			createButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
 		}
 		else {
-			text[MenuIndex].setString(main_menu_txt[MenuIndex]);
-			text[MenuIndex].setCharacterSize(70);
-			text[MenuIndex].setPosition(sf::Vector2f((width_window_test / 2) - (text[MenuIndex].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1) * (MenuIndex + 1)) - (text[MenuIndex].getGlobalBounds().height / 2)));
+			createButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
 			MenuIndex = 0;
-			text[MenuIndex].setString(main_menu_txt2[MenuIndex]);
-			text[MenuIndex].setCharacterSize(82);
-			text[MenuIndex].setPosition(sf::Vector2f((width_window_test / 2) - (text[MenuIndex].getGlobalBounds().width / 2), (height_window_test / (MAX_NUMBER_OF_ITEMS + 1) * (MenuIndex + 1)) - (text[MenuIndex].getGlobalBounds().height / 2)));
+			createButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+		}
+	}
+	else if (not MAIN_MENU and CREATORS and not HELP) {
+		if (MenuIndex + 1 < MAX_NUMBER_OF_ITEMS) {
+			createButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
+			MenuIndex++;
+			createButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+		}
+		else {
+			createButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
+			MenuIndex = 0;
+			createButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
 		}
 	}
 }
@@ -174,10 +181,9 @@ void Menu::renderButtons(sf::RenderWindow* window) {
 			break;
 		case 1:
 			printf("Ktos nacisnal Creators");
-			renderCreators();
 			MAIN_MENU = false;
 			CREATORS = true;
-			//HELP = false;
+			renderButtons2(creators_menu_txt, creators_menu_txt2);
 			break;
 		case 2:
 			printf("Ktos nacisnal Help");
@@ -191,16 +197,35 @@ void Menu::renderButtons(sf::RenderWindow* window) {
 			break;
 		}
 	}
+	if (not MAIN_MENU and CREATORS and not HELP) {
+		switch (GetPressedItem())
+		{
+		case 0:
+			printf("Ktos nacisnal Bolanowski");
+			break;
+		case 1:
+			printf("Ktos nacisnal Szul");
+			break;
+		case 2:
+			printf("Ktos nacisnal nic");
+			break;
+		case 3:
+			MAIN_MENU = true;
+			CREATORS = false;
+			renderButtons2(main_menu_txt, main_menu_txt2);
+		default:
+			break;
+		}
+	}
 }
 
-void Menu::renderCreators() {
-	//text[0].setString("Karol Bolanowski i Michal Szul");
-	//text[1].setString("ISSP sem III");
-	//text[2].setString(" ");
-	//text[3].setString("BACK");
-	std::string creators[4] = {"Karol Bolanowski i Michal Szul", "ISSP sem III", " ", "BACK" };
-	this->getButtons(MAX_NUMBER_OF_ITEMS);
-	text[0].setFillColor(sf::Color::White);
+void Menu::renderButtons2(std::string menu_string[MAX_NUMBER_OF_ITEMS], std::string menu_string2[MAX_NUMBER_OF_ITEMS]) {
+	MenuIndex = 0;
+	createButton(menu_string2[0], 0, MAX_NUMBER_OF_ITEMS, 82);
+	createButton(menu_string[1], 1, MAX_NUMBER_OF_ITEMS);
+	createButton(menu_string[2], 2, MAX_NUMBER_OF_ITEMS);
+	createButton(menu_string[3], 3, MAX_NUMBER_OF_ITEMS);
+	
 }
 
 /*

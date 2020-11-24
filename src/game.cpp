@@ -72,16 +72,21 @@ void Game::updateSFMLeventsMenu() {
 			{
 			case sf::Keyboard::Up:
 				menu->MoveUp();
-				printf("m_u");
+				//printf("m_u");
 				break;
 
 			case sf::Keyboard::Down:
 				menu->MoveDown();
-				printf("m_d");
+				//printf("m_d");
 				break;
 
 			case sf::Keyboard::Return:
 				menu->renderButtons(this->window);
+				break;
+
+			case sf::Keyboard::Escape:
+				this->window->close();
+				break;
 			}
 			break;
 			// window closed

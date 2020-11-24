@@ -24,7 +24,8 @@ public:
     bool CREATORS;
     bool HELP;
     void renderButtons(sf::RenderWindow* window);
-    void renderCreators();
+    void renderButtons2(std::string menu_string[MAX_NUMBER_OF_ITEMS], std::string menu_string2[MAX_NUMBER_OF_ITEMS]);
+    void createButton(std::string button_name, int which, int of_how_many, int font_size);
     //int GetPressedItem() { return MenuIndex; }
 
     //functions changed from Game
@@ -46,10 +47,10 @@ public:
 
     std::string main_menu_txt[4] = { "PLAY", "CREATORS", "HELP", "EXIT" };
     std::string main_menu_txt2[4] = { "- PLAY -", "- CREATORS -", "- HELP -", "- EXIT -" };
-    std::string creators_menu_txt[4] = { "PLAY", "CREATORS", "HELP", "EXIT" };
-    std::string creators_menu_txt2[4] = { "- PLAY -", "- CREATORS -", "- HELP -", "- EXIT -" };
-    std::string help_menu_txt[4] = { "PLAY", "CREATORS", "HELP", "EXIT" };
-    std::string help_menu_txt2[4] = { "- PLAY -", "- CREATORS -", "- HELP -", "- EXIT -" };
+    std::string creators_menu_txt[4] = { "Karol Bolanowski", "Michal Szul", "ISSP sem III", "BACK" };
+    std::string creators_menu_txt2[4] = { "- Karol Bolanowski -", "- Michal Szul -", "- ISSP sem III -", "- BACK -" };
+    std::string help_menu_txt[4] = { " ", " ", " ", "BACK" };
+    std::string help_menu_txt2[4] = { " ", " ", " ", "- BACK -" };
 
     int pause = 0;
 };
