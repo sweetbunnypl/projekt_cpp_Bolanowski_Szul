@@ -85,13 +85,17 @@ void Game::updateSFMLeventsMenu() {
 				break;
 
 			case sf::Keyboard::Escape:
+				menu->quit_sound.play();
+				Sleep(500);
 				this->window->close();
 				break;
 			}
 			break;
 			// window closed
 		case sf::Event::Closed:
-			this->window->close();
+			menu->quit_sound.play();
+			Sleep(500);
+			this->window->close(); 
 			break;
 			// we don't process other types of events
 		default:

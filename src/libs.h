@@ -9,6 +9,7 @@
 #include <SFML/Network.hpp>
 #include <SFML/Window.hpp>
 #include <stdlib.h>
+#include <windows.h>
 
 #define width_window_test 1280//828
 #define height_window_test 720//358

@@ -35,6 +35,14 @@ public:
     //void update(sf::RenderWindow* window);
 
     //variables
+    sf::Music menu_music;
+    sf::SoundBuffer change_buffer;
+    sf::Sound change_sound;
+    sf::SoundBuffer enter_buffer;
+    sf::Sound enter_sound;
+    sf::SoundBuffer quit_buffer;
+    sf::Sound quit_sound;
+
     int MenuIndex = 0;
     sf::Text text[MAX_NUMBER_OF_ITEMS];
     sf::RectangleShape rectangle;

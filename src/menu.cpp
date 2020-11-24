@@ -28,11 +28,41 @@ Menu::Menu(float width_window, float height_window)
 	rectangle.setSize(sf::Vector2f(400, height_window_test));
 	rectangle.setFillColor(sf::Color(0, 0, 0, 170));
 	rectangle.setPosition(width_window_test / 2 - 200, 0);
+
+	//muzyka w menu
+	if (!menu_music.openFromFile("res/sounds/menu_music.ogg")) {
+		printf("nie wczytano menu_music.ogg");
+	}
+	//odtworzenie muzyki
+	menu_music.setLoop(true);
+	menu_music.play();
+
+	//wczytywanie change
+	if (!change_buffer.loadFromFile("res/sounds/menu_change.wav")) {
+		printf("nie wczytano menu_change.wav");
+	}
+	change_sound.setBuffer(change_buffer);
+	//change_sound.play();
+
+	//wczytywanie enter
+	if (!enter_buffer.loadFromFile("res/sounds/menu_enter.wav")) {
+		printf("nie wczytano menu_change.wav");
+	}
+	enter_sound.setBuffer(enter_buffer);
+	//enter_sound.play();
+	
+	//wczytywanie quit
+	if (!quit_buffer.loadFromFile("res/sounds/menu_quit.wav")) {
+		printf("nie wczytano menu_change.wav");
+	}
+	quit_sound.setBuffer(quit_buffer);
+	//quit_sound.play();
+	
 }
 
 Menu::~Menu()
 {
-
+	menu_music.stop();
 }
 
 void Menu::createButton(std::string button_name, int which, int of_how_many, int font_size = 70) {
@@ -76,6 +106,7 @@ void Menu::drawMenu(sf::RenderWindow* window)
 
 //R U C H
 void Menu::MoveUp() {
+	change_sound.play();
 	if (MAIN_MENU and not CREATORS and not HELP) {
 		if (MenuIndex - 1 >= 0) {
 			createButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
@@ -103,6 +134,7 @@ void Menu::MoveUp() {
 }
 
 void Menu::MoveDown() {
+	change_sound.play();
 	if (MAIN_MENU and not CREATORS and not HELP) {
 		if (MenuIndex + 1 < MAX_NUMBER_OF_ITEMS) {
 			createButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS);
@@ -135,21 +167,26 @@ void Menu::renderButtons(sf::RenderWindow* window) {
 		{
 		case 0:
 			printf("Ktos nacisnal Play");
+			enter_sound.play();
 			//menu->StartGame();
 			break;
 		case 1:
 			printf("Ktos nacisnal Creators");
+			enter_sound.play();
 			MAIN_MENU = false;
 			CREATORS = true;
 			renderButtons2(creators_menu_txt, creators_menu_txt2);
 			break;
 		case 2:
 			printf("Ktos nacisnal Help");
+			enter_sound.play();
 			MAIN_MENU = false;
 			//CREATORS = false;
 			HELP = true;
 			break;
 		case 3:
+			quit_sound.play();
+			Sleep(500);
 			window->close();
 		default:
 			break;
@@ -160,11 +197,13 @@ void Menu::renderButtons(sf::RenderWindow* window) {
 		{
 		case 0:
 			printf("Ktos nacisnal Bolanowski");
+			enter_sound.play();
 			//link otwiera sie tylko pod windowsem
 			system("start https://github.com/sweetbunnypl/");
 			break;
 		case 1:
 			printf("Ktos nacisnal Szul");
+			enter_sound.play();
 			//link otwiera sie tylko pod windowsem
 			system("start https://github.com/SonOfGrabarz");
 			break;
@@ -175,6 +214,7 @@ void Menu::renderButtons(sf::RenderWindow* window) {
 			MAIN_MENU = true;
 			CREATORS = false;
 			renderButtons2(main_menu_txt, main_menu_txt2);
+			quit_sound.play();
 		default:
 			break;
 		}
