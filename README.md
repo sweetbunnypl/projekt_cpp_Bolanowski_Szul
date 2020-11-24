@@ -27,6 +27,7 @@ Naszym założeniem jest oparcie projektu w głównej mierze o bibliotekę SFML,
 
 RAPORTY:
 
+
 RAPORT I - 03.11.2020
 
 branch Szul_movement:
@@ -36,10 +37,11 @@ branch Szul_movement:
 branch Bolanowski:
 - proste menu
 
+
 RAPORT II - 17.11.2020
 
-branch Bolanowski (commit bedzie do końca tygodnia):
-- drobne ulepszenia graficzne menu
+branch Bolanowski:
+- duże ulepszenia graficzne menu
 - dodanie opcji w menu
 
 - 11.12.2020 - raport III
