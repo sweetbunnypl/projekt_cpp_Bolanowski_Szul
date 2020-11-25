@@ -1,25 +1,31 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
 
-#include "libs.h"
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Audio.hpp>
 
 class Player
 {
-private:
-    sf::Vector2f coordinates;
-    sf::Sprite player_texture;
-    int player_health;
-    int points;
-
 public:
-    Player();
-    ~Player();
 
-    int movement(sf::Vector2f coordinates);
-    int health(int player_health);
-    int pointsSystem(int points);
-    void player_death();
+	Player();
+	~Player();
+
+	sf::Texture playerTexture;
+	sf::Sprite playerSprite;
+
+	float movementSpeed;
+
+	void initTexture();
+	void initSprite();
+	void updateMovement(const float& deltaTime, const float x, const float y);
+
+	void update(const float& deltaTime);
+	void render(sf::RenderTarget* target);
 
 };
 
-#endif // PLAYER_H
