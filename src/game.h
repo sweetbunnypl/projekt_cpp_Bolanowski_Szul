@@ -1,26 +1,47 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
+#include "player.h"
+#include "map.h"
 
-#include "libs.h"
-
-class Game{
+class Game
+{
 private:
-    // variables
-    sf::RenderWindow *window;
-    sf::Event event;
-    void initWindow();
+	// variables
+	sf::RenderWindow* window;
+	sf::Event sfEvent;
+
+	sf::Clock dtClock;
+	float deltaTime;
+	
+	// CREATING OBJECTS WHEN WINDOW IS READY
+
+	// map object
+	Map map;
+
+	// player object
+	Player player;
+
+	// end-screen object (etc.)
+
+	// init.
+	void initWindow();
 
 public:
-    // constructor and destructor
-    Game();
-    ~Game();
+	Game();
+	~Game();
 
-    // initialization of methods
-    void updateSFMLevents();
-    void update();
-    void render();
-    void run();
+	// methods
+	void updateDeltaTime();
+	void updateSFMLEvents();
+	void update();
+	void render();
+	void run();
+
+	// handling collisons with window borders
+	void borders();
+
+	// handling collisions with object
+	void collision();
+
 
 };
 
-#endif // GAME_H
