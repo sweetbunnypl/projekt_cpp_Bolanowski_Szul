@@ -2,6 +2,7 @@
 #include "player.h"
 #include "map.h"
 #include "libs.h"
+
 #define MAX_NUMBER_OF_ITEMS 4
 
 class Game
@@ -9,10 +10,10 @@ class Game
 private:
 	// GAME VARIABLES
 	sf::RenderWindow* window;
-	sf::Event sfEvent;
+	sf::Event event;
 
-	sf::Clock dtClock;
-	float deltaTime;
+	sf::Clock clock;
+	sf::Time deltaTime;
 	
 	// CREATING OBJECTS WHEN WINDOW IS READY
 
@@ -84,8 +85,11 @@ public:
 	void menuRenderButtons2(std::string menu_string[MAX_NUMBER_OF_ITEMS], std::string menu_string2[MAX_NUMBER_OF_ITEMS]);
 	void menuCreateButton(std::string button_name, int which, int of_how_many, int font_size);
 	int menuGetPressedItem() { return MenuIndex; }
-	void menuDeleteMenu();
+	//void menuDeleteMenu();
 	void menuDrawMenu(sf::RenderTarget* target);
+
+	// PLAYER METHODS
+	void updatePlayerMovement();
 
 	// COLLISION METHODS
 	void borders();				// handling collisons with window borders

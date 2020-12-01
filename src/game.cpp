@@ -11,6 +11,7 @@ Game::~Game()
 	delete this->window;
 }
 
+// GAME
 void Game::initWindow()
 {
 	// all variables associated with window
@@ -29,28 +30,28 @@ void Game::updateDeltaTime()
 	// this->elapsedTime = this->dtClock.getElapsedTime().asSeconds();
 
 	// updates the delta time variable with the time it takes to update and render one frame;
-	this->deltaTime = this->dtClock.restart().asSeconds();
+	//this->deltaFloatTime = this->dtClock.restart().asSeconds();
 
 	// clears the console
 	system("cls");
-	std::cout << this->deltaTime << '\n';
+	//std::cout << this->deltaFloatTime << '\n';
 }
 
 void Game::updateSFMLEvents()
 {
-	while (this->window->pollEvent(this->sfEvent))
+	while (this->window->pollEvent(this->event))
 	{
-		if (this->sfEvent.type == sf::Event::Closed)
+		if (this->event.type == sf::Event::Closed)
 		{
 			window->close();
 		}
 		if (this->inMenuState)
 		{
-			switch (sfEvent.type)
+			switch (event.type)
 			{
 				// key pressed
 			case sf::Event::KeyReleased:
-				switch (sfEvent.key.code)
+				switch (event.key.code)
 				{
 				case sf::Keyboard::Up:
 					menuMoveUp();
@@ -83,9 +84,23 @@ void Game::updateSFMLEvents()
 			default:
 				break;
 			}
-
 		}
-
+		if (this->playingState)
+		{
+			switch (event.type)
+			{
+				// key pressed
+			case sf::Event::KeyReleased:
+				switch (event.key.code)
+				{
+				case sf::Keyboard::Backspace:
+					playingState = false;
+					inMenuState = true;
+					//printf("m_u");
+					break;
+				}
+			}
+		}
 	}
 }
 
@@ -96,7 +111,7 @@ void Game::update()
 	// update classes below
 	if (this->playingState)
 	{
-		this->player.update(deltaTime);
+		this->updatePlayerMovement();
 		this->borders();
 		this->collision();
 	}
@@ -110,6 +125,7 @@ void Game::render()
 	
 	while (inMenuState)
 	{
+		//menu_music.play();
 		this->menuDrawMenu(this->window);
 		this->window->display();
 		this->update();
@@ -118,6 +134,7 @@ void Game::render()
 
 	while (playingState)
 	{
+		this->menu_music.stop();
 		this->map.renderMap(this->window);
 		this->map.renderObject(this->window);
 		this->player.render(this->window);
@@ -127,7 +144,6 @@ void Game::render()
 	// 
 
 	//this->window->display();
-
 }
 
 void Game::run()
@@ -140,6 +156,7 @@ void Game::run()
 	}
 }
 
+// MENU 
 void Game::initMenu()
 {
 	for (int i = 0; i <= 7; i++) {
@@ -358,10 +375,47 @@ void Game::menuDrawMenu(sf::RenderTarget* target)
 	}
 }
 
+// PLAYER
+void Game::updatePlayerMovement()
+{
+	this->player.playerAnimation.update(clock.restart());
+	this->player.playerAnimation.animate(player.playerSprite);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	{
+		this->player.playerAnimation.playAnimation("left", true);
+		this->player.playerAnimation.update(clock.restart());
+		this->player.playerAnimation.animate(player.playerSprite);
+		this->player.playerSprite.move({ -5.f, 0.f });
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+		this->player.playerSprite.move({ 5.f , 0.f });
+		this->player.playerAnimation.playAnimation("right", true);
+		this->player.playerAnimation.update(clock.restart());
+		this->player.playerAnimation.animate(player.playerSprite);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	{
+		this->player.playerSprite.move({ 0.f, -5.f });
+		this->player.playerAnimation.playAnimation("up", true);
+		this->player.playerAnimation.update(clock.restart());
+		this->player.playerAnimation.animate(player.playerSprite);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	{
+		this->player.playerSprite.move({ 0.f, 5.f });
+		this->player.playerAnimation.playAnimation("down", true);
+		this->player.playerAnimation.update(clock.restart());
+		this->player.playerAnimation.animate(player.playerSprite);
+	}
+}
+
+// COLLISIONS
 void Game::borders()
 {
-	std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
-	std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
+	//std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
+	//std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
 
 	if (player.playerSprite.getPosition().x <= 0)
 	{
