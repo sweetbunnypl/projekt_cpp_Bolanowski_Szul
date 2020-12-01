@@ -2,12 +2,14 @@
 #include "player.h"
 #include "map.h"
 #include "libs.h"
+#include "player.h"
 
 #define MAX_NUMBER_OF_ITEMS 4
 
 class Game
 {
 private:
+<<<<<<< HEAD
 	// GAME VARIABLES
 	sf::RenderWindow* window;
 	sf::Event event;
@@ -27,6 +29,14 @@ private:
 
 	// init.
 	void initWindow();
+=======
+    // variables
+    sf::RenderWindow *window;
+    sf::Event event;
+    Player player;
+
+    void initWindow();
+>>>>>>> 744555fb668c93e060173744eb3ac832c8b02f5b
 
 public:
 	Game();
@@ -95,6 +105,16 @@ public:
 	void borders();				// handling collisons with window borders
 	void collision();			// handling collisions with object
 
+<<<<<<< HEAD
+=======
+    // initialization of methods
+    void updateSFMLevents();
+    void updatePlayer();
+    void updatePlayerMovement();
+    void update();
+    void render();
+    void run();
+>>>>>>> 744555fb668c93e060173744eb3ac832c8b02f5b
 
 };
 
