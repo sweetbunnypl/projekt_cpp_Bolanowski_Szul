@@ -39,6 +39,11 @@ public:
 	bool playingState;
 	bool inMenuState;
 
+	// GUI VARIABLES
+	sf::Texture guiTexture;
+	sf::Sprite playerHealthBar;
+	sf::Sprite playerHealthBarEmpty;
+
 	// MENU VARIABLES
 	sf::Music menu_music;
 	sf::SoundBuffer change_buffer;
@@ -75,6 +80,10 @@ public:
 	void update();
 	void render();
 	void run();
+	
+	// GUI METHODS
+	void initGUI();
+	void renderGUI(sf::RenderTarget* target);
 
 	// MENU METHODS
 	void initMenu();
@@ -87,7 +96,8 @@ public:
 	void menuDrawMenu(sf::RenderTarget* target);
 
 	// PLAYER MOVEMENT METHODS
-	void playerMovement();
+	void updatePlayerMovement();
+	void updatePlayerHealth();
 
 	// COLLISION METHODS
 	void borders();				// handling collisons with window borders

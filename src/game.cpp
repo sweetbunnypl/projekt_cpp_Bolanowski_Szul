@@ -105,6 +105,13 @@ void Game::updateSFMLEvents()
 					inMenuState = true;
 					break;
 				}
+
+				switch (event.key.code)
+				{
+				case sf::Keyboard::K:
+					this->player.playerHealth = player.playerHealth - 1.f;
+					break;
+				}
 			}
 		}
 	}
@@ -117,7 +124,7 @@ void Game::update()
 	// update classes below
 	if (this->playingState)
 	{
-		this->playerMovement();
+		this->updatePlayerMovement();
 		this->borders();
 		/*this->collision();*/
 	}
@@ -151,6 +158,7 @@ void Game::render()
 		this->map.renderMap(this->window);
 		this->map.renderObject(this->window);
 		this->player.render(this->window);
+		this->renderGUI(this->window);
 		this->update();
 		this->window->display();
 	}
@@ -169,6 +177,35 @@ void Game::run()
 		this->render();
 	}
 }
+
+// GUI METHODS
+void Game::initGUI()
+{
+	if (!this->guiTexture.loadFromFile("res/textures/gui.png"))
+	{
+		std::cout << "ERROR::GAME::initGUI::Could not load the GUI texture!" << "\n";
+	}
+
+	sf::Vector2f playerHealthBarPosition = sf::Vector2f( 20, this->windowHeight - 50);
+
+	this->playerHealthBarEmpty.setTexture(this->guiTexture);
+	this->playerHealthBarEmpty.setTextureRect(sf::IntRect(7, 11, 50, 8));
+	this->playerHealthBarEmpty.setPosition(playerHealthBarPosition);
+	this->playerHealthBarEmpty.setScale(4.5f, 4.5f);
+
+	this->playerHealthBar.setTexture(this->guiTexture);
+	this->playerHealthBar.setTextureRect(sf::IntRect(7, 1, 49 * this->player.playerHealth * 0.01, 8));
+	this->playerHealthBar.setPosition(playerHealthBarPosition);
+	this->playerHealthBar.setScale(4.5f, 4.5f);
+}
+
+void Game::renderGUI(sf::RenderTarget* target)
+{
+	initGUI();
+	target->draw(this->playerHealthBarEmpty);
+	target->draw(this->playerHealthBar);
+}
+
 
 // MENU METHODS
 void Game::initMenu()
@@ -390,7 +427,7 @@ void Game::menuDrawMenu(sf::RenderTarget* target)
 }
 
 // PLAYER METHODS
-void Game::playerMovement()
+void Game::updatePlayerMovement()
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{

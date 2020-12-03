@@ -2,14 +2,15 @@
 
 Player::Player()
 {
-    this->movementSpeed = 200.f;
+    this->playerHealth = 100.f;
+
     this->initTexture();
     this->initSprite();
 }
 
 Player::~Player()
 {
-
+    
 }
 
 void Player::initTexture()
@@ -55,6 +56,7 @@ void Player::initSprite()
     // setting scale, bc it's a little bit too small 
     this->playerSprite.scale(3.f, 3.f);
 }
+
 
 // MOVEMENT SHOULD BE HANLED IN GAME
 //void Player::updateMovement(const float& deltaTime, const float x, const float y)

@@ -21,7 +21,7 @@ public:
 
 	thor::Animator<sf::Sprite, std::string> playerAnimation;
 
-	float movementSpeed;
+	float playerHealth;
 
 	void initTexture();
 	void initSprite();
