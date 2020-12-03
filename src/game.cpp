@@ -25,17 +25,17 @@ void Game::initWindow()
 	this->inMenuState = true;
 }
 
-void Game::updateDeltaTime()
-{
-	// this->elapsedTime = this->dtClock.getElapsedTime().asSeconds();
-
-	// updates the delta time variable with the time it takes to update and render one frame;
-	this->deltaTime = this->dtClock.restart().asSeconds();
-
-	// clears the console
-	system("cls");
-	std::cout << this->deltaTime << '\n';
-}
+//void Game::updateDeltaTime()
+//{
+//	// this->elapsedTime = this->dtClock.getElapsedTime().asSeconds();
+//
+//	// updates the delta time variable with the time it takes to update and render one frame;
+//	this->deltaTime = this->dtClock.restart().asSeconds();
+//
+//	// clears the console
+//	system("cls");
+//	std::cout << this->deltaTime << '\n';
+//}
 
 void Game::updateSFMLEvents()
 {
@@ -79,11 +79,11 @@ void Game::updateSFMLEvents()
 				break;
 
 			// window closed
-			case sf::Event::Closed:
+			/*case sf::Event::Closed:
 				quit_sound.play();
 				Sleep(500);
 				this->window->close();
-				break;
+				break;*/
 
 			// we don't process other types of events
 			default:
@@ -104,14 +104,18 @@ void Game::updateSFMLEvents()
 					playingState = false;
 					inMenuState = true;
 					break;
-				}
 
-				switch (event.key.code)
-				{
 				case sf::Keyboard::K:
 					this->player.playerHealth = player.playerHealth - 1.f;
 					break;
-				}
+
+				case sf::Keyboard::Escape:
+					quit_sound.play();
+					Sleep(500);
+					this->window->close();
+					break;
+				}			
+			
 			}
 		}
 	}
@@ -172,7 +176,7 @@ void Game::run()
 {
 	while (this->window->isOpen())
 	{
-		this->updateDeltaTime();
+		/*this->updateDeltaTime();*/
 		this->update();
 		this->render();
 	}
@@ -205,7 +209,6 @@ void Game::renderGUI(sf::RenderTarget* target)
 	target->draw(this->playerHealthBarEmpty);
 	target->draw(this->playerHealthBar);
 }
-
 
 // MENU METHODS
 void Game::initMenu()
@@ -429,10 +432,14 @@ void Game::menuDrawMenu(sf::RenderTarget* target)
 // PLAYER METHODS
 void Game::updatePlayerMovement()
 {
+	this->player.playerAnimation.update(clock.restart());
+	this->player.playerAnimation.animate(this->player.playerSprite);
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{
 		// moving up
 		this->player.playerSprite.move({ 0.f, -5.f });
+		this->player.playerAnimation.playAnimation("up", true);
 
 		// collision with upper side of object
 		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
@@ -444,6 +451,7 @@ void Game::updatePlayerMovement()
 	{
 		// moving bottom
 		this->player.playerSprite.move({ 0.f, 5.f });
+		this->player.playerAnimation.playAnimation("down", true);
 
 		// collision with bottom side of object
 		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
@@ -455,6 +463,7 @@ void Game::updatePlayerMovement()
 	{
 		// moving left
 		this->player.playerSprite.move({ -5.f, 0.f });
+		this->player.playerAnimation.playAnimation("left", true);
 
 		// collision with left side of object
 		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
@@ -466,6 +475,7 @@ void Game::updatePlayerMovement()
 	{
 		// moving right
 		this->player.playerSprite.move({ 5.f, 0.f });
+		this->player.playerAnimation.playAnimation("right", true);
 
 		// collision with right side of object
 		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
@@ -506,15 +516,4 @@ void Game::borders()
 		player.playerSprite.setPosition(player.playerSprite.getPosition().x, window->getSize().y - player.playerSprite.getGlobalBounds().height);
 	}
 }
-
-// with other objects 
-//void Game::collision()
-//{
-//	if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
-//	{
-//		std::cout << "MPK znowu jeblo" << '\n';
-//	}
-//}
-
-
 

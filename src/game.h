@@ -11,8 +11,8 @@ private:
 	sf::RenderWindow* window;
 	sf::Event event;
 
-	sf::Clock dtClock;
-	float deltaTime;
+	sf::Clock clock;
+	sf::Time dt;
 
 	// CREATING OBJECTS WHEN WINDOW IS READY
 
