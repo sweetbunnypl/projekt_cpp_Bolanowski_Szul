@@ -8,8 +8,6 @@ Naszymi inspiracjami są gry The Binding of Issac oraz Enter the Gungeon
 
 Podział pracy:
 Nasza praca oparta będzie o system "branchów" githuba dlatego elementy projektu typu szkielet gry oraz podstawowe mechaniki będziemy wykonywać razem, natomiast poszczególnie będziemy robić:
-- Karol Bolanowski - główne menu gry, śledzenie kamery, grafika, ...
-- Michał Szul - system tworzenia poziomów, AI przeciwników, grafika, ...
 
 --------
 
