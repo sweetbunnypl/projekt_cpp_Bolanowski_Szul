@@ -45,7 +45,7 @@ branch main:
 - dodanie opcji w menu
 - podstawowe mechaniki
 
-RAPORT III - 01.12.2020
+RAPORT III - 01.12.2020 (955 linijek kodu)
 
 - scalenie menu z grą
 - przycisk PLAY przenosi do rozgrywki
