@@ -40,16 +40,30 @@ branch Bolanowski:
 
 RAPORT II - 17.11.2020
 
-branch Bolanowski:
+branch main:
 - duże ulepszenia graficzne menu
 - dodanie opcji w menu
+- podstawowe mechaniki
 
-- 11.12.2020 - raport III
-- 15.12.2020 - raport IV
-- 12.01.2021 - prototyp
-- 02.02.2021 - deadline
+RAPORT III - 01.12.2020
+
+- scalenie menu i grą
+- przycisk PLAY przenosi do rozgrywki
+- BACKSPACE pauzuje grę ( Q - powrót do menu / R - wznowienie gry )
+- poprawione poruszanie się (będzie zmienione w przyszłości)
+- dalsze rozkminianie animacji (będzie poprawione w przyszłości)
+- kolizje z obiektami na mapie ("ściana" wokół mapy)
+- zrobienie i dodanie ostatecznych tekstur ścian i podłogi
+
+(RAPORT IV - 15.12.2020) / do zrobienia
+
+- przeciwnicy (loot z przeciwników)
+- podstawowy system walki
+- sklep (system wymiany przedmiotów i inne mechaniki)
+- system levelovania postaci
+- usprawnienie stanów gry
 
 --------
-
-NAPOTKANE PROBLEMY:
-- ...
+- 12.01.2021 - prototyp
+- 02.02.2021 - deadline
+--------
