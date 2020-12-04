@@ -9,11 +9,11 @@ class Game
 private:
 	// GAME VARIABLES
 	sf::RenderWindow* window;
-	sf::Event sfEvent;
+	sf::Event event;
 
-	sf::Clock dtClock;
-	float deltaTime;
-	
+	sf::Clock clock;
+	sf::Time dt;
+
 	// CREATING OBJECTS WHEN WINDOW IS READY
 
 	// map object
@@ -39,6 +39,11 @@ public:
 	bool playingState;
 	bool inMenuState;
 
+	// GUI VARIABLES
+	sf::Texture guiTexture;
+	sf::Sprite playerHealthBar;
+	sf::Sprite playerHealthBarEmpty;
+
 	// MENU VARIABLES
 	sf::Music menu_music;
 	sf::SoundBuffer change_buffer;
@@ -57,8 +62,8 @@ public:
 
 	std::string main_menu_txt[4] = { "PLAY", "CREATORS", "HELP", "EXIT" };
 	std::string main_menu_txt2[4] = { "- PLAY -", "- CREATORS -", "- HELP -", "- EXIT -" };
-	std::string creators_menu_txt[4] = { "Karol Bolanowski", "Michal Szul", "ISSP sem III", "BACK" };
-	std::string creators_menu_txt2[4] = { "- Karol Bolanowski -", "- Michal Szul -", "- ISSP sem III -", "- BACK -" };
+	std::string creators_menu_txt[4] = { "K.Bolanowski", "M.Szul", "ISSP III", "BACK" };
+	std::string creators_menu_txt2[4] = { "- K.Bolanowski -", "- M.Szul -", "- ISSP III -", "- BACK -" };
 	std::string help_menu_txt[4] = { " ", " ", " ", "BACK" };
 	std::string help_menu_txt2[4] = { " ", " ", " ", "- BACK -" };
 
@@ -75,6 +80,10 @@ public:
 	void update();
 	void render();
 	void run();
+	
+	// GUI METHODS
+	void initGUI();
+	void renderGUI(sf::RenderTarget* target);
 
 	// MENU METHODS
 	void initMenu();
@@ -84,13 +93,15 @@ public:
 	void menuRenderButtons2(std::string menu_string[MAX_NUMBER_OF_ITEMS], std::string menu_string2[MAX_NUMBER_OF_ITEMS]);
 	void menuCreateButton(std::string button_name, int which, int of_how_many, int font_size);
 	int menuGetPressedItem() { return MenuIndex; }
-	void menuDeleteMenu();
 	void menuDrawMenu(sf::RenderTarget* target);
+
+	// PLAYER MOVEMENT METHODS
+	void updatePlayerMovement();
+	void updatePlayerHealth();
 
 	// COLLISION METHODS
 	void borders();				// handling collisons with window borders
-	void collision();			// handling collisions with object
+	//void collision();			// handling collisions with object
 
 
 };
-

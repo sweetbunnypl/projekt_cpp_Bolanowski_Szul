@@ -11,6 +11,7 @@ Game::~Game()
 	delete this->window;
 }
 
+// GAME METHODS
 void Game::initWindow()
 {
 	// all variables associated with window
@@ -24,33 +25,36 @@ void Game::initWindow()
 	this->inMenuState = true;
 }
 
-void Game::updateDeltaTime()
-{
-	// this->elapsedTime = this->dtClock.getElapsedTime().asSeconds();
-
-	// updates the delta time variable with the time it takes to update and render one frame;
-	this->deltaTime = this->dtClock.restart().asSeconds();
-
-	// clears the console
-	system("cls");
-	std::cout << this->deltaTime << '\n';
-}
+//void Game::updateDeltaTime()
+//{
+//	// this->elapsedTime = this->dtClock.getElapsedTime().asSeconds();
+//
+//	// updates the delta time variable with the time it takes to update and render one frame;
+//	this->deltaTime = this->dtClock.restart().asSeconds();
+//
+//	// clears the console
+//	system("cls");
+//	std::cout << this->deltaTime << '\n';
+//}
 
 void Game::updateSFMLEvents()
 {
-	while (this->window->pollEvent(this->sfEvent))
+	while (this->window->pollEvent(this->event))
 	{
-		if (this->sfEvent.type == sf::Event::Closed)
+		// HANDLING WINDOW ACTIONS
+		if (this->event.type == sf::Event::Closed)
 		{
 			window->close();
 		}
-		if (this->inMenuState)
+
+		// HANDLING KEY PRESSING IN MENU
+		if (this->inMenuState and this->playingState == false)
 		{
-			switch (sfEvent.type)
+			switch (event.type)
 			{
-				// key pressed
+			// key pressed
 			case sf::Event::KeyReleased:
-				switch (sfEvent.key.code)
+				switch (event.key.code)
 				{
 				case sf::Keyboard::Up:
 					menuMoveUp();
@@ -73,19 +77,47 @@ void Game::updateSFMLEvents()
 					break;
 				}
 				break;
-				// window closed
-			case sf::Event::Closed:
+
+			// window closed
+			/*case sf::Event::Closed:
 				quit_sound.play();
 				Sleep(500);
 				this->window->close();
-				break;
-				// we don't process other types of events
+				break;*/
+
+			// we don't process other types of events
 			default:
 				break;
 			}
-
 		}
 
+		// HANDLING KEY PRESSING WHILE PLAYING
+		if (this->inMenuState == false and this->playingState)
+		{
+			switch (event.type)
+			{
+				// key pressed
+			case sf::Event::KeyReleased:
+				switch (event.key.code)
+				{
+				case sf::Keyboard::Backspace:
+					playingState = false;
+					inMenuState = true;
+					break;
+
+				case sf::Keyboard::K:
+					this->player.playerHealth = player.playerHealth - 1.f;
+					break;
+
+				case sf::Keyboard::Escape:
+					quit_sound.play();
+					Sleep(500);
+					this->window->close();
+					break;
+				}			
+			
+			}
+		}
 	}
 }
 
@@ -96,9 +128,9 @@ void Game::update()
 	// update classes below
 	if (this->playingState)
 	{
-		this->player.update(deltaTime);
+		this->updatePlayerMovement();
 		this->borders();
-		this->collision();
+		/*this->collision();*/
 	}
 }
 
@@ -107,9 +139,16 @@ void Game::render()
 	this->window->clear();
 
 	// render (draw) objects here
-	
+
 	while (inMenuState)
 	{
+		// after entering the playing state music stops so it plays
+		// the music again when you go back to the menu
+		if (this->menu_music.getStatus() == 0)
+		{
+			this->menu_music.play();
+		}
+
 		this->menuDrawMenu(this->window);
 		this->window->display();
 		this->update();
@@ -118,9 +157,12 @@ void Game::render()
 
 	while (playingState)
 	{
+		menu_music.stop();
+
 		this->map.renderMap(this->window);
 		this->map.renderObject(this->window);
 		this->player.render(this->window);
+		this->renderGUI(this->window);
 		this->update();
 		this->window->display();
 	}
@@ -134,12 +176,41 @@ void Game::run()
 {
 	while (this->window->isOpen())
 	{
-		this->updateDeltaTime();
+		/*this->updateDeltaTime();*/
 		this->update();
 		this->render();
 	}
 }
 
+// GUI METHODS
+void Game::initGUI()
+{
+	if (!this->guiTexture.loadFromFile("res/textures/gui.png"))
+	{
+		std::cout << "ERROR::GAME::initGUI::Could not load the GUI texture!" << "\n";
+	}
+
+	sf::Vector2f playerHealthBarPosition = sf::Vector2f( 20, this->windowHeight - 50);
+
+	this->playerHealthBarEmpty.setTexture(this->guiTexture);
+	this->playerHealthBarEmpty.setTextureRect(sf::IntRect(7, 11, 50, 8));
+	this->playerHealthBarEmpty.setPosition(playerHealthBarPosition);
+	this->playerHealthBarEmpty.setScale(4.5f, 4.5f);
+
+	this->playerHealthBar.setTexture(this->guiTexture);
+	this->playerHealthBar.setTextureRect(sf::IntRect(7, 1, 49 * this->player.playerHealth * 0.01, 8));
+	this->playerHealthBar.setPosition(playerHealthBarPosition);
+	this->playerHealthBar.setScale(4.5f, 4.5f);
+}
+
+void Game::renderGUI(sf::RenderTarget* target)
+{
+	initGUI();
+	target->draw(this->playerHealthBarEmpty);
+	target->draw(this->playerHealthBar);
+}
+
+// MENU METHODS
 void Game::initMenu()
 {
 	for (int i = 0; i <= 7; i++) {
@@ -199,26 +270,26 @@ void Game::menuMoveUp()
 	change_sound.play();
 	if (MAIN_MENU and not CREATORS and not HELP) {
 		if (MenuIndex - 1 >= 0) {
-			menuCreateButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
 			MenuIndex--;
-			menuCreateButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 		else {
-			menuCreateButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
 			MenuIndex = MAX_NUMBER_OF_ITEMS - 1;
-			menuCreateButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 	}
 	else if (not MAIN_MENU and CREATORS and not HELP) {
 		if (MenuIndex - 1 >= 0) {
-			menuCreateButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
 			MenuIndex--;
-			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 		else {
-			menuCreateButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
 			MenuIndex = MAX_NUMBER_OF_ITEMS - 1;
-			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 	}
 }
@@ -228,26 +299,26 @@ void Game::menuMoveDown()
 	change_sound.play();
 	if (MAIN_MENU and not CREATORS and not HELP) {
 		if (MenuIndex + 1 < MAX_NUMBER_OF_ITEMS) {
-			menuCreateButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
 			MenuIndex++;
-			menuCreateButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 		else {
-			menuCreateButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(main_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
 			MenuIndex = 0;
-			menuCreateButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(main_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 	}
 	else if (not MAIN_MENU and CREATORS and not HELP) {
 		if (MenuIndex + 1 < MAX_NUMBER_OF_ITEMS) {
-			menuCreateButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
 			MenuIndex++;
-			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 		else {
-			menuCreateButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(creators_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
 			MenuIndex = 0;
-			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 82);
+			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 	}
 }
@@ -317,10 +388,10 @@ void Game::menuRenderButtons(sf::RenderTarget* target)
 void Game::menuRenderButtons2(std::string menu_string[MAX_NUMBER_OF_ITEMS], std::string menu_string2[MAX_NUMBER_OF_ITEMS])
 {
 	MenuIndex = 0;
-	menuCreateButton(menu_string2[0], 0, MAX_NUMBER_OF_ITEMS, 82);
-	menuCreateButton(menu_string[1], 1, MAX_NUMBER_OF_ITEMS, 82);
-	menuCreateButton(menu_string[2], 2, MAX_NUMBER_OF_ITEMS, 82);
-	menuCreateButton(menu_string[3], 3, MAX_NUMBER_OF_ITEMS, 82);
+	menuCreateButton(menu_string2[0], 0, MAX_NUMBER_OF_ITEMS, 80);
+	menuCreateButton(menu_string[1], 1, MAX_NUMBER_OF_ITEMS, 60);
+	menuCreateButton(menu_string[2], 2, MAX_NUMBER_OF_ITEMS, 60);
+	menuCreateButton(menu_string[3], 3, MAX_NUMBER_OF_ITEMS, 60);
 }
 
 void Game::menuCreateButton(std::string button_name, int which, int of_how_many, int font_size)
@@ -358,43 +429,91 @@ void Game::menuDrawMenu(sf::RenderTarget* target)
 	}
 }
 
+// PLAYER METHODS
+void Game::updatePlayerMovement()
+{
+	this->player.playerAnimation.update(clock.restart());
+	this->player.playerAnimation.animate(this->player.playerSprite);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+	{
+		// moving up
+		this->player.playerSprite.move({ 0.f, -5.f });
+		this->player.playerAnimation.playAnimation("up", true);
+
+		// collision with upper side of object
+		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+		{
+			this->player.playerSprite.move({ 0.f, 5.f });
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+	{
+		// moving bottom
+		this->player.playerSprite.move({ 0.f, 5.f });
+		this->player.playerAnimation.playAnimation("down", true);
+
+		// collision with bottom side of object
+		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+		{
+			this->player.playerSprite.move({ 0.f, -5.f });
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+	{
+		// moving left
+		this->player.playerSprite.move({ -5.f, 0.f });
+		this->player.playerAnimation.playAnimation("left", true);
+
+		// collision with left side of object
+		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+		{
+			this->player.playerSprite.move({ 5.f, 0.f });
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+	{
+		// moving right
+		this->player.playerSprite.move({ 5.f, 0.f });
+		this->player.playerAnimation.playAnimation("right", true);
+
+		// collision with right side of object
+		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+		{
+			this->player.playerSprite.move({ -5.f, 0.f });
+		}
+	}
+}
+
+// COLLISION METHODS
+// with window borders
 void Game::borders()
 {
-	std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
-	std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
+	//std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
+	//std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
 
 	if (player.playerSprite.getPosition().x <= 0)
 	{
-		std::cout << "jeblo z lewej" << '\n';
+		//std::cout << "jeblo z lewej" << '\n';
 		player.playerSprite.setPosition(0.f, player.playerSprite.getPosition().y);
 	}
 
 	if (player.playerSprite.getPosition().y <= 0)
 	{
-		std::cout << "jeblo z gory" << '\n';
+		//std::cout << "jeblo z gory" << '\n';
 		player.playerSprite.setPosition(player.playerSprite.getPosition().x, 0);
 	}
 
 	if (player.playerSprite.getPosition().x + player.playerSprite.getGlobalBounds().width >= window->getSize().x)
 	{
-		std::cout << "jeblo z prawej" << '\n';
+		//std::cout << "jeblo z prawej" << '\n';
 		player.playerSprite.setPosition(window->getSize().x - player.playerSprite.getGlobalBounds().width, player.playerSprite.getPosition().y);
 	}
 
 	if (player.playerSprite.getPosition().y + player.playerSprite.getGlobalBounds().height >= window->getSize().y)
 	{
-		std::cout << "jeblo z dolu" << '\n';
+		//std::cout << "jeblo z dolu" << '\n';
 		player.playerSprite.setPosition(player.playerSprite.getPosition().x, window->getSize().y - player.playerSprite.getGlobalBounds().height);
 	}
 }
-
-void Game::collision()
-{
-	if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
-	{
-		std::cout << "MPK znowu jeblo" << '\n';
-	}
-}
-
-
 
