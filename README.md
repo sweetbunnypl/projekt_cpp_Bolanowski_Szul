@@ -66,6 +66,7 @@ zdjęcia z obecnego stanu gry: https://imgur.com/a/uWUoXpO
 - system levelovania postaci
 - usprawnienie stanów gry
 - usprawienie GUI
+- zrobienie i dodatnie ostatecznych tekstur postaci (z poprawką animacji)
 
 --------
 - 12.01.2021 - prototyp
