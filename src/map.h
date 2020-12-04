@@ -14,19 +14,19 @@ public:
 	Map();
 	~Map();
 
-	//sf::Texture mapBackgroundTexture;
-	//sf::Sprite mapBackground;
+	sf::Texture mapBackgroundTexture;
+	sf::Sprite mapBackground;
 
 	// collison test object
-	sf::Sprite object[63];
-	int objectArrSize = sizeof(object) / sizeof(object[0]);
+	sf::Sprite object[53];
 	sf::Texture tilesTexture;
 
 	int mnoznik;
 
-	//void initMap();
-	void initObjects();
+	void initMap();
 	void renderMap(sf::RenderTarget* target);
+
+	void initObjects();
 	void renderObject(sf::RenderTarget* target);
 };
 

@@ -15,14 +15,15 @@ Game::~Game()
 void Game::initWindow()
 {
 	// all variables associated with window
-	std::string title = "game project";
+	std::string title = "WERSJA PRE-ALPHA";
 	sf::VideoMode windowBunds(windowWidth, windowHeight);
 	this->window = new sf::RenderWindow(windowBunds, title, sf::Style::Close | sf::Style::Resize);
 	this->window->setFramerateLimit(30);
 
 	// states
-	this->playingState = false;
-	this->inMenuState = true;
+	this->PLAYING_STATE = false;
+	this->IN_MENU_STATE = true;
+	this->GAME_STOPPED = false;
 }
 
 void Game::updateSFMLEvents()
@@ -36,7 +37,7 @@ void Game::updateSFMLEvents()
 		}
 
 		// HANDLING KEY PRESSING IN MENU
-		if (this->inMenuState and this->playingState == false)
+		if (this->IN_MENU_STATE and this->PLAYING_STATE == false)
 		{
 			switch (event.type)
 			{
@@ -73,7 +74,7 @@ void Game::updateSFMLEvents()
 		}
 
 		// HANDLING KEY PRESSING WHILE PLAYING
-		if (this->inMenuState == false and this->playingState)
+		if (this->IN_MENU_STATE == false and this->PLAYING_STATE)
 		{
 			switch (event.type)
 			{
@@ -82,12 +83,44 @@ void Game::updateSFMLEvents()
 				switch (event.key.code)
 				{
 				case sf::Keyboard::Backspace:
-					playingState = false;
-					inMenuState = true;
+					PLAYING_STATE = false;
+					IN_MENU_STATE = false;
+					GAME_STOPPED = true;
 					break;
 
 				case sf::Keyboard::K:
 					this->player.playerHealth = player.playerHealth - 1.f;
+					break;
+
+				case sf::Keyboard::Escape:
+					quit_sound.play();
+					Sleep(500);
+					this->window->close();
+					break;
+				}
+			}
+		}
+
+		if (this->GAME_STOPPED)
+		{
+			switch (event.type)
+			{
+				// key pressed
+			case sf::Event::KeyReleased:
+				switch (event.key.code)
+				{
+				case sf::Keyboard::Q:
+					PLAYING_STATE = false;
+					IN_MENU_STATE = true;
+					GAME_STOPPED = false;
+					std::cout << "WYJSCIE DO MENU" << '\n';
+					break;
+
+				case sf::Keyboard::R:
+					PLAYING_STATE = true;
+					IN_MENU_STATE = false;
+					GAME_STOPPED = false;
+					std::cout << "WZNOWIENIE GRY" << '\n';
 					break;
 
 				case sf::Keyboard::Escape:
@@ -105,8 +138,14 @@ void Game::update()
 {
 	this->updateSFMLEvents();
 
+	if (GAME_STOPPED)
+	{
+		std::cout << "GRA ZATRZYMANA" << '\n';
+			
+	}
+
 	// update classes below
-	if (this->playingState)
+	if (this->PLAYING_STATE)
 	{
 		this->updatePlayerMovement();
 		this->borders();
@@ -120,7 +159,7 @@ void Game::render()
 
 	// render (draw) objects here
 
-	while (inMenuState)
+	while (IN_MENU_STATE)
 	{
 		// after entering the playing state music stops so it plays
 		// the music again when you go back to the menu
@@ -135,7 +174,7 @@ void Game::render()
 		break;
 	}
 
-	while (playingState)
+	while (PLAYING_STATE)
 	{
 		menu_music.stop();
 
@@ -173,7 +212,7 @@ void Game::initGUI()
 		std::cout << "ERROR::GAME::initGUI::Could not load the GUI texture!" << "\n";
 	}
 
-	sf::Vector2f playerHealthBarPosition = sf::Vector2f( 20, this->windowHeight - 50);
+	sf::Vector2f playerHealthBarPosition = sf::Vector2f( 980, 50);
 
 	this->playerHealthBarEmpty.setTexture(this->guiTexture);
 	this->playerHealthBarEmpty.setTextureRect(sf::IntRect(7, 11, 50, 8));
@@ -314,8 +353,8 @@ void Game::menuRenderButtons(sf::RenderTarget* target)
 		case 0:
 			printf("Ktos nacisnal Play");
 			enter_sound.play();
-			this->inMenuState = false;
-			this->playingState = true;
+			this->IN_MENU_STATE = false;
+			this->PLAYING_STATE = true;
 			break;
 		case 1:
 			printf("Ktos nacisnal Creators");
@@ -423,7 +462,7 @@ void Game::updatePlayerMovement()
 		this->player.playerAnimation.playAnimation("up", true);
 
 		// collision with upper side of object
-		for (int i = 0; i <= 62; i++)
+		for (int i = 0; i <= 52; i++)
 		{
 			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
@@ -440,7 +479,7 @@ void Game::updatePlayerMovement()
 		this->player.playerAnimation.playAnimation("down", true);
 
 		// collision with bottom side of object
-		for (int i = 0; i <= 62; i++)
+		for (int i = 0; i <= 52; i++)
 		{
 			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
@@ -457,7 +496,7 @@ void Game::updatePlayerMovement()
 		this->player.playerAnimation.playAnimation("left", true);
 
 		// collision with left side of object
-		for (int i = 0; i <= 62; i++)
+		for (int i = 0; i <= 52; i++)
 		{
 			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
@@ -474,7 +513,7 @@ void Game::updatePlayerMovement()
 		this->player.playerAnimation.playAnimation("right", true);
 
 		// collision with right side of object
-		for (int i = 0; i <= 62; i++)
+		for (int i = 0; i <= 52; i++)
 		{
 			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{

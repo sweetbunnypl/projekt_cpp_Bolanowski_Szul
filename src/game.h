@@ -36,8 +36,9 @@ public:
 	unsigned windowHeight = 720;
 
 	// GAME STATE VARIABLES
-	bool playingState;
-	bool inMenuState;
+	bool PLAYING_STATE;
+	bool IN_MENU_STATE;
+	bool GAME_STOPPED;
 
 	// GUI VARIABLES
 	sf::Texture guiTexture;

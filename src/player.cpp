@@ -54,7 +54,7 @@ void Player::initSprite()
     this->playerSprite.setTextureRect(sf::IntRect(textureSize.x * 0, textureSize.y * 0, textureSize.x, textureSize.y));
 
     // setting scale, bc it's a little bit too small 
-    this->playerSprite.scale(3.f, 3.f);
+    this->playerSprite.scale(2.f, 2.f);
 
     // setting starting position
     this->playerSprite.setPosition(500.f, 500.f);
