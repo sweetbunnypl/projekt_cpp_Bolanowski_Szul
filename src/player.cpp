@@ -36,10 +36,10 @@ void Player::initTexture()
     playerUp.addFrame(1.f, sf::IntRect(32, 96, 32, 32));
     playerUp.addFrame(1.f, sf::IntRect(64, 96, 32, 32));
 
-    playerAnimation.addAnimation("down", playerDown, sf::seconds(1.8f));
-    playerAnimation.addAnimation("left", playerLeft, sf::seconds(1.8f));
-    playerAnimation.addAnimation("right", playerRight, sf::seconds(1.8f));
-    playerAnimation.addAnimation("up", playerUp, sf::seconds(1.8f));
+    playerAnimation.addAnimation("down", playerDown, sf::seconds(2.f));
+    playerAnimation.addAnimation("left", playerLeft, sf::seconds(2.f));
+    playerAnimation.addAnimation("right", playerRight, sf::seconds(2.f));
+    playerAnimation.addAnimation("up", playerUp, sf::seconds(2.f));
 }
 
 void Player::initSprite()
@@ -55,41 +55,13 @@ void Player::initSprite()
 
     // setting scale, bc it's a little bit too small 
     this->playerSprite.scale(3.f, 3.f);
+
+    // setting starting position
+    this->playerSprite.setPosition(500.f, 500.f);
 }
-
-
-// MOVEMENT SHOULD BE HANLED IN GAME
-//void Player::updateMovement(const float& deltaTime, const float x, const float y)
-//{
-//    this->playerSprite.move(x * this->movementSpeed * deltaTime, y * this->movementSpeed * deltaTime);
-//}
-
-//void Player::update(const float& deltaTime)
-//{
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-//    {
-//        // move up
-//        this->updateMovement(deltaTime, 0.f, -1.f);
-//    }
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-//    {
-//        // move down
-//        this->updateMovement(deltaTime, 0.f, 1.f);
-//    }
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-//    {
-//        // move left
-//        this->updateMovement(deltaTime, -1.f, 0.f);
-//    }
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-//    {
-//        // move right
-//        this->updateMovement(deltaTime, 1.f, 0.f);
-//    }
-//
-//}
 
 void Player::render(sf::RenderTarget* target)
 {
+
     target->draw(this->playerSprite);
 }

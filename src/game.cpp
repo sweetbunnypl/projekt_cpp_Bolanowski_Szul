@@ -25,18 +25,6 @@ void Game::initWindow()
 	this->inMenuState = true;
 }
 
-//void Game::updateDeltaTime()
-//{
-//	// this->elapsedTime = this->dtClock.getElapsedTime().asSeconds();
-//
-//	// updates the delta time variable with the time it takes to update and render one frame;
-//	this->deltaTime = this->dtClock.restart().asSeconds();
-//
-//	// clears the console
-//	system("cls");
-//	std::cout << this->deltaTime << '\n';
-//}
-
 void Game::updateSFMLEvents()
 {
 	while (this->window->pollEvent(this->event))
@@ -78,13 +66,6 @@ void Game::updateSFMLEvents()
 				}
 				break;
 
-			// window closed
-			/*case sf::Event::Closed:
-				quit_sound.play();
-				Sleep(500);
-				this->window->close();
-				break;*/
-
 			// we don't process other types of events
 			default:
 				break;
@@ -114,8 +95,7 @@ void Game::updateSFMLEvents()
 					Sleep(500);
 					this->window->close();
 					break;
-				}			
-			
+				}
 			}
 		}
 	}
@@ -159,11 +139,14 @@ void Game::render()
 	{
 		menu_music.stop();
 
+		this->window->clear(sf::Color(42, 33, 52, 255));
 		this->map.renderMap(this->window);
 		this->map.renderObject(this->window);
 		this->player.render(this->window);
 		this->renderGUI(this->window);
 		this->update();
+		this->player.playerAnimation.update(clock.restart());
+		this->player.playerAnimation.animate(this->player.playerSprite);
 		this->window->display();
 	}
 	// 
@@ -241,7 +224,7 @@ void Game::initMenu()
 	}
 	//odtworzenie muzyki
 	menu_music.setLoop(true);
-	menu_music.play();
+	//menu_music.play();
 
 	//wczytywanie change
 	if (!change_buffer.loadFromFile("res/sounds/menu_change.wav")) {
@@ -432,55 +415,71 @@ void Game::menuDrawMenu(sf::RenderTarget* target)
 // PLAYER METHODS
 void Game::updatePlayerMovement()
 {
-	this->player.playerAnimation.update(clock.restart());
-	this->player.playerAnimation.animate(this->player.playerSprite);
-
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{
 		// moving up
 		this->player.playerSprite.move({ 0.f, -5.f });
+		//this->player.playerAnimation.update(clock.restart());
 		this->player.playerAnimation.playAnimation("up", true);
 
 		// collision with upper side of object
-		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+		for (int i = 0; i <= 62; i++)
 		{
-			this->player.playerSprite.move({ 0.f, 5.f });
-		}
+			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+			{
+				this->player.playerSprite.move({ 0.f, 5.f });
+			}
+		}	
 	}
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 	{
 		// moving bottom
 		this->player.playerSprite.move({ 0.f, 5.f });
+		//this->player.playerAnimation.update(clock.restart());
 		this->player.playerAnimation.playAnimation("down", true);
 
 		// collision with bottom side of object
-		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+		for (int i = 0; i <= 62; i++)
 		{
-			this->player.playerSprite.move({ 0.f, -5.f });
-		}
+			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+			{
+				this->player.playerSprite.move({ 0.f, -5.f });
+			}
+		}	
 	}
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
 		// moving left
 		this->player.playerSprite.move({ -5.f, 0.f });
+		//this->player.playerAnimation.update(clock.restart());
 		this->player.playerAnimation.playAnimation("left", true);
 
 		// collision with left side of object
-		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+		for (int i = 0; i <= 62; i++)
 		{
-			this->player.playerSprite.move({ 5.f, 0.f });
+			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+			{
+				this->player.playerSprite.move({ 5.f, 0.f });
+			}
 		}
 	}
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 	{
 		// moving right
 		this->player.playerSprite.move({ 5.f, 0.f });
+		//this->player.playerAnimation.update(clock.restart());
 		this->player.playerAnimation.playAnimation("right", true);
 
 		// collision with right side of object
-		if (this->map.object.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+		for (int i = 0; i <= 62; i++)
 		{
-			this->player.playerSprite.move({ -5.f, 0.f });
+			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+			{
+				this->player.playerSprite.move({ -5.f, 0.f });
+			}
 		}
 	}
 }
@@ -489,30 +488,26 @@ void Game::updatePlayerMovement()
 // with window borders
 void Game::borders()
 {
-	//std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
-	//std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
+	std::cout << "x: " << player.playerSprite.getPosition().x << '\n';
+	std::cout << "y: " << player.playerSprite.getPosition().y << '\n';
 
 	if (player.playerSprite.getPosition().x <= 0)
 	{
-		//std::cout << "jeblo z lewej" << '\n';
 		player.playerSprite.setPosition(0.f, player.playerSprite.getPosition().y);
 	}
 
 	if (player.playerSprite.getPosition().y <= 0)
 	{
-		//std::cout << "jeblo z gory" << '\n';
 		player.playerSprite.setPosition(player.playerSprite.getPosition().x, 0);
 	}
 
 	if (player.playerSprite.getPosition().x + player.playerSprite.getGlobalBounds().width >= window->getSize().x)
 	{
-		//std::cout << "jeblo z prawej" << '\n';
 		player.playerSprite.setPosition(window->getSize().x - player.playerSprite.getGlobalBounds().width, player.playerSprite.getPosition().y);
 	}
 
 	if (player.playerSprite.getPosition().y + player.playerSprite.getGlobalBounds().height >= window->getSize().y)
 	{
-		//std::cout << "jeblo z dolu" << '\n';
 		player.playerSprite.setPosition(player.playerSprite.getPosition().x, window->getSize().y - player.playerSprite.getGlobalBounds().height);
 	}
 }

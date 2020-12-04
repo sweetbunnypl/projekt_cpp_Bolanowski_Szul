@@ -98,6 +98,11 @@ public:
 	// PLAYER MOVEMENT METHODS
 	void updatePlayerMovement();
 	void updatePlayerHealth();
+	bool movingLeft;
+	bool movingRight;
+	bool movingDown;
+	bool movingUp;
+	bool movingNot;
 
 	// COLLISION METHODS
 	void borders();				// handling collisons with window borders
