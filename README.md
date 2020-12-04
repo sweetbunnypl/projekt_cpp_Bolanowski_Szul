@@ -47,7 +47,7 @@ branch main:
 
 RAPORT III - 01.12.2020
 
-- scalenie menu i grą
+- scalenie menu z grą
 - przycisk PLAY przenosi do rozgrywki
 - BACKSPACE pauzuje grę ( Q - powrót do menu / R - wznowienie gry )
 - poprawione poruszanie się (będzie zmienione w przyszłości)
