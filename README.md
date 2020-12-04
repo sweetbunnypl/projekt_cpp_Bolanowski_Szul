@@ -54,6 +54,9 @@ RAPORT III - 01.12.2020
 - dalsze rozkminianie animacji (będzie poprawione w przyszłości)
 - kolizje z obiektami na mapie ("ściana" wokół mapy)
 - zrobienie i dodanie ostatecznych tekstur ścian i podłogi
+- zalążek GUI
+
+zdjęcia z obecnego stanu gry: https://imgur.com/a/uWUoXpO
 
 (RAPORT IV - 15.12.2020) / do zrobienia
 
@@ -62,6 +65,7 @@ RAPORT III - 01.12.2020
 - sklep (system wymiany przedmiotów i inne mechaniki)
 - system levelovania postaci
 - usprawnienie stanów gry
+- usprawienie GUI
 
 --------
 - 12.01.2021 - prototyp
