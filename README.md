@@ -24,9 +24,6 @@ Naszym założeniem jest oparcie projektu w głównej mierze o bibliotekę SFML,
 
 --------
 
-RAPORTY:
-
-
 RAPORT I - 2020/11/03
 
 branch Szul_movement:
@@ -37,12 +34,15 @@ branch Bolanowski:
 - proste menu
 
 
+
 RAPORT II - 2020/11/17
 
 branch main:
 - duże ulepszenia graficzne menu
 - dodanie opcji w menu
 - podstawowe mechaniki
+
+
 
 RAPORT III - 2020/12/01 (955 linijek kodu)
 
@@ -56,6 +56,8 @@ RAPORT III - 2020/12/01 (955 linijek kodu)
 - zalążek GUI
 
 zdjęcia z obecnego stanu gry: https://imgur.com/a/uWUoXpO
+
+
 
 (RAPORT IV - 2020/12/15) / do zrobienia
 
