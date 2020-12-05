@@ -20,13 +20,14 @@ Do zrobienia:
 
 Użyte technologie:
 Naszym założeniem jest oparcie projektu w głównej mierze o bibliotekę SFML, lecz w trakcie tworzenia projektu możliwe, że użyjemy bibliotek opartych lub współpracujących z SFML'em w celu spójniejszego działania aplikacji oraz uproszczenia kodu.
+2020/12/01 - rozszerzenie projektu o bibliotekę Thor, opartą o SFML i poszerzającą jego możliwości.
 
 --------
 
 RAPORTY:
 
 
-RAPORT I - 03.11.2020
+RAPORT I - 2020/11/03
 
 branch Szul_movement:
 - basic player movement
@@ -36,14 +37,14 @@ branch Bolanowski:
 - proste menu
 
 
-RAPORT II - 17.11.2020
+RAPORT II - 2020/11/17
 
 branch main:
 - duże ulepszenia graficzne menu
 - dodanie opcji w menu
 - podstawowe mechaniki
 
-RAPORT III - 01.12.2020 (955 linijek kodu)
+RAPORT III - 2020/12/01 (955 linijek kodu)
 
 - scalenie menu z grą
 - przycisk PLAY przenosi do rozgrywki
@@ -56,7 +57,7 @@ RAPORT III - 01.12.2020 (955 linijek kodu)
 
 zdjęcia z obecnego stanu gry: https://imgur.com/a/uWUoXpO
 
-(RAPORT IV - 15.12.2020) / do zrobienia
+(RAPORT IV - 2020/12/15) / do zrobienia
 
 - przeciwnicy (loot z przeciwników)
 - podstawowy system walki
