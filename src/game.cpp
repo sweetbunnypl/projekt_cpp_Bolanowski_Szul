@@ -138,12 +138,6 @@ void Game::update()
 {
 	this->updateSFMLEvents();
 
-	if (GAME_STOPPED)
-	{
-		std::cout << "GRA ZATRZYMANA" << '\n';
-			
-	}
-
 	// update classes below
 	if (this->PLAYING_STATE)
 	{
@@ -207,9 +201,9 @@ void Game::render()
 
 			// STATIC ANIMATIONS
 			this->map.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-			this->map.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-			this->map.key.setTextureRect(sf::IntRect(3*mnoznikStatic + map.liczba, 0, 15, 30));
-			this->map.heart.setTextureRect(sf::IntRect(map.liczba, 0, 12, 16));
+			this->map.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
+			this->map.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
+			this->map.heart.setTextureRect(sf::IntRect(map.liczba - 1*mnoznikStatic, 0, 11, 16));
 
 			// DYNAMIC ANIMATION
 			if (player.liczba > 32)
@@ -254,7 +248,18 @@ void Game::render()
 
 	while (GAME_STOPPED)
 	{
+		this->testText.setFont(this->font);
+		this->testText.setCharacterSize(40);
+		this->testText.setFillColor(sf::Color::White);
+		this->testText.setOutlineColor(sf::Color::Black);
+		this->testText.setOutlineThickness(2);
+		this->testText.setStyle(sf::Text::Bold);
+		this->testText.setString("> Click R to RESUME or Q to go back to the MENU <");
+		this->testText.setPosition(300.f, 300.f);
+		this->window->draw(this->testText);
 
+		this->update();
+		this->window->display();
 	}
 
 	//this->window->display();

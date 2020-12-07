@@ -139,19 +139,19 @@ void Map::testShards()
     }
 
     this->shard.setTexture(this->shardTexture);
-    this->shard.setPosition({ 600.f, 280.f });
+    this->shard.setPosition({ 585.f, 280.f });
     this->shard.setScale(2.f, 2.f);
 
     this->coin.setTexture(this->coinTexture);
-    this->coin.setPosition({ 500.f, 280.f });
+    this->coin.setPosition({ 520.f, 290.f });
     this->coin.setScale(3.f, 3.f);
 
     this->key.setTexture(this->keyTexture);
-    this->key.setPosition({ 400.f, 280.f });
-    this->key.setScale(2.f, 2.f);
+    this->key.setPosition({ 450.f, 282.f });
+    this->key.setScale(3.f, 3.f);
 
     this->heart.setTexture(this->heartTexture);
-    this->heart.setPosition({ 300.f, 280.f });
+    this->heart.setPosition({ 390.f, 290.f });
     this->heart.setScale(3.f, 3.f);
 }
 
