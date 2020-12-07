@@ -149,7 +149,7 @@ void Game::update()
 	{
 		this->updatePlayerMovement();
 		this->borders();
-		/*this->collision();*/
+
 	}
 }
 
@@ -179,16 +179,83 @@ void Game::render()
 		menu_music.stop();
 
 		this->window->clear(sf::Color(42, 33, 52, 255));
+
 		this->map.renderMap(this->window);
 		this->map.renderObject(this->window);
+		this->map.renderShards(this->window);
+
 		this->player.render(this->window);
+
 		this->renderGUI(this->window);
+
 		this->update();
-		this->player.playerAnimation.update(clock.restart());
-		this->player.playerAnimation.animate(this->player.playerSprite);
+
+		// ANIMATIONS
+		if (clock.getElapsedTime().asSeconds() > 0.15f)
+		{
+			// STATIC ANIMATIONS COUNTER
+			if (map.liczba > 12 * 4)
+			{
+				this->map.liczba -= 12 * 5;
+				this->mnoznikStatic -= 5;
+			}
+			else
+			{
+				this->map.liczba += 12;
+				this->mnoznikStatic += 1;
+			}		
+
+			// STATIC ANIMATIONS
+			this->map.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
+			this->map.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
+			this->map.key.setTextureRect(sf::IntRect(3*mnoznikStatic + map.liczba, 0, 15, 30));
+			this->map.heart.setTextureRect(sf::IntRect(map.liczba, 0, 12, 16));
+
+			// DYNAMIC ANIMATION
+			if (player.liczba > 32)
+			{
+				this->player.liczba -= 32 * 2;
+			}
+			else
+			{
+				this->player.liczba += 32;
+			}
+			
+			if (BEFORE_MOOVING)
+			{
+				this->player.playerSprite.setTextureRect(sf::IntRect(32, 0, 32, 32));
+			}
+			if (MOOVING_DOWN)
+			{
+				this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 0, 32, 32));
+			}
+			if (MOOVING_UP)
+			{
+				this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 3, 32, 32));
+			}
+
+			if (MOOVING_LEFT)
+			{
+				this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 1, 32, 32));
+			}
+
+			if (MOOVING_RIGHT)
+			{
+				this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 2, 32, 32));
+			}
+
+			this->clock.restart();
+
+		}
+
 		this->window->display();
 	}
 	// 
+
+	while (GAME_STOPPED)
+	{
+
+	}
 
 	//this->window->display();
 
@@ -196,9 +263,14 @@ void Game::render()
 
 void Game::run()
 {
+	this->MOOVING_UP = false;
+	this->MOOVING_DOWN = false;
+	this->MOOVING_RIGHT = false;
+	this->MOOVING_LEFT = false;
+	this->BEFORE_MOOVING = true;
+
 	while (this->window->isOpen())
 	{
-		/*this->updateDeltaTime();*/
 		this->update();
 		this->render();
 	}
@@ -457,9 +529,9 @@ void Game::updatePlayerMovement()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{
 		// moving up
+		this->MOOVING_UP = true;
+		this->BEFORE_MOOVING = false;
 		this->player.playerSprite.move({ 0.f, -5.f });
-		//this->player.playerAnimation.update(clock.restart());
-		this->player.playerAnimation.playAnimation("up", true);
 
 		// collision with upper side of object
 		for (int i = 0; i <= 52; i++)
@@ -470,13 +542,17 @@ void Game::updatePlayerMovement()
 			}
 		}	
 	}
+	else
+	{
+		this->MOOVING_UP = false;
+	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 	{
 		// moving bottom
+		this->MOOVING_DOWN = true;
+		this->BEFORE_MOOVING = false;
 		this->player.playerSprite.move({ 0.f, 5.f });
-		//this->player.playerAnimation.update(clock.restart());
-		this->player.playerAnimation.playAnimation("down", true);
 
 		// collision with bottom side of object
 		for (int i = 0; i <= 52; i++)
@@ -487,13 +563,17 @@ void Game::updatePlayerMovement()
 			}
 		}	
 	}
+	else
+	{
+		this->MOOVING_DOWN = false;
+	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
 		// moving left
+		this->MOOVING_LEFT = true;
+		this->BEFORE_MOOVING = false;
 		this->player.playerSprite.move({ -5.f, 0.f });
-		//this->player.playerAnimation.update(clock.restart());
-		this->player.playerAnimation.playAnimation("left", true);
 
 		// collision with left side of object
 		for (int i = 0; i <= 52; i++)
@@ -504,13 +584,17 @@ void Game::updatePlayerMovement()
 			}
 		}
 	}
+	else
+	{
+		this->MOOVING_LEFT = false;
+	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 	{
 		// moving right
+		this->MOOVING_RIGHT = true;
+		this->BEFORE_MOOVING = false;
 		this->player.playerSprite.move({ 5.f, 0.f });
-		//this->player.playerAnimation.update(clock.restart());
-		this->player.playerAnimation.playAnimation("right", true);
 
 		// collision with right side of object
 		for (int i = 0; i <= 52; i++)
@@ -521,14 +605,19 @@ void Game::updatePlayerMovement()
 			}
 		}
 	}
+	else
+	{
+		this->MOOVING_RIGHT = false;
+	}
+
 }
 
 // COLLISION METHODS
 // with window borders
 void Game::borders()
 {
-	std::cout << "x: " << player.playerSprite.getPosition().x << '\n';
-	std::cout << "y: " << player.playerSprite.getPosition().y << '\n';
+	//std::cout << "x: " << player.playerSprite.getPosition().x << '\n';
+	//std::cout << "y: " << player.playerSprite.getPosition().y << '\n';
 
 	if (player.playerSprite.getPosition().x <= 0)
 	{

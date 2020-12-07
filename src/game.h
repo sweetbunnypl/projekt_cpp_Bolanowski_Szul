@@ -99,11 +99,15 @@ public:
 	// PLAYER MOVEMENT METHODS
 	void updatePlayerMovement();
 	void updatePlayerHealth();
-	bool movingLeft;
-	bool movingRight;
-	bool movingDown;
-	bool movingUp;
-	bool movingNot;
+
+	bool MOOVING_LEFT;
+	bool MOOVING_RIGHT;
+	bool MOOVING_UP;
+	bool MOOVING_DOWN;
+	bool BEFORE_MOOVING;
+	
+	int mnoznikStatic;
+	int mnoznikDynamic;
 
 	// COLLISION METHODS
 	void borders();				// handling collisons with window borders

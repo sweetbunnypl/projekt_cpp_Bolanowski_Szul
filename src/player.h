@@ -13,15 +13,8 @@ public:
 	sf::Sprite playerSprite;
 	sf::Vector2u textureSize;
 
-	// Thor animations
-	thor::FrameAnimation playerDown;
-	thor::FrameAnimation playerLeft;
-	thor::FrameAnimation playerRight;
-	thor::FrameAnimation playerUp;
-
-	thor::Animator<sf::Sprite, std::string> playerAnimation;
-
 	float playerHealth;
+	int liczba;
 
 	void initTexture();
 	void initSprite();

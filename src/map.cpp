@@ -4,6 +4,7 @@ Map::Map()
 {
     this->initMap();
     this->initObjects();
+    this->testShards();
 }
 
 Map::~Map()
@@ -113,4 +114,51 @@ void Map::renderObject(sf::RenderTarget* target)
     {
         target->draw(this->object[i]);
     }
+}
+
+void Map::testShards()
+{
+    if (!this->shardTexture.loadFromFile("res/textures/levelshards.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+
+    if (!this->coinTexture.loadFromFile("res/textures/coin.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+
+    if (!this->keyTexture.loadFromFile("res/textures/key.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+
+    if (!this->heartTexture.loadFromFile("res/textures/heart.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+
+    this->shard.setTexture(this->shardTexture);
+    this->shard.setPosition({ 600.f, 280.f });
+    this->shard.setScale(2.f, 2.f);
+
+    this->coin.setTexture(this->coinTexture);
+    this->coin.setPosition({ 500.f, 280.f });
+    this->coin.setScale(3.f, 3.f);
+
+    this->key.setTexture(this->keyTexture);
+    this->key.setPosition({ 400.f, 280.f });
+    this->key.setScale(2.f, 2.f);
+
+    this->heart.setTexture(this->heartTexture);
+    this->heart.setPosition({ 300.f, 280.f });
+    this->heart.setScale(3.f, 3.f);
+}
+
+void Map::renderShards(sf::RenderTarget* target)
+{
+    target->draw(this->shard);
+    target->draw(this->coin);
+    target->draw(this->key);
+    target->draw(this->heart);
 }
