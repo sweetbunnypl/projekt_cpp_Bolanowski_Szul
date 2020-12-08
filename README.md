@@ -68,6 +68,7 @@ zdjęcia z obecnego stanu gry: https://imgur.com/a/uWUoXpO
 - usprawnienie stanów gry
 - usprawienie GUI
 - animacja postaci i obiektów [X]
+- robienie screenshotów [X]
 
 --------
 - 12.01.2021 - prototyp
