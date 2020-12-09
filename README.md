@@ -7,8 +7,8 @@ Gra typu "rougelike" w połączeniu z elementami RPG, oparta o grafikę dwuwymia
 Naszymi inspiracjami są gry The Binding of Issac oraz Enter the Gungeon
 
 Podział pracy:
-Michał: tekstury i animacja / gracz / sklep /
-Karol: menu / przeciwnicy /
+-Michał: tekstury i animacja / gracz / sklep /
+-Karol: menu / przeciwnicy /
 
 --------
 
