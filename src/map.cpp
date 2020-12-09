@@ -119,58 +119,40 @@ void Map::renderObject(sf::RenderTarget* target)
     }
 }
 
-void Map::testShards()
-{
-    if (!this->shardTexture.loadFromFile("res/textures/levelshards.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
+//void Map::testShards()
+//{
+//    
+//
+//    this->shard.setTexture(this->shardTexture);
+//    this->shard.setPosition({ 585.f, 280.f });
+//    this->shard.setScale(1.7f, 1.7f);
+//
+//    this->coin.setTexture(this->coinTexture);
+//    this->coin.setPosition({ 520.f, 290.f });
+//    this->coin.setScale(2.9f, 2.9f);
+//
+//    this->key.setTexture(this->keyTexture);
+//    this->key.setPosition({ 450.f, 282.f });
+//    this->key.setScale(3.f, 3.f);
+//
+//    this->heart.setTexture(this->heartTexture);
+//    this->heart.setPosition({ 390.f, 290.f });
+//    this->heart.setScale(3.f, 3.f);
+//}
 
-    if (!this->coinTexture.loadFromFile("res/textures/coin.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
-    if (!this->keyTexture.loadFromFile("res/textures/key.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
-    if (!this->heartTexture.loadFromFile("res/textures/heart.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
-    this->shard.setTexture(this->shardTexture);
-    this->shard.setPosition({ 585.f, 280.f });
-    this->shard.setScale(1.7f, 1.7f);
-
-    this->coin.setTexture(this->coinTexture);
-    this->coin.setPosition({ 520.f, 290.f });
-    this->coin.setScale(2.9f, 2.9f);
-
-    this->key.setTexture(this->keyTexture);
-    this->key.setPosition({ 450.f, 282.f });
-    this->key.setScale(3.f, 3.f);
-
-    this->heart.setTexture(this->heartTexture);
-    this->heart.setPosition({ 390.f, 290.f });
-    this->heart.setScale(3.f, 3.f);
-}
-
-void Map::renderShards(sf::RenderTarget* target)
-{
-    target->draw(this->shard);
-    target->draw(this->coin);
-    target->draw(this->key);
-    target->draw(this->heart);
-}
+//void Map::renderShards(sf::RenderTarget* target)
+//{
+//    target->draw(this->shard);
+//    target->draw(this->coin);
+//    target->draw(this->key);
+//    target->draw(this->heart);
+//}
 
 Shop::Shop()
 {
     this->initMap(shopBackgroundTexture);
     this->initObjects(shopTexture);
-    this->testShards();
+    //this->testShards();
 }
 
 Shop::~Shop()
@@ -181,7 +163,7 @@ StartingRoom::StartingRoom()
 {
     this->initMap(backgroundTexture);
     this->initObjects(tilesTexture);
-    this->testShards();
+    //this->testShards();
 }
 
 StartingRoom::~StartingRoom()

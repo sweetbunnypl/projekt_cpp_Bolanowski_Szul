@@ -221,7 +221,12 @@ void Game::render()
 			this->window->clear(sf::Color(42, 33, 52, 255));
 			this->room1.renderMap(this->window);
 			this->room1.renderObject(this->window);
-			this->room1.renderShards(this->window);
+			//this->room1.renderShards(this->window);
+			if (showheart)
+			{
+				heart.create({ 390.f, 290.f }, { 3.f, 3.f });
+				heart.render(this->window);
+			}
 
 			this->player.render(this->window);
 
@@ -239,7 +244,7 @@ void Game::render()
 
 			this->shop.renderMap(this->window);
 			this->shop.renderObject(this->window);
-			this->shop.renderShards(this->window);
+			//this->shop.renderShards(this->window);
 
 			this->player.render(this->window);
 
@@ -679,41 +684,42 @@ void Game::animation()
 		if (IN_STARTING_ROOM)
 		{
 			// STATIC ANIMATIONS COUNTER
-			if (map.liczba > 12 * 4)
+			if (obj.liczba > 12 * 4)
 			{
-				this->map.liczba -= 12 * 5;
+				this->obj.liczba -= 12 * 5;
 				this->mnoznikStatic -= 5;
 			}
 			else
 			{
-				this->map.liczba += 12;
+				this->obj.liczba += 12;
 				this->mnoznikStatic += 1;
 			}
 
-			this->room1.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-			this->room1.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
-			this->room1.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
-			this->room1.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
+			//this->room1.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
+			//this->room1.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
+			//this->room1.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
+			//this->room1.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
+			heart.sprite.setTextureRect(sf::IntRect(obj.liczba - mnoznikStatic, 0, 11, 16));
 		}
 
 		if (IN_SHOP)
 		{
 			// STATIC ANIMATIONS COUNTER
-			if (map.liczba > 12 * 4)
+			if (obj.liczba > 12 * 4)
 			{
-				this->map.liczba -= 12 * 5;
+				this->obj.liczba -= 12 * 5;
 				this->mnoznikStatic -= 5;
 			}
 			else
 			{
-				this->map.liczba += 12;
+				this->obj.liczba += 12;
 				this->mnoznikStatic += 1;
 			}
 
-			this->shop.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-			this->shop.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
-			this->shop.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
-			this->shop.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
+			//this->shop.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
+			//this->shop.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
+			//this->shop.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
+			//this->shop.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
 		}
 		
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "player.h"
 #include "map.h"
+#include "object.h"
 #include "libs.h"
 #define MAX_NUMBER_OF_ITEMS 4
 
@@ -18,8 +19,19 @@ private:
 
 	// map object
 	Map map;
+
+	// rooms
 	Shop shop;
 	StartingRoom room1;
+
+	// object object
+	Object obj;
+
+	// objects
+	Heart heart;
+	Key key;
+	Coin coin;
+	Shard shard;
 
 	// player object
 	Player player;
@@ -45,6 +57,8 @@ public:
 	// ROOM VARIABLES
 	bool IN_STARTING_ROOM;
 	bool IN_SHOP;
+
+	bool showheart;
 
 	// GUI VARIABLES
 	sf::Texture guiTexture;
@@ -82,7 +96,6 @@ public:
 	sf::Sprite gif_bcg_s[8];
 
 	// GAME CLASS METHODS
-	void updateDeltaTime();
 	void updateSFMLEvents();
 	void update();
 	void render();
