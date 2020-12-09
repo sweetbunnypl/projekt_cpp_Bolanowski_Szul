@@ -2,48 +2,51 @@
 
 Map::Map()
 {
-    this->initMap();
-    this->initObjects();
-    this->testShards();
+    if (!this->tilesTexture.loadFromFile("res/textures/tiles.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+
+    if (!this->backgroundTexture.loadFromFile("res/textures/floor.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+    if (!this->shopTexture.loadFromFile("res/textures/tiles2.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+    if (!this->shopBackgroundTexture.loadFromFile("res/textures/floorShop.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
 }
 
 Map::~Map()
 {
 }
 
-void Map::initMap()
+void Map::initMap(sf::Texture& texture)
 {
-    if (!this->mapBackgroundTexture.loadFromFile("res/textures/floor.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
-    this->mapBackground.setTexture(this->mapBackgroundTexture);
-    this->mapBackground.setPosition(56.f, 62.f);
-    this->mapBackground.setScale(2.02f, 1.875f);
+    this->background.setTexture(texture);
+    this->background.setPosition(56.f, 62.f);
+    this->background.setScale(2.02f, 1.875f);
 }
 
 void Map::renderMap(sf::RenderTarget* target)
 {
-    target->draw(this->mapBackground);
+    target->draw(this->background);
 }
 
-void Map::initObjects()
+void Map::initObjects(sf::Texture &texture)
 {
-
-    if (!this->tilesTexture.loadFromFile("res/textures/tiles.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
     // getting texture size and dividing it to separate parts
-    sf::Vector2u textureSize = tilesTexture.getSize();
+    sf::Vector2u textureSize = texture.getSize();
     textureSize.x /= 3;
     textureSize.y /= 3;
 
     for (int i = 0; i <= 52; i++)
     {
-        this->object[i].setTexture(this->tilesTexture);
+        this->object[i].setTexture(texture);
     }
 
     // TOP MAIN
@@ -140,11 +143,11 @@ void Map::testShards()
 
     this->shard.setTexture(this->shardTexture);
     this->shard.setPosition({ 585.f, 280.f });
-    this->shard.setScale(2.f, 2.f);
+    this->shard.setScale(1.7f, 1.7f);
 
     this->coin.setTexture(this->coinTexture);
     this->coin.setPosition({ 520.f, 290.f });
-    this->coin.setScale(3.f, 3.f);
+    this->coin.setScale(2.9f, 2.9f);
 
     this->key.setTexture(this->keyTexture);
     this->key.setPosition({ 450.f, 282.f });
@@ -161,4 +164,26 @@ void Map::renderShards(sf::RenderTarget* target)
     target->draw(this->coin);
     target->draw(this->key);
     target->draw(this->heart);
+}
+
+Shop::Shop()
+{
+    this->initMap(shopBackgroundTexture);
+    this->initObjects(shopTexture);
+    this->testShards();
+}
+
+Shop::~Shop()
+{
+}
+
+StartingRoom::StartingRoom()
+{
+    this->initMap(backgroundTexture);
+    this->initObjects(tilesTexture);
+    this->testShards();
+}
+
+StartingRoom::~StartingRoom()
+{
 }

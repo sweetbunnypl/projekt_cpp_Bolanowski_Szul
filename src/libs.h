@@ -9,10 +9,6 @@
 #include <SFML/Network.hpp>
 #include <SFML/Window.hpp>
 
-// EXTENDS THE SFML LIBRARY
-// handling animations (in progress)
-#include <Thor/Animations.hpp>
-
 // OTHER LIBRARIES
 #include <iostream>
 #include <string>

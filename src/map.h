@@ -8,8 +8,10 @@ public:
 	~Map();
 
 	// background
-	sf::Texture mapBackgroundTexture;
-	sf::Sprite mapBackground;
+	sf::Texture backgroundTexture;
+	sf::Texture shopBackgroundTexture;
+	sf::Texture shopTexture;
+	sf::Sprite background;
 
 	// collision object (borders..)
 	sf::Sprite object[53];
@@ -32,13 +34,26 @@ public:
 	int liczba;
 	int spriteWidth;
 
-	void initMap();
+	void initMap(sf::Texture& texture);
 	void renderMap(sf::RenderTarget* target);
 
-	void initObjects();
+	void initObjects(sf::Texture& texture);
 	void renderObject(sf::RenderTarget* target);
 
 	void testShards();
 	void renderShards(sf::RenderTarget* target);
 };
 
+class Shop : public Map
+{
+public:
+	Shop();
+	~Shop();
+};
+
+class StartingRoom : public Map
+{
+public:
+	StartingRoom();
+	~StartingRoom();
+};

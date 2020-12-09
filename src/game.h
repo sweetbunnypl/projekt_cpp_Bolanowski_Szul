@@ -18,6 +18,8 @@ private:
 
 	// map object
 	Map map;
+	Shop shop;
+	StartingRoom room1;
 
 	// player object
 	Player player;
@@ -39,6 +41,10 @@ public:
 	bool PLAYING_STATE;
 	bool IN_MENU_STATE;
 	bool GAME_STOPPED;
+
+	// ROOM VARIABLES
+	bool IN_STARTING_ROOM;
+	bool IN_SHOP;
 
 	// GUI VARIABLES
 	sf::Texture guiTexture;
@@ -100,11 +106,19 @@ public:
 	void updatePlayerMovement();
 	void updatePlayerHealth();
 
+	// PLAYER MOVEMENT
 	bool MOOVING_LEFT;
 	bool MOOVING_RIGHT;
 	bool MOOVING_UP;
 	bool MOOVING_DOWN;
 	bool BEFORE_MOOVING;
+
+	// ADITIONAL THINGS
+	sf::Texture screenshot;
+	unsigned int screenshotNumber;
+	void takeScreenshot(const sf::RenderWindow& window, const std::string& filename);
+
+	void animation();
 	
 	int mnoznikStatic;
 	int mnoznikDynamic;
@@ -113,7 +127,6 @@ public:
 
 	// COLLISION METHODS
 	void borders();				// handling collisons with window borders
-	//void collision();			// handling collisions with object
-
 
 };
+

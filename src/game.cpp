@@ -97,6 +97,49 @@ void Game::updateSFMLEvents()
 					Sleep(500);
 					this->window->close();
 					break;
+				
+				case sf::Keyboard::C:
+					screenshotNumber += 1;
+					std::string filename_core = "SCREENSHOT_";
+					std::string filename_number = std::to_string(screenshotNumber);
+					std::string filename_path = "files/";
+					std::string filename_format = ".png";
+					std::string filename = filename_path + filename_core + filename_number + filename_format;
+					takeScreenshot(*window, filename);
+					break;
+
+				}
+			}
+
+			// "G" MA DZIALAÆ ¯EBY PRZENIEŒÆ GRACZA DO SKLEPU
+			if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y > 63 and IN_STARTING_ROOM)
+			{
+				switch (event.type)
+				{
+				case sf::Event::KeyReleased:
+					switch (event.key.code)
+					{
+					case sf::Keyboard::G:
+						std::cout << "TELEPORTACJA! WZIUUU..." << '\n';
+						IN_STARTING_ROOM = false;
+						IN_SHOP = true;
+					}
+				}
+			}
+
+			// I Z POWRTOEM....WZIUU
+			if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y > 534 and IN_SHOP)
+			{
+				switch (event.type)
+				{
+				case sf::Event::KeyReleased:
+					switch (event.key.code)
+					{
+					case sf::Keyboard::G:
+						std::cout << "TELEPORTACJA! WZIUUU..." << '\n';
+						IN_STARTING_ROOM = true;
+						IN_SHOP = false;
+					}
 				}
 			}
 		}
@@ -143,7 +186,6 @@ void Game::update()
 	{
 		this->updatePlayerMovement();
 		this->borders();
-
 	}
 }
 
@@ -151,7 +193,7 @@ void Game::render()
 {
 	this->window->clear();
 
-	// render (draw) objects here
+	// render (draw) objects below
 
 	while (IN_MENU_STATE)
 	{
@@ -172,82 +214,47 @@ void Game::render()
 	{
 		menu_music.stop();
 
-		this->window->clear(sf::Color(42, 33, 52, 255));
+		IN_STARTING_ROOM = true;
 
-		this->map.renderMap(this->window);
-		this->map.renderObject(this->window);
-		this->map.renderShards(this->window);
-
-		this->player.render(this->window);
-
-		this->renderGUI(this->window);
-
-		this->update();
-
-		// ANIMATIONS
-		if (clock.getElapsedTime().asSeconds() > 0.15f)
+		while (IN_STARTING_ROOM)
 		{
-			// STATIC ANIMATIONS COUNTER
-			if (map.liczba > 12 * 4)
-			{
-				this->map.liczba -= 12 * 5;
-				this->mnoznikStatic -= 5;
-			}
-			else
-			{
-				this->map.liczba += 12;
-				this->mnoznikStatic += 1;
-			}		
+			this->window->clear(sf::Color(42, 33, 52, 255));
+			this->room1.renderMap(this->window);
+			this->room1.renderObject(this->window);
+			this->room1.renderShards(this->window);
 
-			// STATIC ANIMATIONS
-			this->map.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-			this->map.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
-			this->map.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
-			this->map.heart.setTextureRect(sf::IntRect(map.liczba - 1*mnoznikStatic, 0, 11, 16));
+			this->player.render(this->window);
 
-			// DYNAMIC ANIMATION
-			if (player.liczba > 32)
-			{
-				this->player.liczba -= 32 * 2;
-			}
-			else
-			{
-				this->player.liczba += 32;
-			}
-			
-			if (BEFORE_MOOVING)
-			{
-				this->player.playerSprite.setTextureRect(sf::IntRect(32, 0, 32, 32));
-			}
-			if (MOOVING_DOWN)
-			{
-				this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 0, 32, 32));
-			}
-			if (MOOVING_UP)
-			{
-				this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 3, 32, 32));
-			}
+			this->renderGUI(this->window);
 
-			if (MOOVING_LEFT)
-			{
-				this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 1, 32, 32));
-			}
+			this->update();
+			this->animation();
 
-			if (MOOVING_RIGHT)
-			{
-				this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 2, 32, 32));
-			}
-
-			this->clock.restart();
-
+			this->window->display();
 		}
 
-		this->window->display();
+		while (IN_SHOP)
+		{
+			this->window->clear(sf::Color(42, 33, 52, 255));
+
+			this->shop.renderMap(this->window);
+			this->shop.renderObject(this->window);
+			this->shop.renderShards(this->window);
+
+			this->player.render(this->window);
+
+			this->renderGUI(this->window);
+
+			this->update();
+			this->animation();
+
+			this->window->display();
+		}
+		
 	}
-	// 
 
 	while (GAME_STOPPED)
-	{
+	{	
 		this->testText.setFont(this->font);
 		this->testText.setCharacterSize(40);
 		this->testText.setFillColor(sf::Color::White);
@@ -261,9 +268,6 @@ void Game::render()
 		this->update();
 		this->window->display();
 	}
-
-	//this->window->display();
-
 }
 
 void Game::run()
@@ -273,6 +277,7 @@ void Game::run()
 	this->MOOVING_RIGHT = false;
 	this->MOOVING_LEFT = false;
 	this->BEFORE_MOOVING = true;
+	this->screenshotNumber = 0;
 
 	while (this->window->isOpen())
 	{
@@ -531,6 +536,10 @@ void Game::menuDrawMenu(sf::RenderTarget* target)
 // PLAYER METHODS
 void Game::updatePlayerMovement()
 {
+	// player position to console
+	std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
+	std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{
 		// moving up
@@ -541,9 +550,10 @@ void Game::updatePlayerMovement()
 		// collision with upper side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
+				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
-				this->player.playerSprite.move({ 0.f, 5.f });
+				this->player.playerSprite.move({ 0.f, 5.f });	
 			}
 		}	
 	}
@@ -562,7 +572,8 @@ void Game::updatePlayerMovement()
 		// collision with bottom side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
+				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
 				this->player.playerSprite.move({ 0.f, -5.f });
 			}
@@ -583,7 +594,8 @@ void Game::updatePlayerMovement()
 		// collision with left side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
+				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
 				this->player.playerSprite.move({ 5.f, 0.f });
 			}
@@ -604,7 +616,8 @@ void Game::updatePlayerMovement()
 		// collision with right side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->map.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+			if(this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
+				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
 				this->player.playerSprite.move({ -5.f, 0.f });
 			}
@@ -642,6 +655,102 @@ void Game::borders()
 	if (player.playerSprite.getPosition().y + player.playerSprite.getGlobalBounds().height >= window->getSize().y)
 	{
 		player.playerSprite.setPosition(player.playerSprite.getPosition().x, window->getSize().y - player.playerSprite.getGlobalBounds().height);
+	}
+}
+
+// ADITIONAL METHODS
+void Game::takeScreenshot(const sf::RenderWindow& window, const std::string& filename)
+{
+	sf::Texture texture;
+	texture.create(window.getSize().x, window.getSize().y);
+	texture.update(window);
+	if (texture.copyToImage().saveToFile(filename))
+	{
+		std::cout << "screenshot saved to " << filename << std::endl;
+	}
+}
+
+void Game::animation()
+{
+	// ANIMATIONS
+	if (clock.getElapsedTime().asSeconds() > 0.15f)
+	{
+		// STATIC ANIMATIONS
+		if (IN_STARTING_ROOM)
+		{
+			// STATIC ANIMATIONS COUNTER
+			if (map.liczba > 12 * 4)
+			{
+				this->map.liczba -= 12 * 5;
+				this->mnoznikStatic -= 5;
+			}
+			else
+			{
+				this->map.liczba += 12;
+				this->mnoznikStatic += 1;
+			}
+
+			this->room1.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
+			this->room1.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
+			this->room1.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
+			this->room1.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
+		}
+
+		if (IN_SHOP)
+		{
+			// STATIC ANIMATIONS COUNTER
+			if (map.liczba > 12 * 4)
+			{
+				this->map.liczba -= 12 * 5;
+				this->mnoznikStatic -= 5;
+			}
+			else
+			{
+				this->map.liczba += 12;
+				this->mnoznikStatic += 1;
+			}
+
+			this->shop.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
+			this->shop.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
+			this->shop.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
+			this->shop.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
+		}
+		
+
+		// DYNAMIC ANIMATION
+		if (player.liczba > 32)
+		{
+			this->player.liczba -= 32 * 2;
+		}
+		else
+		{
+			this->player.liczba += 32;
+		}
+
+		if (BEFORE_MOOVING)
+		{
+			this->player.playerSprite.setTextureRect(sf::IntRect(32, 0, 32, 32));
+		}
+		if (MOOVING_DOWN)
+		{
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 0, 32, 32));
+		}
+		if (MOOVING_UP)
+		{
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 3, 32, 32));
+		}
+
+		if (MOOVING_LEFT)
+		{
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 1, 32, 32));
+		}
+
+		if (MOOVING_RIGHT)
+		{
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 2, 32, 32));
+		}
+
+		this->clock.restart();
 	}
 }
 

@@ -10,7 +10,7 @@ Player::Player()
 
 Player::~Player()
 {
-    
+
 }
 
 void Player::initTexture()
