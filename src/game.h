@@ -3,6 +3,7 @@
 #include "map.h"
 #include "object.h"
 #include "libs.h"
+#include "enemy.h"
 #define MAX_NUMBER_OF_ITEMS 4
 
 class Game
@@ -144,6 +145,15 @@ public:
 
 	// COLLISION METHODS
 	void borders();				// handling collisons with window borders
+
+	// ENEMY:
+	Enemy enemy;
+	std::vector<Enemy> enemies;
+	void updateEnemyMovement();
+	void createEnemies();
+	void updateEnemyHealth();
+	int current_wave = 0;
+	bool IS_WAVE_ACTIVE = false;
 
 };
 

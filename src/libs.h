@@ -16,5 +16,6 @@
 #include <windows.h>
 #include <ctime>
 #include <cstdlib>
+#include <math.h>
 
 #endif // LIBS_H

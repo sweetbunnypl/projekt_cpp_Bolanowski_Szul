@@ -76,6 +76,7 @@ void Game::updateSFMLEvents()
 		// HANDLING KEY PRESSING WHILE PLAYING
 		if (this->IN_MENU_STATE == false and this->PLAYING_STATE)
 		{
+			//std::cout << player.playerSprite.getPosition().y << std::endl;
 			switch (event.type)
 			{
 				// key pressed
@@ -113,7 +114,7 @@ void Game::updateSFMLEvents()
 			}
 
 			// "G" MA DZIALAÆ ¯EBY PRZENIEŒÆ GRACZA DO SKLEPU
-			if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y > 63 and IN_STARTING_ROOM)
+			if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y < 70 and IN_STARTING_ROOM and !IS_WAVE_ACTIVE)
 			{
 				switch (event.type)
 				{
@@ -121,20 +122,21 @@ void Game::updateSFMLEvents()
 					switch (event.key.code)
 					{
 					case sf::Keyboard::G:
-						std::cout << "TELEPORTACJA! WZIUUU..." << '\n';
+						//std::cout << "TELEPORTACJA! WZIUUU..." << '\n';
 						IN_STARTING_ROOM = false;
 						IN_SHOP = true;
 
+						std::cout << "jestes w sklepie" << '\n';
 						std::cout << "IN STARTING ROOM: " << IN_STARTING_ROOM << '\n';
 						std::cout << "IN_SHOP: " << IN_SHOP << '\n';
 						
-						PLAYER_TELEPORTATION = true;	
+						//PLAYER_TELEPORTATION = true;
+						this->player.playerSprite.setPosition({ 440.f, 580.f });
 					}
 				}
 			}
-
 			// I Z POWRTOEM....WZIUU
-			if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y > 534 and IN_SHOP)
+			else if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y > 534 and IN_SHOP and !IS_WAVE_ACTIVE)
 			{
 				switch (event.type)
 				{
@@ -142,14 +144,37 @@ void Game::updateSFMLEvents()
 					switch (event.key.code)
 					{
 					case sf::Keyboard::G:
-						std::cout << "TELEPORTACJA! WZIUUU..." << '\n';
+						//std::cout << "TELEPORTACJA! WZIUUU..." << '\n';
 						IN_STARTING_ROOM = true;
 						IN_SHOP = false;
 
+						std::cout << "jestes w starting roomie" << '\n';
 						std::cout << "IN STARTING ROOM: " <<  IN_STARTING_ROOM << '\n';
 						std::cout << "IN_SHOP: " << IN_SHOP << '\n';
 
-						PLAYER_TELEPORTATION = true;
+						//PLAYER_TELEPORTATION = true;
+						this->player.playerSprite.setPosition({ 440.f, 65.f });
+					}
+				}
+			}
+			// START FALI
+			else if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y > 534 and IN_STARTING_ROOM)
+			{
+				switch (event.type)
+				{
+				case sf::Event::KeyReleased:
+					switch (event.key.code)
+					{
+					case sf::Keyboard::G:
+						if (!IS_WAVE_ACTIVE){
+							std::cout << "CZAS NA FALE" << '\n';
+							createEnemies();
+							IS_WAVE_ACTIVE = true;
+						}
+						else { 
+							IS_WAVE_ACTIVE = false;
+							std::cout << "KONIEC FALI" << '\n';
+						}
 					}
 				}
 			}
@@ -195,6 +220,9 @@ void Game::update()
 	// update classes below
 	if (this->PLAYING_STATE)
 	{
+		if (IS_WAVE_ACTIVE) {
+			this->updateEnemyMovement();
+		}
 		this->updatePlayerMovement();
 		this->borders();
 		this->animation();
@@ -225,7 +253,6 @@ void Game::render()
 	while (PLAYING_STATE)
 	{
 		menu_music.stop();
-
 		// ustawienie, ze pokojem poczatkowym jest room1
 		IN_STARTING_ROOM = true;
 
@@ -234,6 +261,15 @@ void Game::render()
 			this->window->clear(sf::Color(42, 33, 52, 255));
 			this->room1.renderMap(this->window);
 			this->room1.renderObject(this->window);
+
+			if (IS_WAVE_ACTIVE) 
+			{
+				for(int i=0; i<5; i++)
+				{
+					this->enemies[i].render(this->window);
+				}
+			}
+
 	
 			if (showheart)
 			{
@@ -241,12 +277,13 @@ void Game::render()
 				heart.render(this->window);
 			}
 
+
 			// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
-			if (PLAYER_TELEPORTATION)
-			{
-				this->player.playerSprite.setPosition({ 440.f, 65.f });
-				PLAYER_TELEPORTATION = false;
-			}
+			//if (PLAYER_TELEPORTATION and !IS_WAVE_ACTIVE)
+			//{
+			//	this->player.playerSprite.setPosition({ 440.f, 65.f });
+			//	PLAYER_TELEPORTATION = false;
+			//}
 
 			this->player.render(this->window);
 
@@ -265,11 +302,11 @@ void Game::render()
 			this->shop.renderObject(this->window);
 			
 			// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
-			if (PLAYER_TELEPORTATION)
-			{
-				this->player.playerSprite.setPosition({ 440.f, 580.f });
-				PLAYER_TELEPORTATION = false;
-			}
+			//if (PLAYER_TELEPORTATION)
+			//{
+			//	this->player.playerSprite.setPosition({ 440.f, 580.f });
+			//	PLAYER_TELEPORTATION = false;
+			//}
 
 			this->armorer.render(this->window);
 
@@ -585,7 +622,7 @@ void Game::updatePlayerMovement()
 		{
 			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
 				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+				(this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and IN_SHOP))
 			{
 				this->player.playerSprite.move({ 0.f, 5.f });	
 			}
@@ -608,7 +645,7 @@ void Game::updatePlayerMovement()
 		{
 			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
 				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+				(this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and IN_SHOP))
 			{
 				this->player.playerSprite.move({ 0.f, -5.f });
 			}
@@ -631,7 +668,7 @@ void Game::updatePlayerMovement()
 		{
 			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
 				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+				(this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and IN_SHOP))
 			{
 				this->player.playerSprite.move({ 5.f, 0.f });
 			}
@@ -654,7 +691,7 @@ void Game::updatePlayerMovement()
 		{
 			if(this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
 				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+				(this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and IN_SHOP))
 			{
 				this->player.playerSprite.move({ -5.f, 0.f });
 			}
@@ -666,6 +703,7 @@ void Game::updatePlayerMovement()
 	}
 
 }
+
 
 // COLLISION METHODS
 // with window borders
@@ -806,3 +844,76 @@ void Game::animation()
 	}
 }
 
+void Game::createEnemies()
+{
+	for(int i=0; i< 5; i++)
+	{
+		this->enemy.create(sf::Vector2f(100+100*i, 100), sf::Vector2f(1, 1));
+		this->enemies.push_back(this->enemy);
+	}
+}
+
+void Game::updateEnemyMovement()
+{
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].terror.getPosition().x + enemies[i].terror_r, enemies[i].terror.getPosition().y + enemies[i].terror_r);
+		sf::Vector2f gracz = sf::Vector2f(player.playerSprite.getPosition().x + player.textureSize.x, player.playerSprite.getPosition().y + player.textureSize.x);
+		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
+		//std::cout << srodek.x << " " << srodek.y << " " << gracz.x << " " << gracz.y << " " << sf::Mouse::getPosition(*window).x << " " << sf::Mouse::getPosition(*window).y << std::endl;
+		//std::cout << dystans << std::endl;
+
+		if (dystans < enemies[i].terror_r)
+		{
+
+			if (przeciwnik.x < gracz.x and przeciwnik.y < gracz.y)
+			{
+				this->enemies[i].sprite.move({ enemies[i].speed.x, enemies[i].speed.y });
+				this->enemies[i].terror.move({ enemies[i].speed.x, enemies[i].speed.y });
+			}
+			else if (przeciwnik.x > gracz.x and przeciwnik.y < gracz.y)
+			{
+				this->enemies[i].sprite.move({ -enemies[i].speed.x, enemies[i].speed.y });
+				this->enemies[i].terror.move({ -enemies[i].speed.x, enemies[i].speed.y });
+			}
+			else if (przeciwnik.x < gracz.x and przeciwnik.y > gracz.y)
+			{
+				this->enemies[i].sprite.move({ enemies[i].speed.x, -enemies[i].speed.y });
+				this->enemies[i].terror.move({ enemies[i].speed.x, -enemies[i].speed.y });
+			}
+			else if (przeciwnik.x > gracz.x and przeciwnik.y > gracz.y)
+			{
+				this->enemies[i].sprite.move({ -enemies[i].speed.x, -enemies[i].speed.y });
+				this->enemies[i].terror.move({ -enemies[i].speed.x, -enemies[i].speed.y });
+			}
+		}
+		else 
+		{
+			float speedy_x = 0;
+			float speedy_y = 0;
+			speedy_x = (rand() % 400 - 200) / 100;
+			speedy_y = (rand() % 400 - 200) / 100;
+			this->enemies[i].sprite.move({ speedy_x, speedy_y });
+			this->enemies[i].terror.move({ speedy_x, speedy_y });
+			/*
+			
+			for (int j=0; j <= 52; j++) 
+			{
+				if (this->room1.object[j].getGlobalBounds().intersects(this->enemies[i].terror.getGlobalBounds()))
+				{
+					speedy_x = (rand() % 400 - 200)/100;
+					speedy_y = (rand() % 400 - 200)/100;
+					this->enemies[i].sprite.move({ speedy_x, speedy_y });
+					this->enemies[i].terror.move({ speedy_x, speedy_y });
+				}
+			}
+			*/
+		}
+	}
+
+}
+
+void Game::updateEnemyHealth()
+{
+
+}
