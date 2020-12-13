@@ -38,3 +38,14 @@ public:
 	Coin();
 };
 
+class Seller : public Object
+{
+public:
+	void shop();
+};
+
+class Armorer : public Seller
+{
+public:
+	Armorer();
+};

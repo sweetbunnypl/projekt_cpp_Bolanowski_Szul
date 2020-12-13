@@ -1,6 +1,5 @@
 #include "object.h"
 
-
 void Object::create(sf::Vector2f position, sf::Vector2f scale)
 {
     sprite.setPosition(position);
@@ -45,6 +44,16 @@ Shard::Shard()
 Coin::Coin()
 {
     if (!texture.loadFromFile("res/textures/coin.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+
+    sprite.setTexture(texture);
+}
+
+Armorer::Armorer()
+{
+    if (!texture.loadFromFile("res/textures/armorer.png"))
     {
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }

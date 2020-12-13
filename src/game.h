@@ -36,6 +36,9 @@ private:
 	// player object
 	Player player;
 
+	// sellers
+	Armorer armorer;
+
 	// end-screen object (etc.)
 
 	// init.
@@ -57,6 +60,7 @@ public:
 	// ROOM VARIABLES
 	bool IN_STARTING_ROOM;
 	bool IN_SHOP;
+	bool PLAYER_TELEPORTATION;
 
 	bool showheart;
 

@@ -106,6 +106,7 @@ void Game::updateSFMLEvents()
 					std::string filename_format = ".png";
 					std::string filename = filename_path + filename_core + filename_number + filename_format;
 					takeScreenshot(*window, filename);
+					showheart = true;
 					break;
 
 				}
@@ -123,6 +124,11 @@ void Game::updateSFMLEvents()
 						std::cout << "TELEPORTACJA! WZIUUU..." << '\n';
 						IN_STARTING_ROOM = false;
 						IN_SHOP = true;
+
+						std::cout << "IN STARTING ROOM: " << IN_STARTING_ROOM << '\n';
+						std::cout << "IN_SHOP: " << IN_SHOP << '\n';
+						
+						PLAYER_TELEPORTATION = true;	
 					}
 				}
 			}
@@ -139,6 +145,11 @@ void Game::updateSFMLEvents()
 						std::cout << "TELEPORTACJA! WZIUUU..." << '\n';
 						IN_STARTING_ROOM = true;
 						IN_SHOP = false;
+
+						std::cout << "IN STARTING ROOM: " <<  IN_STARTING_ROOM << '\n';
+						std::cout << "IN_SHOP: " << IN_SHOP << '\n';
+
+						PLAYER_TELEPORTATION = true;
 					}
 				}
 			}
@@ -186,6 +197,7 @@ void Game::update()
 	{
 		this->updatePlayerMovement();
 		this->borders();
+		this->animation();
 	}
 }
 
@@ -214,6 +226,7 @@ void Game::render()
 	{
 		menu_music.stop();
 
+		// ustawienie, ze pokojem poczatkowym jest room1
 		IN_STARTING_ROOM = true;
 
 		while (IN_STARTING_ROOM)
@@ -221,11 +234,18 @@ void Game::render()
 			this->window->clear(sf::Color(42, 33, 52, 255));
 			this->room1.renderMap(this->window);
 			this->room1.renderObject(this->window);
-			//this->room1.renderShards(this->window);
+	
 			if (showheart)
 			{
 				heart.create({ 390.f, 290.f }, { 3.f, 3.f });
 				heart.render(this->window);
+			}
+
+			// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
+			if (PLAYER_TELEPORTATION)
+			{
+				this->player.playerSprite.setPosition({ 440.f, 65.f });
+				PLAYER_TELEPORTATION = false;
 			}
 
 			this->player.render(this->window);
@@ -233,7 +253,6 @@ void Game::render()
 			this->renderGUI(this->window);
 
 			this->update();
-			this->animation();
 
 			this->window->display();
 		}
@@ -244,7 +263,15 @@ void Game::render()
 
 			this->shop.renderMap(this->window);
 			this->shop.renderObject(this->window);
-			//this->shop.renderShards(this->window);
+			
+			// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
+			if (PLAYER_TELEPORTATION)
+			{
+				this->player.playerSprite.setPosition({ 440.f, 580.f });
+				PLAYER_TELEPORTATION = false;
+			}
+
+			this->armorer.render(this->window);
 
 			this->player.render(this->window);
 
@@ -254,8 +281,7 @@ void Game::render()
 			this->animation();
 
 			this->window->display();
-		}
-		
+		}	
 	}
 
 	while (GAME_STOPPED)
@@ -283,6 +309,8 @@ void Game::run()
 	this->MOOVING_LEFT = false;
 	this->BEFORE_MOOVING = true;
 	this->screenshotNumber = 0;
+
+	this->armorer.create({ 250.f, 430.f }, { -3.f, 3.f });
 
 	while (this->window->isOpen())
 	{
@@ -324,7 +352,7 @@ void Game::initMenu()
 {
 	for (int i = 0; i <= 7; i++) {
 		std::string path = "res/textures/gif/frame_" + std::to_string(i) + ".png";
-		if (!gif_bcg[i].loadFromFile(path)) printf("nie wczytano chuja %d", i);
+		if (!gif_bcg[i].loadFromFile(path)) printf("nie wczytano %d", i);
 		gif_bcg_s[i].setTexture(gif_bcg[i]);
 		gif_bcg_s[i].setScale(2.5, 2.5);
 	};
@@ -438,20 +466,20 @@ void Game::menuRenderButtons(sf::RenderTarget* target)
 		switch (menuGetPressedItem())
 		{
 		case 0:
-			printf("Ktos nacisnal Play");
+			std::cout << "Ktos nacisnal Play" << '\n';
 			enter_sound.play();
 			this->IN_MENU_STATE = false;
 			this->PLAYING_STATE = true;
 			break;
 		case 1:
-			printf("Ktos nacisnal Creators");
+			std::cout << "Ktos nacisnal Creators" << '\n';
 			enter_sound.play();
 			MAIN_MENU = false;
 			CREATORS = true;
 			menuRenderButtons2(creators_menu_txt, creators_menu_txt2);
 			break;
 		case 2:
-			printf("Ktos nacisnal Help");
+			std::cout << "Ktos nacisnal Help" << '\n';
 			enter_sound.play();
 			MAIN_MENU = false;
 			//CREATORS = false;
@@ -469,19 +497,19 @@ void Game::menuRenderButtons(sf::RenderTarget* target)
 		switch (menuGetPressedItem())
 		{
 		case 0:
-			printf("Ktos nacisnal Bolanowski");
+			std::cout << "Ktos nacisnal Bolanowski" << '\n';
 			enter_sound.play();
 			//link otwiera sie tylko pod windowsem
 			system("start https://github.com/sweetbunnypl/");
 			break;
 		case 1:
-			printf("Ktos nacisnal Szul");
+			std::cout << "Ktos nacisnal Szul" << '\n';
 			enter_sound.play();
 			//link otwiera sie tylko pod windowsem
 			system("start https://github.com/SonOfGrabarz");
 			break;
 		case 2:
-			printf("Ktos nacisnal nic");
+			std::cout << "Ktos nacisnal nic" << '\n';
 			break;
 		case 3:
 			MAIN_MENU = true;
@@ -542,8 +570,8 @@ void Game::menuDrawMenu(sf::RenderTarget* target)
 void Game::updatePlayerMovement()
 {
 	// player position to console
-	std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
-	std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
+	//std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
+	//std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{
@@ -556,7 +584,8 @@ void Game::updatePlayerMovement()
 		for (int i = 0; i <= 52; i++)
 		{
 			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
+				this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
 				this->player.playerSprite.move({ 0.f, 5.f });	
 			}
@@ -578,7 +607,8 @@ void Game::updatePlayerMovement()
 		for (int i = 0; i <= 52; i++)
 		{
 			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
+				this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
 				this->player.playerSprite.move({ 0.f, -5.f });
 			}
@@ -600,7 +630,8 @@ void Game::updatePlayerMovement()
 		for (int i = 0; i <= 52; i++)
 		{
 			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
+				this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
 				this->player.playerSprite.move({ 5.f, 0.f });
 			}
@@ -622,7 +653,8 @@ void Game::updatePlayerMovement()
 		for (int i = 0; i <= 52; i++)
 		{
 			if(this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
+				this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
 			{
 				this->player.playerSprite.move({ -5.f, 0.f });
 			}
@@ -699,6 +731,7 @@ void Game::animation()
 			//this->room1.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
 			//this->room1.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
 			//this->room1.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
+
 			heart.sprite.setTextureRect(sf::IntRect(obj.liczba - mnoznikStatic, 0, 11, 16));
 		}
 
@@ -715,6 +748,18 @@ void Game::animation()
 				this->obj.liczba += 12;
 				this->mnoznikStatic += 1;
 			}
+
+			// DYNAMIC ANIMATION
+			if (player.liczba > 32)
+			{
+				this->player.liczba -= 32 * 2;
+			}
+			else
+			{
+				this->player.liczba += 32;
+			}
+
+			this->armorer.sprite.setTextureRect(sf::IntRect(player.liczba, 0, 32, 38));
 
 			//this->shop.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
 			//this->shop.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
@@ -736,6 +781,7 @@ void Game::animation()
 		if (BEFORE_MOOVING)
 		{
 			this->player.playerSprite.setTextureRect(sf::IntRect(32, 0, 32, 32));
+			this->armorer.sprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
 		}
 		if (MOOVING_DOWN)
 		{
