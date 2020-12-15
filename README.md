@@ -27,6 +27,8 @@ Naszym założeniem jest oparcie projektu w głównej mierze o bibliotekę SFML,
 
 --------
 
+
+
 RAPORT I - 2020/11/03
 
 branch Szul_movement:
@@ -62,16 +64,27 @@ zdjęcia z obecnego stanu gry: https://imgur.com/a/uWUoXpO
 
 
 
-(RAPORT IV - 2020/12/15) / do zrobienia
+RAPORT IV - 2020/12/15
 
-- przeciwnicy (loot z przeciwników)
+- wprowadzenie planszy, będącej sklepem
+- wprowadzenie prostych przeciwników, którzy podążają za graczem
+- nowe tekstury
+- usprawnienie kodu
+- poprawa kilku drobnych błędów w gameplayu
+- animacja postaci i obiektów
+- robienie screenshotów
+
+
+
+(PROTOTYP - 2021/01/12) / do zrobienia
+
+- usprawnienie przeciwników (loot z przeciwników)
 - podstawowy system walki
 - sklep (system wymiany przedmiotów i inne mechaniki)
 - system levelovania postaci
 - usprawnienie stanów gry
 - usprawienie GUI
-- animacja postaci i obiektów [X]
-- robienie screenshotów [X]
+- usprawnienie menu
 
 --------
 - 12.01.2021 - prototyp
