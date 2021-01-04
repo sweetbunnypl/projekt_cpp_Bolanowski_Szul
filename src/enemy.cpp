@@ -2,12 +2,12 @@
 
 Enemy::Enemy()
 {
-    terror_r = 250;
-    sprite.setSize(sf::Vector2f(50, 50));
-    sprite.setFillColor(sf::Color::Black);
+    terrorRadius = 250;
     sprite.setPosition(0, 0);
-
-    terror.setRadius(terror_r);
+    sprite.setFillColor(sf::Color::Green);
+    size = sf::Vector2f(30.f, 30s.f);
+    sprite.setSize(size);
+    terror.setRadius(terrorRadius);
     terror.setFillColor(sf::Color::Red);
     terror.setPosition(0, 0);
     speed = sf::Vector2f(2.f, 2.f);
@@ -20,9 +20,9 @@ Enemy::~Enemy()
 
 void Enemy::create(sf::Vector2f position, sf::Vector2f scale)
 {
+    this->sprite.setTexture(&texture);
     sprite.setPosition(position);
-    sprite.setScale(scale);
-    terror.setPosition(sf::Vector2f(position.x+(sprite.getSize().x/2)-terror_r, position.y+(sprite.getSize().y/2)-terror_r));
+    terror.setPosition(sf::Vector2f(position.x+(sprite.getSize().x/2)-terrorRadius, position.y+(sprite.getSize().y/2)-terrorRadius));
     terror.setScale(scale);
 }
 

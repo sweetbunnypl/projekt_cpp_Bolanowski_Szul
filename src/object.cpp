@@ -21,6 +21,8 @@ Heart::Heart()
     sprite.setTexture(texture);
 }
 
+
+
 Key::Key()
 {
     if (!texture.loadFromFile("res/textures/key.png"))

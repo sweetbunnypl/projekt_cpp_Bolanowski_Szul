@@ -14,7 +14,8 @@ public:
 	sf::Vector2u textureSize;
 
 	float playerHealth;
-	int liczba;
+	int frame;
+	int attackFrame;
 
 	void initTexture();
 	void initSprite();

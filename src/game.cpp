@@ -109,7 +109,24 @@ void Game::updateSFMLEvents()
 					takeScreenshot(*window, filename);
 					showheart = true;
 					break;
-
+				}
+			}
+			if (PLAYER_IS_ATTACKING == false)
+			{
+				switch (event.type)
+				{
+				case sf::Event::MouseButtonPressed:
+					switch (event.mouseButton.button)
+					{
+					case sf::Mouse::Left:
+						this->PLAYER_MOOVING_RIGHT = false;
+						this->PLAYER_MOOVING_LEFT = false;
+						this->PLAYER_IDLE = false;
+						this->PLAYER_IS_ATTACKING = true;
+						Sleep(500);
+						
+						std::cout << "PRZYCZAJONY TYGRYS, UKRYTY SMOK!" << '\n';
+					}
 				}
 			}
 
@@ -220,9 +237,11 @@ void Game::update()
 	// update classes below
 	if (this->PLAYING_STATE)
 	{
-		if (IS_WAVE_ACTIVE) {
+		if (IS_WAVE_ACTIVE) 
+		{
 			this->updateEnemyMovement();
 		}
+
 		this->updatePlayerMovement();
 		this->borders();
 		this->animation();
@@ -247,78 +266,76 @@ void Game::render()
 		this->menuDrawMenu(this->window);
 		this->window->display();
 		this->update();
+		IN_STARTING_ROOM = true;
+
 		break;
 	}
 
-	while (PLAYING_STATE)
+	while (PLAYING_STATE and IN_STARTING_ROOM)
 	{
 		menu_music.stop();
 		// ustawienie, ze pokojem poczatkowym jest room1
-		IN_STARTING_ROOM = true;
 
-		while (IN_STARTING_ROOM)
+		this->window->clear(sf::Color(42, 33, 52, 255));
+		this->room1.renderMap(this->window);
+		this->room1.renderObject(this->window);
+
+		if (IS_WAVE_ACTIVE) 
 		{
-			this->window->clear(sf::Color(42, 33, 52, 255));
-			this->room1.renderMap(this->window);
-			this->room1.renderObject(this->window);
-
-			if (IS_WAVE_ACTIVE) 
+			for(int i=0; i<5; i++)
 			{
-				for(int i=0; i<5; i++)
-				{
-					this->enemies[i].render(this->window);
-				}
+				this->enemies[i].render(this->window);
 			}
-
-	
-			if (showheart)
-			{
-				heart.create({ 390.f, 290.f }, { 3.f, 3.f });
-				heart.render(this->window);
-			}
-
-
-			// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
-			//if (PLAYER_TELEPORTATION and !IS_WAVE_ACTIVE)
-			//{
-			//	this->player.playerSprite.setPosition({ 440.f, 65.f });
-			//	PLAYER_TELEPORTATION = false;
-			//}
-
-			this->player.render(this->window);
-
-			this->renderGUI(this->window);
-
-			this->update();
-
-			this->window->display();
 		}
 
-		while (IN_SHOP)
+	
+		if (showheart)
 		{
-			this->window->clear(sf::Color(42, 33, 52, 255));
+			heart.create({ 390.f, 290.f }, { 3.f, 3.f });
+			heart.render(this->window);
+		}
 
-			this->shop.renderMap(this->window);
-			this->shop.renderObject(this->window);
-			
-			// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
-			//if (PLAYER_TELEPORTATION)
-			//{
-			//	this->player.playerSprite.setPosition({ 440.f, 580.f });
-			//	PLAYER_TELEPORTATION = false;
-			//}
 
-			this->armorer.render(this->window);
+		// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
+		//if (PLAYER_TELEPORTATION and !IS_WAVE_ACTIVE)
+		//{
+		//	this->player.playerSprite.setPosition({ 440.f, 65.f });
+		//	PLAYER_TELEPORTATION = false;
+		//}
 
-			this->player.render(this->window);
+		this->player.render(this->window);
 
-			this->renderGUI(this->window);
+		this->renderGUI(this->window);
 
-			this->update();
-			this->animation();
+		this->update();
 
-			this->window->display();
-		}	
+		this->window->display();
+	}
+
+	while (PLAYING_STATE and IN_SHOP)
+	{
+		this->window->clear(sf::Color(42, 33, 52, 255));
+
+		this->shop.renderMap(this->window);
+		this->shop.renderObject(this->window);
+
+		// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
+		//if (PLAYER_TELEPORTATION)
+		//{
+		//	this->player.playerSprite.setPosition({ 440.f, 580.f });
+		//	PLAYER_TELEPORTATION = false;
+		//}
+
+		this->armorer.render(this->window);
+
+		this->player.render(this->window);
+
+		this->renderGUI(this->window);
+
+		this->update();
+		this->animation();
+
+		this->window->display();
 	}
 
 	while (GAME_STOPPED)
@@ -340,11 +357,9 @@ void Game::render()
 
 void Game::run()
 {
-	this->MOOVING_UP = false;
-	this->MOOVING_DOWN = false;
-	this->MOOVING_RIGHT = false;
-	this->MOOVING_LEFT = false;
-	this->BEFORE_MOOVING = true;
+	this->PLAYER_MOOVING_RIGHT = false;
+	this->PLAYER_MOOVING_LEFT = false;
+	this->PLAYER_IDLE = true;
 	this->screenshotNumber = 0;
 
 	this->armorer.create({ 250.f, 430.f }, { -3.f, 3.f });
@@ -613,8 +628,6 @@ void Game::updatePlayerMovement()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{
 		// moving up
-		this->MOOVING_UP = true;
-		this->BEFORE_MOOVING = false;
 		this->player.playerSprite.move({ 0.f, -5.f });
 
 		// collision with upper side of object
@@ -630,14 +643,12 @@ void Game::updatePlayerMovement()
 	}
 	else
 	{
-		this->MOOVING_UP = false;
+		PLAYER_IDLE = true;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 	{
 		// moving bottom
-		this->MOOVING_DOWN = true;
-		this->BEFORE_MOOVING = false;
 		this->player.playerSprite.move({ 0.f, 5.f });
 
 		// collision with bottom side of object
@@ -653,14 +664,14 @@ void Game::updatePlayerMovement()
 	}
 	else
 	{
-		this->MOOVING_DOWN = false;
+		PLAYER_IDLE = true;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
 		// moving left
-		this->MOOVING_LEFT = true;
-		this->BEFORE_MOOVING = false;
+		this->PLAYER_MOOVING_LEFT = true;
+		this->PLAYER_IDLE = false;
 		this->player.playerSprite.move({ -5.f, 0.f });
 
 		// collision with left side of object
@@ -676,14 +687,14 @@ void Game::updatePlayerMovement()
 	}
 	else
 	{
-		this->MOOVING_LEFT = false;
+		this->PLAYER_MOOVING_LEFT = false;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 	{
 		// moving right
-		this->MOOVING_RIGHT = true;
-		this->BEFORE_MOOVING = false;
+		this->PLAYER_MOOVING_RIGHT = true;
+		this->PLAYER_IDLE = false;
 		this->player.playerSprite.move({ 5.f, 0.f });
 
 		// collision with right side of object
@@ -699,9 +710,8 @@ void Game::updatePlayerMovement()
 	}
 	else
 	{
-		this->MOOVING_RIGHT = false;
+		this->PLAYER_MOOVING_RIGHT = false;
 	}
-
 }
 
 
@@ -751,97 +761,126 @@ void Game::animation()
 	if (clock.getElapsedTime().asSeconds() > 0.15f)
 	{
 		// STATIC ANIMATIONS
-		if (IN_STARTING_ROOM)
+		//if (IN_STARTING_ROOM)
+		//{
+		//	// STATIC ANIMATIONS COUNTER
+		//	if (obj.liczba > 12 * 4)
+		//	{
+		//		this->obj.liczba -= 12 * 5;
+		//		this->mnoznikStatic -= 5;
+		//	}
+		//	else
+		//	{
+		//		this->obj.liczba += 12;
+		//		this->mnoznikStatic += 1;
+		//	}
+
+		//	//this->room1.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
+		//	//this->room1.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
+		//	//this->room1.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
+		//	//this->room1.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
+
+		//	heart.sprite.setTextureRect(sf::IntRect(obj.liczba - mnoznikStatic, 0, 11, 16));
+		//}
+
+		//if (IN_SHOP)
+		//{
+		//	// STATIC ANIMATIONS COUNTER
+		//	if (obj.liczba > 12 * 4)
+		//	{
+		//		this->obj.liczba -= 12 * 5;
+		//		this->mnoznikStatic -= 5;
+		//	}
+		//	else
+		//	{
+		//		this->obj.liczba += 12;
+		//		this->mnoznikStatic += 1;
+		//	}
+
+		//	// DYNAMIC ANIMATION
+		//	if (player.liczba > 32)
+		//	{
+		//		this->player.liczba -= 32 * 2;
+		//	}
+		//	else
+		//	{
+		//		this->player.liczba += 32;
+		//	}
+
+		//	this->armorer.sprite.setTextureRect(sf::IntRect(player.liczba, 0, 32, 38));
+
+		//	//this->shop.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
+		//	//this->shop.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
+		//	//this->shop.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
+		//	//this->shop.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
+		//}
+
+		//std::cout << player.attackFrame << '\n';
+		//std::cout << "ATTACK: " << PLAYER_IS_ATTACKING << '\n';
+		//std::cout << "IDLE: " << PLAYER_IDLE << '\n';
+		//std::cout << "CLOCK: " << clock.getElapsedTime().asSeconds() << '\n';
+
+		// PLAYER MOVING ANIMATION
+		if (player.frame > 384)
 		{
-			// STATIC ANIMATIONS COUNTER
-			if (obj.liczba > 12 * 4)
-			{
-				this->obj.liczba -= 12 * 5;
-				this->mnoznikStatic -= 5;
-			}
-			else
-			{
-				this->obj.liczba += 12;
-				this->mnoznikStatic += 1;
-			}
-
-			//this->room1.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-			//this->room1.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
-			//this->room1.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
-			//this->room1.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
-
-			heart.sprite.setTextureRect(sf::IntRect(obj.liczba - mnoznikStatic, 0, 11, 16));
-		}
-
-		if (IN_SHOP)
-		{
-			// STATIC ANIMATIONS COUNTER
-			if (obj.liczba > 12 * 4)
-			{
-				this->obj.liczba -= 12 * 5;
-				this->mnoznikStatic -= 5;
-			}
-			else
-			{
-				this->obj.liczba += 12;
-				this->mnoznikStatic += 1;
-			}
-
-			// DYNAMIC ANIMATION
-			if (player.liczba > 32)
-			{
-				this->player.liczba -= 32 * 2;
-			}
-			else
-			{
-				this->player.liczba += 32;
-			}
-
-			this->armorer.sprite.setTextureRect(sf::IntRect(player.liczba, 0, 32, 38));
-
-			//this->shop.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-			//this->shop.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
-			//this->shop.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
-			//this->shop.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
-		}
-		
-
-		// DYNAMIC ANIMATION
-		if (player.liczba > 32)
-		{
-			this->player.liczba -= 32 * 2;
+			this->player.frame = 0;
 		}
 		else
 		{
-			this->player.liczba += 32;
+			this->player.frame += 64;
 		}
 
-		if (BEFORE_MOOVING)
+		if (PLAYER_IDLE and PLAYER_FACING_RIGHT == false)
 		{
-			this->player.playerSprite.setTextureRect(sf::IntRect(32, 0, 32, 32));
-			this->armorer.sprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
-		}
-		if (MOOVING_DOWN)
-		{
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 0, 32, 32));
-		}
-		if (MOOVING_UP)
-		{
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 3, 32, 32));
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.frame, 128, 64, 64));
 		}
 
-		if (MOOVING_LEFT)
+		if (PLAYER_IDLE and PLAYER_FACING_RIGHT)
 		{
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 1, 32, 32));
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.frame, 192, 64, 64));
 		}
 
-		if (MOOVING_RIGHT)
+		if (PLAYER_MOOVING_LEFT)
+		{	
+			this->PLAYER_FACING_RIGHT = false;
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.frame, 0, 64, 64));
+		}
+
+		if (PLAYER_MOOVING_RIGHT)
 		{
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.liczba, 32 * 2, 32, 32));
+			this->PLAYER_FACING_RIGHT = true;
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.frame, 64, 64, 64));
+		}
+
+		// PLAYER ATTACKING ANIMATION
+		if (player.attackFrame > 720)
+		{
+			this->player.attackFrame = 0;
+
+			if (PLAYER_IS_ATTACKING)
+			{
+				this->PLAYER_IS_ATTACKING = false;
+				this->PLAYER_IDLE = true;
+			}	
+		}
+		else
+		{
+			this->player.attackFrame += 120;
+		}
+
+		if (PLAYER_IS_ATTACKING and PLAYER_FACING_RIGHT == false)
+		{
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.attackFrame, 256, 120, 76));
+		}
+
+		if (PLAYER_IS_ATTACKING and PLAYER_FACING_RIGHT)
+		{
+			this->player.playerSprite.setTextureRect(sf::IntRect(player.attackFrame, 332, 120, 76));
 		}
 
 		this->clock.restart();
 	}
+
 }
 
 void Game::createEnemies()
@@ -857,13 +896,11 @@ void Game::updateEnemyMovement()
 {
 	for (int i = 0; i < 5; i++)
 	{
-		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].terror.getPosition().x + enemies[i].terror_r, enemies[i].terror.getPosition().y + enemies[i].terror_r);
+		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].terror.getPosition().x + enemies[i].terrorRadius, enemies[i].terror.getPosition().y + enemies[i].terrorRadius);
 		sf::Vector2f gracz = sf::Vector2f(player.playerSprite.getPosition().x + player.textureSize.x, player.playerSprite.getPosition().y + player.textureSize.x);
 		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
-		//std::cout << srodek.x << " " << srodek.y << " " << gracz.x << " " << gracz.y << " " << sf::Mouse::getPosition(*window).x << " " << sf::Mouse::getPosition(*window).y << std::endl;
-		//std::cout << dystans << std::endl;
 
-		if (dystans < enemies[i].terror_r)
+		if (dystans < enemies[i].terrorRadius)
 		{
 
 			if (przeciwnik.x < gracz.x and przeciwnik.y < gracz.y)
@@ -895,19 +932,6 @@ void Game::updateEnemyMovement()
 			speedy_y = (rand() % 400 - 200) / 100;
 			this->enemies[i].sprite.move({ speedy_x, speedy_y });
 			this->enemies[i].terror.move({ speedy_x, speedy_y });
-			/*
-			
-			for (int j=0; j <= 52; j++) 
-			{
-				if (this->room1.object[j].getGlobalBounds().intersects(this->enemies[i].terror.getGlobalBounds()))
-				{
-					speedy_x = (rand() % 400 - 200)/100;
-					speedy_y = (rand() % 400 - 200)/100;
-					this->enemies[i].sprite.move({ speedy_x, speedy_y });
-					this->enemies[i].terror.move({ speedy_x, speedy_y });
-				}
-			}
-			*/
 		}
 	}
 

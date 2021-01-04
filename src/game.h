@@ -14,7 +14,6 @@ private:
 	sf::Event event;
 
 	sf::Clock clock;
-	sf::Time dt;
 
 	// CREATING OBJECTS WHEN WINDOW IS READY
 
@@ -125,11 +124,11 @@ public:
 	void updatePlayerHealth();
 
 	// PLAYER MOVEMENT
-	bool MOOVING_LEFT;
-	bool MOOVING_RIGHT;
-	bool MOOVING_UP;
-	bool MOOVING_DOWN;
-	bool BEFORE_MOOVING;
+	bool PLAYER_MOOVING_LEFT;
+	bool PLAYER_MOOVING_RIGHT;
+	bool PLAYER_IDLE;
+	bool PLAYER_FACING_RIGHT;
+	bool PLAYER_IS_ATTACKING;
 
 	// ADITIONAL THINGS
 	sf::Texture screenshot;

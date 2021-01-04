@@ -6,11 +6,12 @@ class Enemy
 public:
 	Enemy();
 	~Enemy();
-	int speed_atack;
+	int speedAtack;
 	sf::Vector2f speed;
+	sf::Vector2f size;
 	int health;
 	int damage;
-	int terror_r;
+	int terrorRadius;
 
 	//sf::Sprite sprite;
 	sf::RectangleShape sprite;
@@ -20,4 +21,3 @@ public:
 	void create(sf::Vector2f position, sf::Vector2f scale);
 	void render(sf::RenderTarget* target);
 };
-
