@@ -83,8 +83,8 @@ RAPORT IV - 2020/12/15
 - sklep (system wymiany przedmiotów i inne mechaniki)
 - system levelovania postaci
 - usprawnienie stanów gry
-- usprawienie GUI
-- usprawnienie menu
+- usprawienie GUI (X)
+- usprawnienie menu (X)
 
 --------
 - 12.01.2021 - prototyp
