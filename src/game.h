@@ -4,6 +4,7 @@
 #include "object.h"
 #include "libs.h"
 #include "enemy.h"
+#include "gui.h"
 #define MAX_NUMBER_OF_ITEMS 4
 
 class Game
@@ -14,8 +15,13 @@ private:
 	sf::Event event;
 
 	sf::Clock clock;
+	sf::Clock waveClock;
+	float waveTime;
 
 	// CREATING OBJECTS WHEN WINDOW IS READY
+
+	// GUI
+	Gui gui;
 
 	// map object
 	Map map;
@@ -26,12 +32,6 @@ private:
 
 	// object object
 	Object obj;
-
-	// objects
-	Heart heart;
-	Key key;
-	Coin coin;
-	Shard shard;
 
 	// player object
 	Player player;
@@ -64,10 +64,6 @@ public:
 
 	bool showheart;
 
-	// GUI VARIABLES
-	sf::Texture guiTexture;
-	sf::Sprite playerHealthBar;
-	sf::Sprite playerHealthBarEmpty;
 
 	// MENU VARIABLES
 	sf::Music menu_music;
@@ -104,6 +100,7 @@ public:
 	void update();
 	void render();
 	void run();
+	void newGame();
 	
 	// GUI METHODS
 	void initGUI();
@@ -121,7 +118,7 @@ public:
 
 	// PLAYER MOVEMENT METHODS
 	void updatePlayerMovement();
-	void updatePlayerHealth();
+	void pickingUpObjects();
 
 	// PLAYER MOVEMENT
 	bool PLAYER_MOOVING_LEFT;
@@ -129,6 +126,8 @@ public:
 	bool PLAYER_IDLE;
 	bool PLAYER_FACING_RIGHT;
 	bool PLAYER_IS_ATTACKING;
+
+	bool deleteHeart;
 
 	// ADITIONAL THINGS
 	sf::Texture screenshot;
@@ -153,6 +152,14 @@ public:
 	void updateEnemyHealth();
 	int current_wave = 0;
 	bool IS_WAVE_ACTIVE = false;
+
+	// objects
+	Heart heart;
+	Key key;
+	Coin coin;
+	Shard shard;
+
+	std::vector<Coin> coins;
 
 };
 

@@ -5,7 +5,7 @@ Enemy::Enemy()
     terrorRadius = 250;
     sprite.setPosition(0, 0);
     sprite.setFillColor(sf::Color::Green);
-    size = sf::Vector2f(30.f, 30s.f);
+    size = sf::Vector2f(30.f, 30.f);
     sprite.setSize(size);
     terror.setRadius(terrorRadius);
     terror.setFillColor(sf::Color::Red);

@@ -19,11 +19,6 @@ void Game::initWindow()
 	sf::VideoMode windowBunds(windowWidth, windowHeight);
 	this->window = new sf::RenderWindow(windowBunds, title, sf::Style::Close | sf::Style::Resize);
 	this->window->setFramerateLimit(30);
-
-	// states
-	this->PLAYING_STATE = false;
-	this->IN_MENU_STATE = true;
-	this->GAME_STOPPED = false;
 }
 
 void Game::updateSFMLEvents()
@@ -90,7 +85,7 @@ void Game::updateSFMLEvents()
 					break;
 
 				case sf::Keyboard::K:
-					this->player.playerHealth = player.playerHealth - 1.f;
+					//this->player.playerHealth = player.playerHealth - 1.f;
 					break;
 
 				case sf::Keyboard::Escape:
@@ -189,6 +184,8 @@ void Game::updateSFMLEvents()
 							IS_WAVE_ACTIVE = true;
 						}
 						else { 
+							this->waveTime = 0;
+							this->waveClock.restart();
 							IS_WAVE_ACTIVE = false;
 							std::cout << "KONIEC FALI" << '\n';
 						}
@@ -240,11 +237,15 @@ void Game::update()
 		if (IS_WAVE_ACTIVE) 
 		{
 			this->updateEnemyMovement();
+			this->waveTime = (int)(this->waveClock.getElapsedTime().asSeconds() * 100 + .5);
+			this->waveTime = waveTime / 100;
 		}
 
 		this->updatePlayerMovement();
-		this->borders();
 		this->animation();
+		this->pickingUpObjects();
+		this->gui.changeValues(this->player.coins, this->player.keys, this->player.level, this->current_wave, this->waveTime);
+
 	}
 }
 
@@ -256,6 +257,8 @@ void Game::render()
 
 	while (IN_MENU_STATE)
 	{
+		this->newGame();
+
 		// after entering the playing state music stops so it plays
 		// the music again when you go back to the menu
 		if (this->menu_music.getStatus() == 0)
@@ -282,33 +285,26 @@ void Game::render()
 
 		if (IS_WAVE_ACTIVE) 
 		{
-			for(int i=0; i<5; i++)
+			for(int i = 0; i < 5; i++)
 			{
 				this->enemies[i].render(this->window);
 			}
 		}
 
-	
-		if (showheart)
+		// PLACEHOLDER
+		if (showheart and !deleteHeart)
 		{
-			heart.create({ 390.f, 290.f }, { 3.f, 3.f });
-			heart.render(this->window);
+			coin.create({ 390.f, 290.f }, { 3.f, 3.f });
+			coin.render(this->window);
+
+			//heart.create({ 390.f, 290.f }, { 3.f, 3.f });
+			//heart.render(this->window);
 		}
 
-
-		// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
-		//if (PLAYER_TELEPORTATION and !IS_WAVE_ACTIVE)
-		//{
-		//	this->player.playerSprite.setPosition({ 440.f, 65.f });
-		//	PLAYER_TELEPORTATION = false;
-		//}
-
+		this->gui.render(this->window);
 		this->player.render(this->window);
 
-		this->renderGUI(this->window);
-
 		this->update();
-
 		this->window->display();
 	}
 
@@ -318,23 +314,11 @@ void Game::render()
 
 		this->shop.renderMap(this->window);
 		this->shop.renderObject(this->window);
-
-		// ustawienie gracza w odpowiedniej pozycji po przejsciu do innego pokoju
-		//if (PLAYER_TELEPORTATION)
-		//{
-		//	this->player.playerSprite.setPosition({ 440.f, 580.f });
-		//	PLAYER_TELEPORTATION = false;
-		//}
-
 		this->armorer.render(this->window);
-
+		this->gui.render(this->window);
 		this->player.render(this->window);
 
-		this->renderGUI(this->window);
-
 		this->update();
-		this->animation();
-
 		this->window->display();
 	}
 
@@ -357,10 +341,19 @@ void Game::render()
 
 void Game::run()
 {
+	// variables that should be defined once before game start
+	// game states
+	this->PLAYING_STATE = false;
+	this->IN_MENU_STATE = true;
+	this->GAME_STOPPED = false;
+	// starting animation is idle animation
 	this->PLAYER_MOOVING_RIGHT = false;
 	this->PLAYER_MOOVING_LEFT = false;
 	this->PLAYER_IDLE = true;
+	// screenshot iterable
 	this->screenshotNumber = 0;
+	// PLACEHOLDER for picking up items (not here)
+	this->deleteHeart = false;
 
 	this->armorer.create({ 250.f, 430.f }, { -3.f, 3.f });
 
@@ -371,32 +364,22 @@ void Game::run()
 	}
 }
 
-// GUI METHODS
-void Game::initGUI()
+void Game::newGame()
 {
-	if (!this->guiTexture.loadFromFile("res/textures/gui.png"))
-	{
-		std::cout << "ERROR::GAME::initGUI::Could not load the GUI texture!" << "\n";
-	}
+	this->waveTime = 0.0;
 
-	sf::Vector2f playerHealthBarPosition = sf::Vector2f( 980, 50);
+	this->player.coins = 0;
+	this->player.keys = 0;
+	this->player.xp = 0;
 
-	this->playerHealthBarEmpty.setTexture(this->guiTexture);
-	this->playerHealthBarEmpty.setTextureRect(sf::IntRect(7, 11, 50, 8));
-	this->playerHealthBarEmpty.setPosition(playerHealthBarPosition);
-	this->playerHealthBarEmpty.setScale(4.5f, 4.5f);
+	this->player.drunk = false;
 
-	this->playerHealthBar.setTexture(this->guiTexture);
-	this->playerHealthBar.setTextureRect(sf::IntRect(7, 1, 49 * this->player.playerHealth * 0.01, 8));
-	this->playerHealthBar.setPosition(playerHealthBarPosition);
-	this->playerHealthBar.setScale(4.5f, 4.5f);
-}
-
-void Game::renderGUI(sf::RenderTarget* target)
-{
-	initGUI();
-	target->draw(this->playerHealthBarEmpty);
-	target->draw(this->playerHealthBar);
+	this->player.level = 1;
+	this->player.hp = 100;
+	this->player.speed = 1;
+	this->player.poisoning = 1;
+	this->player.dmg = 1;
+	this->player.def = 1;
 }
 
 // MENU METHODS
@@ -621,7 +604,7 @@ void Game::menuDrawMenu(sf::RenderTarget* target)
 // PLAYER METHODS
 void Game::updatePlayerMovement()
 {
-	// player position to console
+	// player position -> console
 	//std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
 	//std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
 
@@ -714,34 +697,58 @@ void Game::updatePlayerMovement()
 	}
 }
 
+void Game::pickingUpObjects()
+{
+	std::cout << this->player.hp << '\n';
+
+	// PLACEHOLDER 
+	/*if (this->heart.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and this->player.hp < 100)
+	{
+		if (!this->deleteHeart)
+		{
+			this->player.hp += 10;
+			this->deleteHeart = true;
+		}
+	}*/
+
+	if (this->coin.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+	{
+		if (!this->deleteHeart)
+		{
+			this->player.coins += 1;
+			this->deleteHeart = true;
+		}
+	}
+}
+
 
 // COLLISION METHODS
 // with window borders
-void Game::borders()
-{
-	//std::cout << "x: " << player.playerSprite.getPosition().x << '\n';
-	//std::cout << "y: " << player.playerSprite.getPosition().y << '\n';
-
-	if (player.playerSprite.getPosition().x <= 0)
-	{
-		player.playerSprite.setPosition(0.f, player.playerSprite.getPosition().y);
-	}
-
-	if (player.playerSprite.getPosition().y <= 0)
-	{
-		player.playerSprite.setPosition(player.playerSprite.getPosition().x, 0);
-	}
-
-	if (player.playerSprite.getPosition().x + player.playerSprite.getGlobalBounds().width >= window->getSize().x)
-	{
-		player.playerSprite.setPosition(window->getSize().x - player.playerSprite.getGlobalBounds().width, player.playerSprite.getPosition().y);
-	}
-
-	if (player.playerSprite.getPosition().y + player.playerSprite.getGlobalBounds().height >= window->getSize().y)
-	{
-		player.playerSprite.setPosition(player.playerSprite.getPosition().x, window->getSize().y - player.playerSprite.getGlobalBounds().height);
-	}
-}
+//void Game::borders()
+//{
+//	//std::cout << "x: " << player.playerSprite.getPosition().x << '\n';
+//	//std::cout << "y: " << player.playerSprite.getPosition().y << '\n';
+//
+//	if (player.playerSprite.getPosition().x <= 0)
+//	{
+//		player.playerSprite.setPosition(0.f, player.playerSprite.getPosition().y);
+//	}
+//
+//	if (player.playerSprite.getPosition().y <= 0)
+//	{
+//		player.playerSprite.setPosition(player.playerSprite.getPosition().x, 0);
+//	}
+//
+//	if (player.playerSprite.getPosition().x + player.playerSprite.getGlobalBounds().width >= window->getSize().x)
+//	{
+//		player.playerSprite.setPosition(window->getSize().x - player.playerSprite.getGlobalBounds().width, player.playerSprite.getPosition().y);
+//	}
+//
+//	if (player.playerSprite.getPosition().y + player.playerSprite.getGlobalBounds().height >= window->getSize().y)
+//	{
+//		player.playerSprite.setPosition(player.playerSprite.getPosition().x, window->getSize().y - player.playerSprite.getGlobalBounds().height);
+//	}
+//}
 
 // ADITIONAL METHODS
 void Game::takeScreenshot(const sf::RenderWindow& window, const std::string& filename)
@@ -761,27 +768,28 @@ void Game::animation()
 	if (clock.getElapsedTime().asSeconds() > 0.15f)
 	{
 		// STATIC ANIMATIONS
-		//if (IN_STARTING_ROOM)
-		//{
-		//	// STATIC ANIMATIONS COUNTER
-		//	if (obj.liczba > 12 * 4)
-		//	{
-		//		this->obj.liczba -= 12 * 5;
-		//		this->mnoznikStatic -= 5;
-		//	}
-		//	else
-		//	{
-		//		this->obj.liczba += 12;
-		//		this->mnoznikStatic += 1;
-		//	}
+		if (IN_STARTING_ROOM)
+		{
+			// STATIC ANIMATIONS COUNTER
+			if (obj.liczba > 12 * 4)
+			{
+				this->obj.liczba -= 12 * 5;
+				this->mnoznikStatic -= 5;
+			}
+			else
+			{
+				this->obj.liczba += 12;
+				this->mnoznikStatic += 1;
+			}
 
-		//	//this->room1.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-		//	//this->room1.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
-		//	//this->room1.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
-		//	//this->room1.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
+			//this->room1.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
+			//this->room1.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
+			//this->room1.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
+			//this->room1.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
 
-		//	heart.sprite.setTextureRect(sf::IntRect(obj.liczba - mnoznikStatic, 0, 11, 16));
-		//}
+			coin.sprite.setTextureRect(sf::IntRect(obj.liczba, 0, 12, 17));
+			//heart.sprite.setTextureRect(sf::IntRect(obj.liczba - mnoznikStatic, 0, 11, 16));
+		}
 
 		//if (IN_SHOP)
 		//{
@@ -885,7 +893,7 @@ void Game::animation()
 
 void Game::createEnemies()
 {
-	for(int i=0; i< 5; i++)
+	for(int i = 0; i < 5; i++)
 	{
 		this->enemy.create(sf::Vector2f(100+100*i, 100), sf::Vector2f(1, 1));
 		this->enemies.push_back(this->enemy);

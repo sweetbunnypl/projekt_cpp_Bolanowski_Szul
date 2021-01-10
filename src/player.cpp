@@ -2,8 +2,6 @@
 
 Player::Player()
 {
-    this->playerHealth = 100.f;
-
     this->initTexture();
     this->initSprite();
 }
@@ -26,7 +24,7 @@ void Player::initSprite()
     // getting texture size and dividing it to separate parts
     this->textureSize = playerTexture.getSize();
     textureSize.x /= 8;
-    //textureSize.y /= 4;
+
     this->playerSprite.setTexture(this->playerTexture);
 
     // setting scale, bc it's a little bit too small 
