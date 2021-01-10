@@ -181,6 +181,7 @@ void Game::updateSFMLEvents()
 						if (!IS_WAVE_ACTIVE){
 							std::cout << "CZAS NA FALE" << '\n';
 							createEnemies();
+							this->waveClock.restart();
 							IS_WAVE_ACTIVE = true;
 						}
 						else { 
