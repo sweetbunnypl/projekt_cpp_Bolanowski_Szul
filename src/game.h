@@ -141,9 +141,6 @@ public:
 
 	sf::Text testText;
 
-	// COLLISION METHODS
-	void borders();				// handling collisons with window borders
-
 	// ENEMY:
 	Enemy enemy;
 	std::vector<Enemy> enemies;

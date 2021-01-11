@@ -722,35 +722,6 @@ void Game::pickingUpObjects()
 	}
 }
 
-
-// COLLISION METHODS
-// with window borders
-//void Game::borders()
-//{
-//	//std::cout << "x: " << player.playerSprite.getPosition().x << '\n';
-//	//std::cout << "y: " << player.playerSprite.getPosition().y << '\n';
-//
-//	if (player.playerSprite.getPosition().x <= 0)
-//	{
-//		player.playerSprite.setPosition(0.f, player.playerSprite.getPosition().y);
-//	}
-//
-//	if (player.playerSprite.getPosition().y <= 0)
-//	{
-//		player.playerSprite.setPosition(player.playerSprite.getPosition().x, 0);
-//	}
-//
-//	if (player.playerSprite.getPosition().x + player.playerSprite.getGlobalBounds().width >= window->getSize().x)
-//	{
-//		player.playerSprite.setPosition(window->getSize().x - player.playerSprite.getGlobalBounds().width, player.playerSprite.getPosition().y);
-//	}
-//
-//	if (player.playerSprite.getPosition().y + player.playerSprite.getGlobalBounds().height >= window->getSize().y)
-//	{
-//		player.playerSprite.setPosition(player.playerSprite.getPosition().x, window->getSize().y - player.playerSprite.getGlobalBounds().height);
-//	}
-//}
-
 // ADITIONAL METHODS
 void Game::takeScreenshot(const sf::RenderWindow& window, const std::string& filename)
 {
@@ -894,7 +865,7 @@ void Game::animation()
 
 void Game::createEnemies()
 {
-	for(int i = 0; i < 5; i++)
+	for(int i = 0; i < 2; i++)
 	{
 		this->enemy.create(sf::Vector2f(100+100*i, 100), sf::Vector2f(1, 1));
 		this->enemies.push_back(this->enemy);
@@ -903,50 +874,29 @@ void Game::createEnemies()
 
 void Game::updateEnemyMovement()
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < this->enemies.size(); i++)
 	{
-		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].terror.getPosition().x + enemies[i].terrorRadius, enemies[i].terror.getPosition().y + enemies[i].terrorRadius);
-		sf::Vector2f gracz = sf::Vector2f(player.playerSprite.getPosition().x + player.textureSize.x, player.playerSprite.getPosition().y + player.textureSize.x);
-		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
-
-		if (dystans < enemies[i].terrorRadius)
+		if (!this->player.playerSprite.getGlobalBounds().intersects(this->enemies[i].sprite.getGlobalBounds()))
 		{
+			if (this->player.playerSprite.getPosition().x > this->enemies[i].sprite.getPosition().x)
+			{
+				this->enemies[i].sprite.move(sf::Vector2f(this->enemy.speed.x, 0.f));
+			}
 
-			if (przeciwnik.x < gracz.x and przeciwnik.y < gracz.y)
+			else if (this->player.playerSprite.getPosition().x < this->enemies[i].sprite.getPosition().x)
 			{
-				this->enemies[i].sprite.move({ enemies[i].speed.x, enemies[i].speed.y });
-				this->enemies[i].terror.move({ enemies[i].speed.x, enemies[i].speed.y });
+				this->enemies[i].sprite.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
 			}
-			else if (przeciwnik.x > gracz.x and przeciwnik.y < gracz.y)
+
+			if (this->player.playerSprite.getPosition().y > this->enemies[i].sprite.getPosition().y)
 			{
-				this->enemies[i].sprite.move({ -enemies[i].speed.x, enemies[i].speed.y });
-				this->enemies[i].terror.move({ -enemies[i].speed.x, enemies[i].speed.y });
+				this->enemies[i].sprite.move(sf::Vector2f(0.f, this->enemy.speed.x));
 			}
-			else if (przeciwnik.x < gracz.x and przeciwnik.y > gracz.y)
+
+			else if (this->player.playerSprite.getPosition().y < this->enemies[i].sprite.getPosition().y)
 			{
-				this->enemies[i].sprite.move({ enemies[i].speed.x, -enemies[i].speed.y });
-				this->enemies[i].terror.move({ enemies[i].speed.x, -enemies[i].speed.y });
+				this->enemies[i].sprite.move(sf::Vector2f(0.f, -this->enemy.speed.x));
 			}
-			else if (przeciwnik.x > gracz.x and przeciwnik.y > gracz.y)
-			{
-				this->enemies[i].sprite.move({ -enemies[i].speed.x, -enemies[i].speed.y });
-				this->enemies[i].terror.move({ -enemies[i].speed.x, -enemies[i].speed.y });
-			}
-		}
-		else 
-		{
-			float speedy_x = 0;
-			float speedy_y = 0;
-			speedy_x = (rand() % 400 - 200) / 100;
-			speedy_y = (rand() % 400 - 200) / 100;
-			this->enemies[i].sprite.move({ speedy_x, speedy_y });
-			this->enemies[i].terror.move({ speedy_x, speedy_y });
 		}
 	}
-
-}
-
-void Game::updateEnemyHealth()
-{
-
 }
