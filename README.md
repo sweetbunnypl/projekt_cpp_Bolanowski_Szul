@@ -76,17 +76,22 @@ RAPORT IV - 2020/12/15
 
 
 
-(PROTOTYP - 2021/01/12) / do zrobienia
+PROTOTYP - 2021/01/12
 
-- usprawnienie przeciwników (loot z przeciwników)
-- podstawowy system walki
-- sklep (system wymiany przedmiotów i inne mechaniki)
-- system levelovania postaci
+- usprawnienie przeciwników
+- podstawowy system walki gracza
 - usprawnienie stanów gry
-- usprawienie GUI (X)
-- usprawnienie menu (X)
+- usprawienie GUI
+
+
+DEADLINE - 2021/02/02 (DO ZROBIENIA):
+- loot z przeciwników
+- atakujący przeciwnicy
+- sklep (system wymiany przedmiotów i inne mechaniki)
+- dalsze usprawnianie stanów gry
+? system levelovania postaci
+? usprawnienie menu
 
 --------
-- 12.01.2021 - prototyp
 - 02.02.2021 - deadline
 --------
