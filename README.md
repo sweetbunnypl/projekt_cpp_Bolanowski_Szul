@@ -10,7 +10,7 @@ Podział pracy:
 
 -Michał: tekstury i animacja / gracz / sklep
 
--Karol: menu / przeciwnicy i ich "AI" / system walki 
+-Karol: menu / przeciwnicy i ich "AI" / system walki /muzyka i efekty dźwiękowe
 
 --------
 
