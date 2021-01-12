@@ -8,9 +8,9 @@ Naszymi inspiracjami są gry The Binding of Issac oraz Enter the Gungeon
 
 Podział pracy:
 
--Michał: tekstury i animacja / gracz / sklep /
+-Michał: tekstury i animacja / gracz / sklep
 
--Karol: menu / przeciwnicy /
+-Karol: menu / przeciwnicy i ich "AI" / system walki 
 
 --------
 
