@@ -290,15 +290,18 @@ void Game::render()
 
 		if (IS_WAVE_ACTIVE) 
 		{
-			for (int i = 0; i < this->enemies.size(); i++)
+			/*for (int i = 0; i < this->enemies.size(); i++)
 			{
 				this->enemies[i].renderRadius(this->window);
-			}
+			}*/
 			for(int i = 0; i < this->enemies.size(); i++)
 			{
 				this->enemies[i].render(this->window);
 			}
 		}
+
+		bonfire.create({ 435.f, 562.f }, { 1.2f, 1.2f });
+		bonfire.render(this->window);
 
 		// PLACEHOLDER
 		if (showheart and !deleteHeart)
@@ -323,7 +326,6 @@ void Game::render()
 
 		this->shop.renderMap(this->window);
 		this->shop.renderObject(this->window);
-		this->armorer.render(this->window);
 		this->gui.render(this->window);
 		this->player.render(this->window);
 
@@ -744,6 +746,7 @@ void Game::takeScreenshot(const sf::RenderWindow& window, const std::string& fil
 
 void Game::animation()
 {
+
 	// ANIMATIONS
 	if (clock.getElapsedTime().asSeconds() > 0.15f)
 	{
@@ -769,6 +772,25 @@ void Game::animation()
 
 			coin.sprite.setTextureRect(sf::IntRect(obj.liczba, 0, 12, 17));
 			//heart.sprite.setTextureRect(sf::IntRect(obj.liczba - mnoznikStatic, 0, 11, 16));
+
+			if (IS_WAVE_ACTIVE)
+			{
+				if (bonfire.frame > 64 * 5)
+				{
+					bonfire.frame = 64;
+				}
+				else
+				{
+					bonfire.frame += 64;
+				}
+				bonfire.sprite.setTextureRect(sf::IntRect(bonfire.frame, 0, 64, 64));
+			}
+
+			else if (!IS_WAVE_ACTIVE)
+			{
+				bonfire.sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
+			}
+			
 		}
 
 		//if (IN_SHOP)
@@ -968,11 +990,12 @@ void Game::updatePlayerAttack()
 		{
 			enemies[i].health = enemies[i].health - 35;
 			std::cout << i << "# enemy got hit! health remaining: " << enemies[i].health << std::endl;
-			this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x + (enemies[i].enemySprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].enemySprite.getPosition().y + (enemies[i].enemySprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
+			//this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x + (enemies[i].enemySprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].enemySprite.getPosition().y + (enemies[i].enemySprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
 			enemies[i].updateHealth(enemies[i].health);
 
 			if (enemies[i].health <= 0)
 			{
+
 				enemies.erase(enemies.begin() + i);
 			}
 		}

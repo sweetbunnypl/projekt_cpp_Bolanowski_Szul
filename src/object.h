@@ -7,6 +7,7 @@ public:
 	int mnoznik;
 	int liczba;
 	int spriteWidth;
+	int frame;
 
 	sf::Sprite sprite;
 	sf::Texture texture;
@@ -36,6 +37,12 @@ class Coin : public Object
 {
 public:
 	Coin();
+};
+
+class Bonfire : public Object
+{
+public:
+	Bonfire();
 };
 
 class Seller : public Object

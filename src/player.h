@@ -13,6 +13,9 @@ public:
 	sf::Sprite playerSprite;
 	sf::Vector2u textureSize;
 
+	sf::Vector2f size;
+	sf::Vector2f position;
+
 	int frame;
 	int attackFrame;
 

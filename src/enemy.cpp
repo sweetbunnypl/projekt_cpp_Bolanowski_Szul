@@ -56,7 +56,7 @@ void Enemy::create(sf::Vector2f position, sf::Vector2f scale, sf::Vector2f textu
 void Enemy::render(sf::RenderTarget* target)
 {
     target->draw(this->enemySprite);
-    target->draw(this->txtHealth);
+    //target->draw(this->txtHealth);
 }
 
 void Enemy::renderRadius(sf::RenderTarget* target)

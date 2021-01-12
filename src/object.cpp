@@ -62,3 +62,13 @@ Armorer::Armorer()
 
     sprite.setTexture(texture);
 }
+
+Bonfire::Bonfire()
+{
+    if (!texture.loadFromFile("res/textures/objects.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+
+    sprite.setTexture(texture);
+}

@@ -32,6 +32,7 @@ private:
 
 	// object object
 	Object obj;
+	Bonfire bonfire;
 
 	// player object
 	Player player;
