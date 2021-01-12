@@ -118,6 +118,7 @@ public:
 
 	// PLAYER MOVEMENT METHODS
 	void updatePlayerMovement();
+	void updatePlayerAttack();
 	void pickingUpObjects();
 
 	// PLAYER MOVEMENT
@@ -144,11 +145,17 @@ public:
 	// ENEMY:
 	Enemy enemy;
 	std::vector<Enemy> enemies;
+	void animationEnemy();
 	void updateEnemyMovement();
-	void createEnemies();
+	void updateEnemyAttack();
+	void createEnemies(int ile_enemy);
 	void updateEnemyHealth();
+
+	//WAVE
 	int current_wave = 0;
 	bool IS_WAVE_ACTIVE = false;
+	void initWave();
+	void endWave();
 
 	// objects
 	Heart heart;
