@@ -118,9 +118,9 @@ void Game::updateSFMLEvents()
 						this->PLAYER_MOOVING_LEFT = false;
 						this->PLAYER_IDLE = false;
 						this->PLAYER_IS_ATTACKING = true;
-						Sleep(500);
 						
 						std::cout << "PRZYCZAJONY TYGRYS, UKRYTY SMOK!" << '\n';
+						this->updatePlayerAttack();
 					}
 				}
 			}
@@ -180,16 +180,19 @@ void Game::updateSFMLEvents()
 					case sf::Keyboard::G:
 						if (!IS_WAVE_ACTIVE){
 							std::cout << "CZAS NA FALE" << '\n';
-							createEnemies();
-							this->waveClock.restart();
+							current_wave++;
 							IS_WAVE_ACTIVE = true;
+							initWave();
+							this->waveClock.restart();
 						}
+						/*
 						else { 
 							this->waveTime = 0;
 							this->waveClock.restart();
 							IS_WAVE_ACTIVE = false;
 							std::cout << "KONIEC FALI" << '\n';
 						}
+						*/
 					}
 				}
 			}
@@ -238,6 +241,7 @@ void Game::update()
 		if (IS_WAVE_ACTIVE) 
 		{
 			this->updateEnemyMovement();
+			//this->updateEnemyAttack();
 			this->waveTime = (int)(this->waveClock.getElapsedTime().asSeconds() * 100 + .5);
 			this->waveTime = waveTime / 100;
 		}
@@ -286,7 +290,11 @@ void Game::render()
 
 		if (IS_WAVE_ACTIVE) 
 		{
-			for(int i = 0; i < 5; i++)
+			for (int i = 0; i < this->enemies.size(); i++)
+			{
+				this->enemies[i].renderRadius(this->window);
+			}
+			for(int i = 0; i < this->enemies.size(); i++)
 			{
 				this->enemies[i].render(this->window);
 			}
@@ -580,7 +588,7 @@ void Game::menuCreateButton(std::string button_name, int which, int of_how_many,
 void Game::menuDrawMenu(sf::RenderTarget* target)
 {
 	pause++;
-	int dt = 30;
+	int dt = 5;
 	if (pause < dt) window->draw(gif_bcg_s[0]);
 	else if (pause < dt * 2 and pause >= dt) window->draw(gif_bcg_s[1]);
 	else if (pause < dt * 3 and pause >= dt * 2) window->draw(gif_bcg_s[2]);
@@ -700,7 +708,7 @@ void Game::updatePlayerMovement()
 
 void Game::pickingUpObjects()
 {
-	std::cout << this->player.hp << '\n';
+	//std::cout << this->player.hp << '\n';
 
 	// PLACEHOLDER 
 	/*if (this->heart.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and this->player.hp < 100)
@@ -833,7 +841,7 @@ void Game::animation()
 		}
 
 		// PLAYER ATTACKING ANIMATION
-		if (player.attackFrame > 720)
+		if (player.attackFrame > 720 and PLAYER_IS_ATTACKING)
 		{
 			this->player.attackFrame = 0;
 
@@ -843,7 +851,7 @@ void Game::animation()
 				this->PLAYER_IDLE = true;
 			}	
 		}
-		else
+		else if (player.attackFrame <= 720 and PLAYER_IS_ATTACKING)
 		{
 			this->player.attackFrame += 120;
 		}
@@ -852,8 +860,7 @@ void Game::animation()
 		{
 			this->player.playerSprite.setTextureRect(sf::IntRect(player.attackFrame, 256, 120, 76));
 		}
-
-		if (PLAYER_IS_ATTACKING and PLAYER_FACING_RIGHT)
+		else if (PLAYER_IS_ATTACKING and PLAYER_FACING_RIGHT)
 		{
 			this->player.playerSprite.setTextureRect(sf::IntRect(player.attackFrame, 332, 120, 76));
 		}
@@ -863,40 +870,139 @@ void Game::animation()
 
 }
 
-void Game::createEnemies()
+void Game::animationEnemy()
 {
-	for(int i = 0; i < 2; i++)
+}
+
+void Game::createEnemies(int ile_enemy)
+{
+	for(int i = 0; i < ile_enemy; i++)
 	{
-		this->enemy.create(sf::Vector2f(100+100*i, 100), sf::Vector2f(1, 1));
+		this->enemy.create(sf::Vector2f(100+100*i, 100), sf::Vector2f(1, 1), sf::Vector2f(3, 3));
 		this->enemies.push_back(this->enemy);
 	}
 }
 
 void Game::updateEnemyMovement()
 {
+	sf::Vector2f gracz_size = sf::Vector2f(player.playerSprite.getGlobalBounds().width, player.playerSprite.getGlobalBounds().height);
+	sf::Vector2f gracz = sf::Vector2f(player.playerSprite.getPosition().x + gracz_size.x/2, player.playerSprite.getPosition().y + gracz_size.y/2);
 	for (int i = 0; i < this->enemies.size(); i++)
 	{
-		if (!this->player.playerSprite.getGlobalBounds().intersects(this->enemies[i].sprite.getGlobalBounds()))
+		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].terror.getPosition().x + enemies[i].terrorRadius, enemies[i].terror.getPosition().y + enemies[i].terrorRadius);
+		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
+
+		if (!this->player.playerSprite.getGlobalBounds().intersects(this->enemies[i].enemySprite.getGlobalBounds()) and dystans < enemies[i].terrorRadius)
 		{
-			if (this->player.playerSprite.getPosition().x > this->enemies[i].sprite.getPosition().x)
+			if (gracz.x > przeciwnik.x)
 			{
-				this->enemies[i].sprite.move(sf::Vector2f(this->enemy.speed.x, 0.f));
+				this->enemies[i].enemySprite.move(sf::Vector2f(this->enemy.speed.x, 0.f));
+				this->enemies[i].terror.move(sf::Vector2f(this->enemy.speed.x, 0.f));
+				this->enemies[i].attack.move(sf::Vector2f(this->enemy.speed.x, 0.f));
+				//this->enemies[i].txtHealth.move(sf::Vector2f(this->enemy.speed.x, 0.f));
 			}
 
-			else if (this->player.playerSprite.getPosition().x < this->enemies[i].sprite.getPosition().x)
+			else if (gracz.x < przeciwnik.x)
 			{
-				this->enemies[i].sprite.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
+				this->enemies[i].enemySprite.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
+				this->enemies[i].terror.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
+				this->enemies[i].attack.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
+				//this->enemies[i].txtHealth.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
 			}
 
-			if (this->player.playerSprite.getPosition().y > this->enemies[i].sprite.getPosition().y)
+			if (gracz.y > przeciwnik.y)
 			{
-				this->enemies[i].sprite.move(sf::Vector2f(0.f, this->enemy.speed.x));
+				this->enemies[i].enemySprite.move(sf::Vector2f(0.f, this->enemy.speed.x));
+				this->enemies[i].terror.move(sf::Vector2f(0.f, this->enemy.speed.x));
+				this->enemies[i].attack.move(sf::Vector2f(0.f, this->enemy.speed.x));
+				//this->enemies[i].txtHealth.move(sf::Vector2f(0.f, this->enemy.speed.x));
 			}
 
-			else if (this->player.playerSprite.getPosition().y < this->enemies[i].sprite.getPosition().y)
+			else if (gracz.y < przeciwnik.y)
 			{
-				this->enemies[i].sprite.move(sf::Vector2f(0.f, -this->enemy.speed.x));
+				this->enemies[i].enemySprite.move(sf::Vector2f(0.f, -this->enemy.speed.x));
+				this->enemies[i].terror.move(sf::Vector2f(0.f, -this->enemy.speed.x));
+				this->enemies[i].attack.move(sf::Vector2f(0.f, -this->enemy.speed.x));
+				//this->enemies[i].txtHealth.move(sf::Vector2f(0.f, -this->enemy.speed.x));
+			}
+			this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x+(enemies[i].enemySprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].enemySprite.getPosition().y+(enemies[i].enemySprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
+			//this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x, enemies[i].enemySprite.getPosition().y-50);
+		}
+	}
+}
+
+void Game::updateEnemyAttack()
+{
+	sf::Vector2f gracz_size = sf::Vector2f(player.playerSprite.getGlobalBounds().width, player.playerSprite.getGlobalBounds().height);
+	sf::Vector2f gracz = sf::Vector2f(player.playerSprite.getPosition().x + gracz_size.x / 2, player.playerSprite.getPosition().y + gracz_size.y / 2);
+	for (int i = 0; i < this->enemies.size(); i++)
+	{
+		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].attack.getPosition().x + enemies[i].attackRadius, enemies[i].attack.getPosition().y + enemies[i].attackRadius);
+		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
+		//std::cout << dystans << "   " << przeciwnik.x << "   " << przeciwnik.y << std::endl;
+		if (dystans < enemies[i].attackRadius)
+		{
+			enemies[i].health = enemies[i].health - 5;
+			std::cout << "hit! health remaining: " << enemies[i].health << std::endl;
+			this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x+(enemies[i].enemySprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].enemySprite.getPosition().y+(enemies[i].enemySprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
+			enemies[i].updateHealth(enemies[i].health);
+			if (enemies[i].health <= 0) 
+			{
+				enemies.erase(enemies.begin() + i);
+			}
+		}
+
+	}
+}
+
+void Game::updatePlayerAttack()
+{
+	sf::Vector2f gracz_size = sf::Vector2f(player.playerSprite.getGlobalBounds().width, player.playerSprite.getGlobalBounds().height);
+	sf::Vector2f gracz = sf::Vector2f(player.playerSprite.getPosition().x + gracz_size.x / 2, player.playerSprite.getPosition().y + gracz_size.y / 2);
+	for (int i = 0; i < this->enemies.size(); i++)
+	{
+		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].attack.getPosition().x + enemies[i].attackRadius, enemies[i].attack.getPosition().y + enemies[i].attackRadius);
+		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
+		//std::cout << dystans << "   " << przeciwnik.x << "   " << przeciwnik.y << std::endl;
+		if (dystans < enemies[i].attackRadius)
+		{
+			enemies[i].health = enemies[i].health - 35;
+			std::cout << i << "# enemy got hit! health remaining: " << enemies[i].health << std::endl;
+			this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x + (enemies[i].enemySprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].enemySprite.getPosition().y + (enemies[i].enemySprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
+			enemies[i].updateHealth(enemies[i].health);
+
+			if (enemies[i].health <= 0)
+			{
+				enemies.erase(enemies.begin() + i);
 			}
 		}
 	}
+	if (enemies.empty() == true) endWave();
+}
+
+void Game::initWave()
+{
+	if (IS_WAVE_ACTIVE and current_wave == 1)
+	{
+		enemies.clear();
+		createEnemies(2);
+	}
+	else if (IS_WAVE_ACTIVE and current_wave == 2)
+	{
+		enemies.clear();
+		createEnemies(3);
+	}
+	else if (IS_WAVE_ACTIVE and current_wave == 3)
+	{
+		enemies.clear();
+		createEnemies(5);
+	}
+}
+
+void Game::endWave()
+{
+	this->waveTime = 0;
+	this->waveClock.restart();
+	IS_WAVE_ACTIVE = false;
+	std::cout << "KONIEC FALI" << '\n';
 }

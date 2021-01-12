@@ -36,6 +36,5 @@ void Player::initSprite()
 
 void Player::render(sf::RenderTarget* target)
 {
-
     target->draw(this->playerSprite);
 }
