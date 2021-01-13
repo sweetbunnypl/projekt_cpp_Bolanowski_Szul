@@ -17,6 +17,7 @@ private:
 	sf::Clock clock;
 	sf::Clock waveClock;
 	float waveTime;
+	int savedWaveTime;
 
 	// CREATING OBJECTS WHEN WINDOW IS READY
 
@@ -30,9 +31,15 @@ private:
 	Shop shop;
 	StartingRoom room1;
 
-	// object object
+	// object objects
 	Object obj;
 	Bonfire bonfire;
+
+	// collectible objects
+	Heart heart;
+	Key key;
+	Coin coin;
+	Shard shard;
 
 	// player object
 	Player player;
@@ -62,9 +69,6 @@ public:
 	bool IN_STARTING_ROOM;
 	bool IN_SHOP;
 	bool PLAYER_TELEPORTATION;
-
-	bool showheart;
-
 
 	// MENU VARIABLES
 	sf::Music menu_music;
@@ -102,10 +106,6 @@ public:
 	void render();
 	void run();
 	void newGame();
-	
-	// GUI METHODS
-	void initGUI();
-	void renderGUI(sf::RenderTarget* target);
 
 	// MENU METHODS
 	void initMenu();
@@ -117,10 +117,11 @@ public:
 	int menuGetPressedItem() { return MenuIndex; }
 	void menuDrawMenu(sf::RenderTarget* target);
 
-	// PLAYER MOVEMENT METHODS
+	// PLAYER METHODS
 	void updatePlayerMovement();
 	void updatePlayerAttack();
 	void pickingUpObjects();
+	void levelingUp();
 
 	// PLAYER MOVEMENT
 	bool PLAYER_MOOVING_LEFT;
@@ -128,8 +129,6 @@ public:
 	bool PLAYER_IDLE;
 	bool PLAYER_FACING_RIGHT;
 	bool PLAYER_IS_ATTACKING;
-
-	bool deleteHeart;
 
 	// ADITIONAL THINGS
 	sf::Texture screenshot;
@@ -141,6 +140,8 @@ public:
 	int mnoznikStatic;
 	int mnoznikDynamic;
 
+	int howManyXP;
+
 	sf::Text testText;
 
 	// ENEMY:
@@ -150,21 +151,18 @@ public:
 	void updateEnemyMovement();
 	void updateEnemyAttack();
 	void createEnemies(int ile_enemy);
-	void updateEnemyHealth();
 
 	//WAVE
+
+	sf::Vector2f lastKnownEnemyPosition;
 	int current_wave = 0;
 	bool IS_WAVE_ACTIVE = false;
 	void initWave();
 	void endWave();
 
-	// objects
-	Heart heart;
-	Key key;
-	Coin coin;
-	Shard shard;
-
 	std::vector<Coin> coins;
-
+	std::vector<Heart> hearts;
+	std::vector<Key> keys;
+	std::vector<Shard> shards;
 };
 

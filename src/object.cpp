@@ -1,5 +1,13 @@
 #include "object.h"
 
+Object::Object()
+{
+    if (!this->texture.loadFromFile("res/textures/gui.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the gui sheet!" << "\n";
+    }
+}
+
 void Object::create(sf::Vector2f position, sf::Vector2f scale)
 {
     sprite.setPosition(position);
@@ -13,53 +21,30 @@ void Object::render(sf::RenderTarget* target)
 
 Heart::Heart()
 {
-    if (!texture.loadFromFile("res/textures/heart.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
+    sprite.setTextureRect(sf::IntRect(0, 140, 60, 60));
     sprite.setTexture(texture);
 }
 
-
-
 Key::Key()
 {
-    if (!texture.loadFromFile("res/textures/key.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
+    sprite.setTextureRect(sf::IntRect(180, 140, 60, 60));
     sprite.setTexture(texture);
 }
 
 Shard::Shard()
 {
-    if (!texture.loadFromFile("res/textures/levelshards.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
+    sprite.setTextureRect(sf::IntRect(60, 140, 60, 60));
     sprite.setTexture(texture);
 }
 
 Coin::Coin()
 {
-    if (!texture.loadFromFile("res/textures/coin.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
+    sprite.setTextureRect(sf::IntRect(240, 140, 60, 60));
     sprite.setTexture(texture);
 }
 
 Armorer::Armorer()
 {
-    if (!texture.loadFromFile("res/textures/armorer.png"))
-    {
-        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
-    }
-
     sprite.setTexture(texture);
 }
 

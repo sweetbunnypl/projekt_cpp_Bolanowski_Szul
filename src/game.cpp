@@ -102,7 +102,6 @@ void Game::updateSFMLEvents()
 					std::string filename_format = ".png";
 					std::string filename = filename_path + filename_core + filename_number + filename_format;
 					takeScreenshot(*window, filename);
-					showheart = true;
 					break;
 				}
 			}
@@ -185,14 +184,6 @@ void Game::updateSFMLEvents()
 							initWave();
 							this->waveClock.restart();
 						}
-						/*
-						else { 
-							this->waveTime = 0;
-							this->waveClock.restart();
-							IS_WAVE_ACTIVE = false;
-							std::cout << "KONIEC FALI" << '\n';
-						}
-						*/
 					}
 				}
 			}
@@ -241,7 +232,6 @@ void Game::update()
 		if (IS_WAVE_ACTIVE) 
 		{
 			this->updateEnemyMovement();
-			//this->updateEnemyAttack();
 			this->waveTime = (int)(this->waveClock.getElapsedTime().asSeconds() * 100 + .5);
 			this->waveTime = waveTime / 100;
 		}
@@ -249,8 +239,8 @@ void Game::update()
 		this->updatePlayerMovement();
 		this->animation();
 		this->pickingUpObjects();
+		this->levelingUp();
 		this->gui.changeValues(this->player.coins, this->player.keys, this->player.level, this->current_wave, this->waveTime);
-
 	}
 }
 
@@ -282,7 +272,6 @@ void Game::render()
 	while (PLAYING_STATE and IN_STARTING_ROOM)
 	{
 		menu_music.stop();
-		// ustawienie, ze pokojem poczatkowym jest room1
 
 		this->window->clear(sf::Color(42, 33, 52, 255));
 		this->room1.renderMap(this->window);
@@ -300,18 +289,23 @@ void Game::render()
 			}
 		}
 
+		if (coins.empty() == false)
+		{
+			for (int i = 0; i < this->coins.size(); i++)
+			{
+				this->coins[i].render(this->window);
+			}
+		}
+		if (shards.empty() == false)
+		{
+			for (int i = 0; i < this->shards.size(); i++)
+			{
+				this->shards[i].render(this->window);
+			}
+		}
+
 		bonfire.create({ 435.f, 562.f }, { 1.2f, 1.2f });
 		bonfire.render(this->window);
-
-		// PLACEHOLDER
-		if (showheart and !deleteHeart)
-		{
-			coin.create({ 390.f, 290.f }, { 3.f, 3.f });
-			coin.render(this->window);
-
-			//heart.create({ 390.f, 290.f }, { 3.f, 3.f });
-			//heart.render(this->window);
-		}
 
 		this->gui.render(this->window);
 		this->player.render(this->window);
@@ -363,8 +357,6 @@ void Game::run()
 	this->PLAYER_IDLE = true;
 	// screenshot iterable
 	this->screenshotNumber = 0;
-	// PLACEHOLDER for picking up items (not here)
-	this->deleteHeart = false;
 
 	this->armorer.create({ 250.f, 430.f }, { -3.f, 3.f });
 
@@ -710,24 +702,66 @@ void Game::updatePlayerMovement()
 
 void Game::pickingUpObjects()
 {
-	//std::cout << this->player.hp << '\n';
-
-	// PLACEHOLDER 
-	/*if (this->heart.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and this->player.hp < 100)
+	for (int i = 0; i < coins.size(); i++)
 	{
-		if (!this->deleteHeart)
+		if (coins.empty() == false)
 		{
-			this->player.hp += 10;
-			this->deleteHeart = true;
+			if (this->player.playerSprite.getGlobalBounds().intersects(this->coins[i].sprite.getGlobalBounds()))
+			{
+				this->player.coins += 1;
+				this->coins.erase(coins.begin() + i);
+			}
 		}
-	}*/
-
-	if (this->coin.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()))
+		
+	}
+	for (int i = 0; i < shards.size(); i++)
 	{
-		if (!this->deleteHeart)
+		if(shards.empty() == false)
 		{
-			this->player.coins += 1;
-			this->deleteHeart = true;
+			if (this->player.playerSprite.getGlobalBounds().intersects(this->shards[i].sprite.getGlobalBounds()))
+			{
+				this->player.xp += 2;
+				this->shards.erase(shards.begin() + i);
+				std::cout << "XP: " << player.xp << '\n';
+			}
+		}
+	}
+}
+
+void Game::levelingUp()
+{
+	int xpRequired;
+
+	if (player.level > 0 and player.level <= 15)
+	{
+		xpRequired = 2 * player.level + 7;
+
+		if (player.xp >= xpRequired)
+		{
+			player.level += 1;
+			player.xp = 0;
+		}
+	}
+
+	if (player.level > 15 and player.level <= 30)
+	{
+		xpRequired = 5 * player.level - 38;
+
+		if (player.xp >= xpRequired)
+		{
+			player.level += 1;
+			player.xp = 0;
+		}
+	}
+
+	if (player.level > 30)
+	{
+		xpRequired = 9 * player.level - 158;
+
+		if (player.xp >= xpRequired)
+		{
+			player.level += 1;
+			player.xp = 0;
 		}
 	}
 }
@@ -746,7 +780,6 @@ void Game::takeScreenshot(const sf::RenderWindow& window, const std::string& fil
 
 void Game::animation()
 {
-
 	// ANIMATIONS
 	if (clock.getElapsedTime().asSeconds() > 0.15f)
 	{
@@ -754,25 +787,6 @@ void Game::animation()
 		if (IN_STARTING_ROOM)
 		{
 			// STATIC ANIMATIONS COUNTER
-			if (obj.liczba > 12 * 4)
-			{
-				this->obj.liczba -= 12 * 5;
-				this->mnoznikStatic -= 5;
-			}
-			else
-			{
-				this->obj.liczba += 12;
-				this->mnoznikStatic += 1;
-			}
-
-			//this->room1.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-			//this->room1.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
-			//this->room1.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
-			//this->room1.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
-
-			coin.sprite.setTextureRect(sf::IntRect(obj.liczba, 0, 12, 17));
-			//heart.sprite.setTextureRect(sf::IntRect(obj.liczba - mnoznikStatic, 0, 11, 16));
-
 			if (IS_WAVE_ACTIVE)
 			{
 				if (bonfire.frame > 64 * 5)
@@ -790,45 +804,7 @@ void Game::animation()
 			{
 				bonfire.sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
 			}
-			
 		}
-
-		//if (IN_SHOP)
-		//{
-		//	// STATIC ANIMATIONS COUNTER
-		//	if (obj.liczba > 12 * 4)
-		//	{
-		//		this->obj.liczba -= 12 * 5;
-		//		this->mnoznikStatic -= 5;
-		//	}
-		//	else
-		//	{
-		//		this->obj.liczba += 12;
-		//		this->mnoznikStatic += 1;
-		//	}
-
-		//	// DYNAMIC ANIMATION
-		//	if (player.liczba > 32)
-		//	{
-		//		this->player.liczba -= 32 * 2;
-		//	}
-		//	else
-		//	{
-		//		this->player.liczba += 32;
-		//	}
-
-		//	this->armorer.sprite.setTextureRect(sf::IntRect(player.liczba, 0, 32, 38));
-
-		//	//this->shop.shard.setTextureRect(sf::IntRect(map.liczba, 0, 12, 30));
-		//	//this->shop.coin.setTextureRect(sf::IntRect(map.liczba, 0, 12, 17));
-		//	//this->shop.key.setTextureRect(sf::IntRect(map.liczba, 0, 12, 21));
-		//	//this->shop.heart.setTextureRect(sf::IntRect(map.liczba - mnoznikStatic, 0, 11, 16));
-		//}
-
-		//std::cout << player.attackFrame << '\n';
-		//std::cout << "ATTACK: " << PLAYER_IS_ATTACKING << '\n';
-		//std::cout << "IDLE: " << PLAYER_IDLE << '\n';
-		//std::cout << "CLOCK: " << clock.getElapsedTime().asSeconds() << '\n';
 
 		// PLAYER MOVING ANIMATION
 		if (player.frame > 384)
@@ -889,7 +865,6 @@ void Game::animation()
 
 		this->clock.restart();
 	}
-
 }
 
 void Game::animationEnemy()
@@ -947,7 +922,7 @@ void Game::updateEnemyMovement()
 				this->enemies[i].attack.move(sf::Vector2f(0.f, -this->enemy.speed.x));
 				//this->enemies[i].txtHealth.move(sf::Vector2f(0.f, -this->enemy.speed.x));
 			}
-			this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x+(enemies[i].enemySprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].enemySprite.getPosition().y+(enemies[i].enemySprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
+			//this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x+(enemies[i].enemySprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].enemySprite.getPosition().y+(enemies[i].enemySprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
 			//this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x, enemies[i].enemySprite.getPosition().y-50);
 		}
 	}
@@ -973,7 +948,6 @@ void Game::updateEnemyAttack()
 				enemies.erase(enemies.begin() + i);
 			}
 		}
-
 	}
 }
 
@@ -985,21 +959,31 @@ void Game::updatePlayerAttack()
 	{
 		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].attack.getPosition().x + enemies[i].attackRadius, enemies[i].attack.getPosition().y + enemies[i].attackRadius);
 		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
-		//std::cout << dystans << "   " << przeciwnik.x << "   " << przeciwnik.y << std::endl;
+
 		if (dystans < enemies[i].attackRadius)
 		{
 			enemies[i].health = enemies[i].health - 35;
 			std::cout << i << "# enemy got hit! health remaining: " << enemies[i].health << std::endl;
-			//this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x + (enemies[i].enemySprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].enemySprite.getPosition().y + (enemies[i].enemySprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
 			enemies[i].updateHealth(enemies[i].health);
 
 			if (enemies[i].health <= 0)
-			{
+			{	
+				lastKnownEnemyPosition = sf::Vector2f({ this->enemies[i].enemySprite.getPosition().x, this->enemies[i].enemySprite.getPosition().y });
+				std::cout << "LastKnownEnemyPosition X: " << this->enemies[i].enemySprite.getPosition().x << " Y: " << this->enemies[i].enemySprite.getPosition().y << '\n';
+				coin.create({ lastKnownEnemyPosition.x + 10, lastKnownEnemyPosition.y - 10 }, { 0.5f, 0.5f });
+				coins.push_back(this->coin);
+
+				heart.create({ lastKnownEnemyPosition.x + 20, lastKnownEnemyPosition.y + 20 }, { 0.5f, 0.5f });
+				hearts.push_back(this->heart);
+
+				key.create({ lastKnownEnemyPosition.x - 30, lastKnownEnemyPosition.y + 20 }, { 0.5f, 0.5f });
+				keys.push_back(this->key);
 
 				enemies.erase(enemies.begin() + i);
 			}
 		}
 	}
+
 	if (enemies.empty() == true) endWave();
 }
 
@@ -1024,8 +1008,51 @@ void Game::initWave()
 
 void Game::endWave()
 {
+	this->savedWaveTime = waveTime;
 	this->waveTime = 0;
 	this->waveClock.restart();
 	IS_WAVE_ACTIVE = false;
+
+	
 	std::cout << "KONIEC FALI" << '\n';
+
+	savedWaveTime = (int)(savedWaveTime);
+
+	if (savedWaveTime > 0 and savedWaveTime <= 10)
+	{
+		for (int i = 0; i < 10; i++)
+		{
+			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 0.5f, 0.5f });
+			shards.push_back(this->shard);
+		}
+	}
+
+	if (savedWaveTime > 10 and savedWaveTime <= 25)
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 0.5f, 0.5f });
+			shards.push_back(this->shard);
+		}
+	}
+
+	if (savedWaveTime >= 25 and savedWaveTime <= 40)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 0.5f, 0.5f });
+			shards.push_back(this->shard);
+		}
+	}
+
+	if (savedWaveTime > 40)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 0.5f, 0.5f });
+			shards.push_back(this->shard);
+		}
+	}
+
+	std::cout << "SHARDS VECTOR SIZE: " << shards.size() << '\n';
 }

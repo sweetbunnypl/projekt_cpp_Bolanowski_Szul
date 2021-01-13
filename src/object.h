@@ -4,6 +4,8 @@
 class Object
 {
 public:
+	Object();
+
 	int mnoznik;
 	int liczba;
 	int spriteWidth;
