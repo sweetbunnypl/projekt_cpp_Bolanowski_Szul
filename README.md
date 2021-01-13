@@ -8,9 +8,9 @@ Naszymi inspiracjami są gry The Binding of Issac oraz Enter the Gungeon
 
 Podział pracy:
 
--Michał: tekstury i animacja / gracz / sklep
+-Michał: tekstury / animacja / gracz / sklep / levelowanie postaci / loot z przeciwnikow
 
--Karol: menu / przeciwnicy i ich "AI" / system walki /muzyka i efekty dźwiękowe
+-Karol: menu / przeciwnicy i ich zachowanie / system walki / muzyka i efekty dźwiękowe
 
 --------
 
@@ -84,13 +84,17 @@ PROTOTYP - 2021/01/12
 - usprawienie GUI
 
 
+
+[2021/01/13]
+- system levelowania postaci
+- loot z przeciwnikow
+
+
 DEADLINE - 2021/02/02 (DO ZROBIENIA):
 - loot z przeciwników
 - atakujący przeciwnicy
 - sklep (system wymiany przedmiotów i inne mechaniki)
 - dalsze usprawnianie stanów gry
-? system levelovania postaci
-? usprawnienie menu
 
 --------
 - 02.02.2021 - deadline
