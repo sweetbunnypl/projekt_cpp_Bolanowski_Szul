@@ -2,8 +2,9 @@
 
 Game::Game()
 {
-	this->initWindow();
-	this->initMenu();
+	initSounds();
+	initWindow();
+	initMenu();
 }
 
 Game::~Game()
@@ -19,6 +20,58 @@ void Game::initWindow()
 	sf::VideoMode windowBunds(windowWidth, windowHeight);
 	this->window = new sf::RenderWindow(windowBunds, title, sf::Style::Close | sf::Style::Resize);
 	this->window->setFramerateLimit(30);
+}
+
+void Game::initSounds()
+{
+	// menu music
+	if (!menu_music.openFromFile("res/sounds/menu_music.ogg")) {
+		printf("nie wczytano menu_music.ogg");
+	}
+	// looping menu music
+	menu_music.setLoop(true);
+
+	// change music
+	if (!change_buffer.loadFromFile("res/sounds/menu_change.wav")) {
+		printf("nie wczytano menu_change.wav");
+	}
+	change_sound.setBuffer(change_buffer);
+
+	// enter music
+	if (!enter_buffer.loadFromFile("res/sounds/menu_enter.wav")) {
+		printf("nie wczytano menu_change.wav");
+	}
+	enter_sound.setBuffer(enter_buffer);
+
+	// quit music
+	if (!quit_buffer.loadFromFile("res/sounds/menu_quit.wav")) {
+		printf("nie wczytano menu_change.wav");
+	}
+	quit_sound.setBuffer(quit_buffer);
+
+	// picking up loot music
+	if (!picking_up.loadFromFile("res/sounds/pickup.wav")) {
+		printf("nie wczytano pickup.wav");
+	}
+	picking_up_sound.setBuffer(picking_up);
+
+	// leveling up music
+	if (!leveling_up.loadFromFile("res/sounds/levelingup.wav")) {
+		printf("nie wczytano levelingup.wav");
+	}
+	leveling_up_sound.setBuffer(leveling_up);
+
+	// kaboom! music
+	if (!boom.loadFromFile("res/sounds/boom.wav")) {
+		printf("nie wczytano levelingup.wav");
+	}
+	boom_sound.setBuffer(boom);
+
+	// activating enemies wave music
+	if (!wave_active.loadFromFile("res/sounds/waveactive.wav")) {
+		printf("nie wczytano levelingup.wav");
+	}
+	wave_active_sound.setBuffer(wave_active);
 }
 
 void Game::updateSFMLEvents()
@@ -78,14 +131,15 @@ void Game::updateSFMLEvents()
 			case sf::Event::KeyReleased:
 				switch (event.key.code)
 				{
+
 				case sf::Keyboard::Backspace:
 					PLAYING_STATE = false;
 					IN_MENU_STATE = false;
 					GAME_STOPPED = true;
 					break;
 
-				case sf::Keyboard::K:
-					//this->player.playerHealth = player.playerHealth - 1.f;
+				case sf::Keyboard::E:
+					PLAYER_PICKING_UP = true;
 					break;
 
 				case sf::Keyboard::Escape:
@@ -104,6 +158,7 @@ void Game::updateSFMLEvents()
 					takeScreenshot(*window, filename);
 					break;
 				}
+			
 			}
 			if (PLAYER_IS_ATTACKING == false)
 			{
@@ -177,11 +232,18 @@ void Game::updateSFMLEvents()
 					switch (event.key.code)
 					{
 					case sf::Keyboard::G:
-						if (!IS_WAVE_ACTIVE){
+						if (!IS_WAVE_ACTIVE)
+						{
+							wave_active_sound.play();
+
 							std::cout << "CZAS NA FALE" << '\n';
-							current_wave++;
+
+							currentWave += 1;
+								
 							IS_WAVE_ACTIVE = true;
+
 							initWave();
+
 							this->waveClock.restart();
 						}
 					}
@@ -224,23 +286,26 @@ void Game::updateSFMLEvents()
 
 void Game::update()
 {
-	this->updateSFMLEvents();
+	updateSFMLEvents();
 
 	// update classes below
-	if (this->PLAYING_STATE)
+	if (PLAYING_STATE)
 	{
+		this->animation();
+
 		if (IS_WAVE_ACTIVE) 
 		{
-			this->updateEnemyMovement();
-			this->waveTime = (int)(this->waveClock.getElapsedTime().asSeconds() * 100 + .5);
-			this->waveTime = waveTime / 100;
+			updateEnemyMovement();
+			waveTime = (int)(waveClock.getElapsedTime().asSeconds() * 100 + .5);
+			waveTime = waveTime / 100;
 		}
 
-		this->updatePlayerMovement();
-		this->animation();
-		this->pickingUpObjects();
-		this->levelingUp();
-		this->gui.changeValues(this->player.coins, this->player.keys, this->player.level, this->current_wave, this->waveTime);
+		updatePlayerMovement();
+		
+		pickingUpObjects();
+		levelingUp();
+
+		gui.changeValues(player.coins, player.keys, player.level, currentWave, waveTime);
 	}
 }
 
@@ -346,24 +411,35 @@ void Game::render()
 
 void Game::run()
 {
-	// variables that should be defined once before game start
+	// variables that should be defined only once and before the game start
+
 	// game states
-	this->PLAYING_STATE = false;
-	this->IN_MENU_STATE = true;
-	this->GAME_STOPPED = false;
-	// starting animation is idle animation
-	this->PLAYER_MOOVING_RIGHT = false;
-	this->PLAYER_MOOVING_LEFT = false;
-	this->PLAYER_IDLE = true;
+	PLAYING_STATE = false;
+	IN_MENU_STATE = true;
+	GAME_STOPPED = false;
+
+	// setting that idle animation is starting animation
+	PLAYER_MOOVING_RIGHT = false;
+	PLAYER_MOOVING_LEFT = false;
+	PLAYER_IDLE = true;
+	PLAYER_PICKING_UP = false;
+
 	// screenshot iterable
-	this->screenshotNumber = 0;
+	screenshotNumber = 0;
+	
+	if (coins.size() != 0)
+	{
+		for (int i = 0; i < coins.size(); i++)
+		{
+			coins[i].sprite.setTextureRect(sf::IntRect(0, 0, 12, 17));
+		}
+	}
 
-	this->armorer.create({ 250.f, 430.f }, { -3.f, 3.f });
-
+	// main loop
 	while (this->window->isOpen())
 	{
-		this->update();
-		this->render();
+		update();
+		render();
 	}
 }
 
@@ -409,35 +485,6 @@ void Game::initMenu()
 	rectangle.setSize(sf::Vector2f(400, this->windowHeight));
 	rectangle.setFillColor(sf::Color(0, 0, 0, 170));
 	rectangle.setPosition(this->windowWidth / 2 - 200, 0);
-
-	//muzyka w menu
-	if (!menu_music.openFromFile("res/sounds/menu_music.ogg")) {
-		printf("nie wczytano menu_music.ogg");
-	}
-	//odtworzenie muzyki
-	menu_music.setLoop(true);
-	//menu_music.play();
-
-	//wczytywanie change
-	if (!change_buffer.loadFromFile("res/sounds/menu_change.wav")) {
-		printf("nie wczytano menu_change.wav");
-	}
-	change_sound.setBuffer(change_buffer);
-	//change_sound.play();
-
-	//wczytywanie enter
-	if (!enter_buffer.loadFromFile("res/sounds/menu_enter.wav")) {
-		printf("nie wczytano menu_change.wav");
-	}
-	enter_sound.setBuffer(enter_buffer);
-	//enter_sound.play();
-
-	//wczytywanie quit
-	if (!quit_buffer.loadFromFile("res/sounds/menu_quit.wav")) {
-		printf("nie wczytano menu_change.wav");
-	}
-	quit_sound.setBuffer(quit_buffer);
-	//quit_sound.play();
 }
 
 void Game::menuMoveUp()
@@ -702,64 +749,83 @@ void Game::updatePlayerMovement()
 
 void Game::pickingUpObjects()
 {
-	for (int i = 0; i < coins.size(); i++)
+	if (PLAYER_PICKING_UP)
 	{
-		if (coins.empty() == false)
+		// coins
+		for (int i = 0; i < coins.size(); i++)
 		{
-			if (this->player.playerSprite.getGlobalBounds().intersects(this->coins[i].sprite.getGlobalBounds()))
+			if (coins.empty() == false)
 			{
-				this->player.coins += 1;
-				this->coins.erase(coins.begin() + i);
+				if (this->player.playerSprite.getGlobalBounds().intersects(this->coins[i].sprite.getGlobalBounds()))
+				{
+					picking_up_sound.play();
+					this->player.coins += 1;
+					this->coins.erase(coins.begin() + i);
+				}
+			}
+
+		}
+
+		// shards
+		for (int i = 0; i < shards.size(); i++)
+		{
+			if (shards.empty() == false)
+			{
+				if (this->player.playerSprite.getGlobalBounds().intersects(this->shards[i].sprite.getGlobalBounds()))
+				{
+					picking_up_sound.play();
+					this->player.xp += 2;
+					this->shards.erase(shards.begin() + i);
+					std::cout << "XP: " << player.xp << '\n';
+				}
 			}
 		}
-		
-	}
-	for (int i = 0; i < shards.size(); i++)
-	{
-		if(shards.empty() == false)
-		{
-			if (this->player.playerSprite.getGlobalBounds().intersects(this->shards[i].sprite.getGlobalBounds()))
-			{
-				this->player.xp += 2;
-				this->shards.erase(shards.begin() + i);
-				std::cout << "XP: " << player.xp << '\n';
-			}
-		}
+
+		PLAYER_PICKING_UP = false;
 	}
 }
 
 void Game::levelingUp()
 {
+	// this should be in player class
+
+	// how much xp is required to level up
 	int xpRequired;
 
+	// 1-15 lvl
 	if (player.level > 0 and player.level <= 15)
 	{
 		xpRequired = 2 * player.level + 7;
 
 		if (player.xp >= xpRequired)
 		{
+			leveling_up_sound.play();
 			player.level += 1;
 			player.xp = 0;
 		}
 	}
 
+	// 15-30 lvl
 	if (player.level > 15 and player.level <= 30)
 	{
 		xpRequired = 5 * player.level - 38;
 
 		if (player.xp >= xpRequired)
 		{
+			leveling_up_sound.play();
 			player.level += 1;
 			player.xp = 0;
 		}
 	}
 
+	// > 30 lvl
 	if (player.level > 30)
 	{
 		xpRequired = 9 * player.level - 158;
 
 		if (player.xp >= xpRequired)
 		{
+			leveling_up_sound.play();
 			player.level += 1;
 			player.xp = 0;
 		}
@@ -783,6 +849,61 @@ void Game::animation()
 	// ANIMATIONS
 	if (clock.getElapsedTime().asSeconds() > 0.15f)
 	{
+		// coin animation
+		if (coins.size() != 0)
+		{
+			if (coin.frame > 12 * 4)
+			{
+				coin.frame = 0;
+			}
+			else
+			{
+				coin.frame += 12;
+			}
+
+			for (int i = 0; i < coins.size(); i++)
+			{
+				coins[i].sprite.setTextureRect(sf::IntRect(coin.frame, 0, 12, 17));
+			}
+		}
+		
+		// shard animation
+		if (shards.size() != 0)
+		{
+			if (shard.frame > 12 * 4)
+			{
+				shard.frame = 0;
+			}
+			else
+			{
+				shard.frame += 12;
+			}
+
+			for (int i = 0; i < shards.size(); i++)
+			{
+				shards[i].sprite.setTextureRect(sf::IntRect(shard.frame, 0, 12, 30));
+			}
+		}
+
+		// heart animation
+		if (hearts.size() != 0)
+		{
+			if (heart.frame > 12 * 4)
+			{
+				heart.frame = 0;
+			}
+			else
+			{
+				heart.frame += 12;
+			}
+
+			for (int i = 0; i < hearts.size(); i++)
+			{
+				hearts[i].sprite.setTextureRect(sf::IntRect(heart.frame, 0, 12, 30));
+			}
+		}
+
+
 		// STATIC ANIMATIONS
 		if (IN_STARTING_ROOM)
 		{
@@ -970,7 +1091,7 @@ void Game::updatePlayerAttack()
 			{	
 				lastKnownEnemyPosition = sf::Vector2f({ this->enemies[i].enemySprite.getPosition().x, this->enemies[i].enemySprite.getPosition().y });
 				std::cout << "LastKnownEnemyPosition X: " << this->enemies[i].enemySprite.getPosition().x << " Y: " << this->enemies[i].enemySprite.getPosition().y << '\n';
-				coin.create({ lastKnownEnemyPosition.x + 10, lastKnownEnemyPosition.y - 10 }, { 0.5f, 0.5f });
+				coin.create({ lastKnownEnemyPosition.x, lastKnownEnemyPosition.y}, { 2.f, 2.f });
 				coins.push_back(this->coin);
 
 				heart.create({ lastKnownEnemyPosition.x + 20, lastKnownEnemyPosition.y + 20 }, { 0.5f, 0.5f });
@@ -989,17 +1110,17 @@ void Game::updatePlayerAttack()
 
 void Game::initWave()
 {
-	if (IS_WAVE_ACTIVE and current_wave == 1)
+	if (IS_WAVE_ACTIVE and currentWave == 1)
 	{
 		enemies.clear();
 		createEnemies(2);
 	}
-	else if (IS_WAVE_ACTIVE and current_wave == 2)
+	else if (IS_WAVE_ACTIVE and currentWave == 2)
 	{
 		enemies.clear();
 		createEnemies(3);
 	}
-	else if (IS_WAVE_ACTIVE and current_wave == 3)
+	else if (IS_WAVE_ACTIVE and currentWave == 3)
 	{
 		enemies.clear();
 		createEnemies(5);
@@ -1013,7 +1134,6 @@ void Game::endWave()
 	this->waveClock.restart();
 	IS_WAVE_ACTIVE = false;
 
-	
 	std::cout << "KONIEC FALI" << '\n';
 
 	savedWaveTime = (int)(savedWaveTime);
@@ -1022,34 +1142,34 @@ void Game::endWave()
 	{
 		for (int i = 0; i < 10; i++)
 		{
-			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 0.5f, 0.5f });
+			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 1.5f, 1.5f });
 			shards.push_back(this->shard);
 		}
 	}
 
-	if (savedWaveTime > 10 and savedWaveTime <= 25)
+	if (savedWaveTime > 10 and savedWaveTime <= 30)
 	{
 		for (int i = 0; i < 6; i++)
 		{
-			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 0.5f, 0.5f });
+			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 1.5f, 1.5f });
 			shards.push_back(this->shard);
 		}
 	}
 
-	if (savedWaveTime >= 25 and savedWaveTime <= 40)
+	if (savedWaveTime >= 30 and savedWaveTime <= 50)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 0.5f, 0.5f });
+			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 1.5f, 1.5f });
 			shards.push_back(this->shard);
 		}
 	}
 
-	if (savedWaveTime > 40)
+	if (savedWaveTime > 50)
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 0.5f, 0.5f });
+			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 1.5f, 1.5f });
 			shards.push_back(this->shard);
 		}
 	}

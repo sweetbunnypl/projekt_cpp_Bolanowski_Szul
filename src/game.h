@@ -79,6 +79,17 @@ public:
 	sf::SoundBuffer quit_buffer;
 	sf::Sound quit_sound;
 
+	sf::SoundBuffer picking_up;
+	sf::Sound picking_up_sound;
+	sf::SoundBuffer leveling_up;
+	sf::Sound leveling_up_sound;
+	sf::SoundBuffer boom;
+	sf::Sound boom_sound;
+	sf::SoundBuffer wave_active;
+	sf::Sound wave_active_sound;
+
+	void initSounds();
+
 	int MenuIndex = 0;
 	int pause = 0;
 	bool MAIN_MENU;
@@ -129,6 +140,7 @@ public:
 	bool PLAYER_IDLE;
 	bool PLAYER_FACING_RIGHT;
 	bool PLAYER_IS_ATTACKING;
+	bool PLAYER_PICKING_UP;
 
 	// ADITIONAL THINGS
 	sf::Texture screenshot;
@@ -155,7 +167,7 @@ public:
 	//WAVE
 
 	sf::Vector2f lastKnownEnemyPosition;
-	int current_wave = 0;
+	int currentWave = 0;
 	bool IS_WAVE_ACTIVE = false;
 	void initWave();
 	void endWave();

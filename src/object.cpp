@@ -33,13 +33,23 @@ Key::Key()
 
 Shard::Shard()
 {
-    sprite.setTextureRect(sf::IntRect(60, 140, 60, 60));
+    //sprite.setTextureRect(sf::IntRect(60, 140, 60, 60));
+
+    if (!texture.loadFromFile("res/textures/levelshards.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
     sprite.setTexture(texture);
 }
 
 Coin::Coin()
 {
-    sprite.setTextureRect(sf::IntRect(240, 140, 60, 60));
+    //sprite.setTextureRect(sf::IntRect(240, 140, 60, 60));
+
+    if (!texture.loadFromFile("res/textures/coin.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
     sprite.setTexture(texture);
 }
 
