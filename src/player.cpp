@@ -6,11 +6,6 @@ Player::Player()
     this->initSprite();
 }
 
-Player::~Player()
-{
-
-}
-
 void Player::initTexture()
 {
     if (!this->playerTexture.loadFromFile("res/textures/spritesheet.png"))
@@ -25,16 +20,16 @@ void Player::initSprite()
     this->textureSize = playerTexture.getSize();
     textureSize.x /= 8;
 
-    this->playerSprite.setTexture(this->playerTexture);
+    this->sprite.setTexture(this->playerTexture);
 
     // setting scale, bc it's a little bit too small 
     //this->playerSprite.scale(2.f, 2.f);
 
     // setting starting position
-    this->playerSprite.setPosition(500.f, 500.f);
+    this->sprite.setPosition(500.f, 500.f);
 }
 
 void Player::render(sf::RenderTarget* target)
 {
-    target->draw(this->playerSprite);
+    target->draw(this->sprite);
 }

@@ -17,22 +17,7 @@ public:
 	sf::Sprite object[53];
 	sf::Texture tilesTexture;
 
-	// test level shards
-	//sf::Sprite shard;
-	//sf::Texture shardTexture;
-
-	//sf::Sprite coin;
-	//sf::Texture coinTexture;
-
-	//sf::Sprite key;
-	//sf::Texture keyTexture;
-
-	//sf::Sprite heart;
-	//sf::Texture heartTexture;
-
 	int mnoznik;
-	//int liczba;
-	//int spriteWidth;
 
 	void initMap(sf::Texture& texture);
 	void renderMap(sf::RenderTarget* target);
@@ -40,20 +25,21 @@ public:
 	void initObjects(sf::Texture& texture);
 	void renderObject(sf::RenderTarget* target);
 
-	//void testShards();
-	//void renderShards(sf::RenderTarget* target);
 };
 
 class Shop : public Map
 {
 public:
 	Shop();
-	~Shop();
+
+	sf::Font font;
+	sf::Text text[10];
+
+	void renderPrices(sf::RenderTarget* target);
 };
 
 class StartingRoom : public Map
 {
 public:
 	StartingRoom();
-	~StartingRoom();
 };

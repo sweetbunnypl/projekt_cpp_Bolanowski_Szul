@@ -27,7 +27,11 @@ Heart::Heart()
 
 Key::Key()
 {
-    sprite.setTextureRect(sf::IntRect(180, 140, 60, 60));
+    if (!texture.loadFromFile("res/textures/key.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+
     sprite.setTexture(texture);
 }
 
@@ -39,17 +43,19 @@ Shard::Shard()
     {
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
+
+    sprite.setTextureRect(sf::IntRect(0, 0, 12, 30));
     sprite.setTexture(texture);
 }
 
 Coin::Coin()
 {
-    //sprite.setTextureRect(sf::IntRect(240, 140, 60, 60));
-
     if (!texture.loadFromFile("res/textures/coin.png"))
     {
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
+
+    sprite.setTextureRect(sf::IntRect(0, 0, 12, 17));
     sprite.setTexture(texture);
 }
 

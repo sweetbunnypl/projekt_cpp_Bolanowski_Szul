@@ -6,11 +6,10 @@ class Player
 public:
 	// constructor and destructor
 	Player();
-	~Player();
 
 	// SFML objects
 	sf::Texture playerTexture;
-	sf::Sprite playerSprite;
+	sf::Sprite sprite;
 	sf::Vector2u textureSize;
 
 	sf::Vector2f size;

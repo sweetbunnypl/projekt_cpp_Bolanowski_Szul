@@ -11,14 +11,17 @@ Map::Map()
     {
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
+
     if (!this->shopTexture.loadFromFile("res/textures/tiles2.png"))
     {
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
+
     if (!this->shopBackgroundTexture.loadFromFile("res/textures/floorShop.png"))
     {
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
+
 }
 
 Map::~Map()
@@ -119,53 +122,35 @@ void Map::renderObject(sf::RenderTarget* target)
     }
 }
 
-//void Map::testShards()
-//{
-//    
-//
-//    this->shard.setTexture(this->shardTexture);
-//    this->shard.setPosition({ 585.f, 280.f });
-//    this->shard.setScale(1.7f, 1.7f);
-//
-//    this->coin.setTexture(this->coinTexture);
-//    this->coin.setPosition({ 520.f, 290.f });
-//    this->coin.setScale(2.9f, 2.9f);
-//
-//    this->key.setTexture(this->keyTexture);
-//    this->key.setPosition({ 450.f, 282.f });
-//    this->key.setScale(3.f, 3.f);
-//
-//    this->heart.setTexture(this->heartTexture);
-//    this->heart.setPosition({ 390.f, 290.f });
-//    this->heart.setScale(3.f, 3.f);
-//}
-
-//void Map::renderShards(sf::RenderTarget* target)
-//{
-//    target->draw(this->shard);
-//    target->draw(this->coin);
-//    target->draw(this->key);
-//    target->draw(this->heart);
-//}
-
 Shop::Shop()
 {
-    this->initMap(shopBackgroundTexture);
-    this->initObjects(shopTexture);
-    //this->testShards();
+    if (!font.loadFromFile("res/fonts/fres_ lychee.ttf"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the font!" << "\n";
+    }
+
+    initMap(shopBackgroundTexture);
+    initObjects(shopTexture);
 }
 
-Shop::~Shop()
+void Shop::renderPrices(sf::RenderTarget* target)
 {
+    text[0].setFont(font);
+    text[0].setCharacterSize(40);
+    text[0].setFillColor(sf::Color::White);
+    text[0].setOutlineColor(sf::Color::Black);
+    text[0].setOutlineThickness(1);
+    text[0].setStyle(sf::Text::Bold);
+    text[0].setString("5c");
+    text[0].setPosition(190.f, 300.f);
+
+    target->draw(this->text[0]);
 }
+
 
 StartingRoom::StartingRoom()
 {
-    this->initMap(backgroundTexture);
-    this->initObjects(tilesTexture);
-    //this->testShards();
+    initMap(backgroundTexture);
+    initObjects(tilesTexture);
 }
 
-StartingRoom::~StartingRoom()
-{
-}

@@ -180,7 +180,7 @@ void Game::updateSFMLEvents()
 			}
 
 			// "G" MA DZIALAÆ ¯EBY PRZENIEŒÆ GRACZA DO SKLEPU
-			if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y < 70 and IN_STARTING_ROOM and !IS_WAVE_ACTIVE)
+			if (player.sprite.getPosition().x > 400 and player.sprite.getPosition().x < 500 and player.sprite.getPosition().y < 70 and IN_STARTING_ROOM and !IS_WAVE_ACTIVE)
 			{
 				switch (event.type)
 				{
@@ -197,12 +197,12 @@ void Game::updateSFMLEvents()
 						std::cout << "IN_SHOP: " << IN_SHOP << '\n';
 						
 						//PLAYER_TELEPORTATION = true;
-						this->player.playerSprite.setPosition({ 440.f, 580.f });
+						this->player.sprite.setPosition({ 440.f, 580.f });
 					}
 				}
 			}
 			// I Z POWRTOEM....WZIUU
-			else if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y > 534 and IN_SHOP and !IS_WAVE_ACTIVE)
+			else if (player.sprite.getPosition().x > 400 and player.sprite.getPosition().x < 500 and player.sprite.getPosition().y > 534 and IN_SHOP and !IS_WAVE_ACTIVE)
 			{
 				switch (event.type)
 				{
@@ -219,12 +219,12 @@ void Game::updateSFMLEvents()
 						std::cout << "IN_SHOP: " << IN_SHOP << '\n';
 
 						//PLAYER_TELEPORTATION = true;
-						this->player.playerSprite.setPosition({ 440.f, 65.f });
+						this->player.sprite.setPosition({ 440.f, 65.f });
 					}
 				}
 			}
 			// START FALI
-			else if (player.playerSprite.getPosition().x > 400 and player.playerSprite.getPosition().x < 500 and player.playerSprite.getPosition().y > 534 and IN_STARTING_ROOM)
+			else if (player.sprite.getPosition().x > 400 and player.sprite.getPosition().x < 500 and player.sprite.getPosition().y > 534 and IN_STARTING_ROOM)
 			{
 				switch (event.type)
 				{
@@ -338,9 +338,9 @@ void Game::render()
 	{
 		menu_music.stop();
 
-		this->window->clear(sf::Color(42, 33, 52, 255));
-		this->room1.renderMap(this->window);
-		this->room1.renderObject(this->window);
+		window->clear(sf::Color(42, 33, 52, 255));
+		room1.renderMap(this->window);
+		room1.renderObject(this->window);
 
 		if (IS_WAVE_ACTIVE) 
 		{
@@ -348,63 +348,70 @@ void Game::render()
 			{
 				this->enemies[i].renderRadius(this->window);
 			}*/
-			for(int i = 0; i < this->enemies.size(); i++)
+			for(int i = 0; i < enemies.size(); i++)
 			{
-				this->enemies[i].render(this->window);
+				enemies[i].render(this->window);
 			}
 		}
 
 		if (coins.empty() == false)
 		{
-			for (int i = 0; i < this->coins.size(); i++)
+			for (int i = 0; i < coins.size(); i++)
 			{
-				this->coins[i].render(this->window);
+				coins[i].render(this->window);
 			}
 		}
+
 		if (shards.empty() == false)
 		{
-			for (int i = 0; i < this->shards.size(); i++)
+			for (int i = 0; i < shards.size(); i++)
 			{
-				this->shards[i].render(this->window);
+				shards[i].render(this->window);
 			}
 		}
 
 		bonfire.create({ 435.f, 562.f }, { 1.2f, 1.2f });
 		bonfire.render(this->window);
 
-		this->gui.render(this->window);
-		this->player.render(this->window);
+		gui.render(this->window);
+		player.render(this->window);
 
-		this->update();
+		update();
 		this->window->display();
 	}
 
 	while (PLAYING_STATE and IN_SHOP)
 	{
+		initShopDeals();
+
 		this->window->clear(sf::Color(42, 33, 52, 255));
 
-		this->shop.renderMap(this->window);
-		this->shop.renderObject(this->window);
-		this->gui.render(this->window);
-		this->player.render(this->window);
+		shop.renderMap(this->window);
+		shop.renderObject(this->window);
+		shop.renderPrices(this->window);
 
-		this->update();
+		key.render(this->window);
+
+		gui.render(this->window);
+		player.render(this->window);
+
+		update();
 		this->window->display();
 	}
 
 	while (GAME_STOPPED)
 	{	
-		this->testText.setFont(this->font);
-		this->testText.setCharacterSize(40);
-		this->testText.setFillColor(sf::Color::White);
-		this->testText.setOutlineColor(sf::Color::Black);
-		this->testText.setOutlineThickness(2);
-		this->testText.setStyle(sf::Text::Bold);
-		this->testText.setString("> Click R to RESUME or Q to go back to the MENU <");
-		this->testText.setPosition(300.f, 300.f);
+		testText.setFont(font);
+		testText.setCharacterSize(40);
+		testText.setFillColor(sf::Color::White);
+		testText.setOutlineColor(sf::Color::Black);
+		testText.setOutlineThickness(2);
+		testText.setStyle(sf::Text::Bold);
+		testText.setString("> Click R to RESUME or Q to go back to the MENU <");
+		testText.setPosition(300.f, 300.f);
 		this->window->draw(this->testText);
 
-		this->update();
+		update();
 		this->window->display();
 	}
 }
@@ -661,16 +668,16 @@ void Game::updatePlayerMovement()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{
 		// moving up
-		this->player.playerSprite.move({ 0.f, -5.f });
+		this->player.sprite.move({ 0.f, -5.f });
 
 		// collision with upper side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				(this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and IN_SHOP))
+			if (this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
+				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
+				(this->armorer.sprite.getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) and IN_SHOP))
 			{
-				this->player.playerSprite.move({ 0.f, 5.f });	
+				this->player.sprite.move({ 0.f, 5.f });	
 			}
 		}	
 	}
@@ -682,16 +689,16 @@ void Game::updatePlayerMovement()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 	{
 		// moving bottom
-		this->player.playerSprite.move({ 0.f, 5.f });
+		this->player.sprite.move({ 0.f, 5.f });
 
 		// collision with bottom side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				(this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and IN_SHOP))
+			if (this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
+				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
+				(this->armorer.sprite.getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) and IN_SHOP))
 			{
-				this->player.playerSprite.move({ 0.f, -5.f });
+				this->player.sprite.move({ 0.f, -5.f });
 			}
 		}	
 	}
@@ -705,16 +712,16 @@ void Game::updatePlayerMovement()
 		// moving left
 		this->PLAYER_MOOVING_LEFT = true;
 		this->PLAYER_IDLE = false;
-		this->player.playerSprite.move({ -5.f, 0.f });
+		this->player.sprite.move({ -5.f, 0.f });
 
 		// collision with left side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				(this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and IN_SHOP))
+			if (this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
+				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
+				(this->armorer.sprite.getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) and IN_SHOP))
 			{
-				this->player.playerSprite.move({ 5.f, 0.f });
+				this->player.sprite.move({ 5.f, 0.f });
 			}
 		}
 	}
@@ -728,16 +735,16 @@ void Game::updatePlayerMovement()
 		// moving right
 		this->PLAYER_MOOVING_RIGHT = true;
 		this->PLAYER_IDLE = false;
-		this->player.playerSprite.move({ 5.f, 0.f });
+		this->player.sprite.move({ 5.f, 0.f });
 
 		// collision with right side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if(this->room1.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) or
-				(this->armorer.sprite.getGlobalBounds().intersects(this->player.playerSprite.getGlobalBounds()) and IN_SHOP))
+			if(this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
+				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
+				(this->armorer.sprite.getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) and IN_SHOP))
 			{
-				this->player.playerSprite.move({ -5.f, 0.f });
+				this->player.sprite.move({ -5.f, 0.f });
 			}
 		}
 	}
@@ -756,7 +763,7 @@ void Game::pickingUpObjects()
 		{
 			if (coins.empty() == false)
 			{
-				if (this->player.playerSprite.getGlobalBounds().intersects(this->coins[i].sprite.getGlobalBounds()))
+				if (this->player.sprite.getGlobalBounds().intersects(this->coins[i].sprite.getGlobalBounds()))
 				{
 					picking_up_sound.play();
 					this->player.coins += 1;
@@ -771,7 +778,7 @@ void Game::pickingUpObjects()
 		{
 			if (shards.empty() == false)
 			{
-				if (this->player.playerSprite.getGlobalBounds().intersects(this->shards[i].sprite.getGlobalBounds()))
+				if (this->player.sprite.getGlobalBounds().intersects(this->shards[i].sprite.getGlobalBounds()))
 				{
 					picking_up_sound.play();
 					this->player.xp += 2;
@@ -903,6 +910,24 @@ void Game::animation()
 			}
 		}
 
+		// key animation
+		if (keys.size() != 0)
+		{
+			if (key.frame > 12 * 4)
+			{
+				key.frame = 0;
+			}
+			else
+			{
+				key.frame += 12;
+			}
+
+			for (int i = 0; i < keys.size(); i++)
+			{
+				keys[i].sprite.setTextureRect(sf::IntRect(key.frame, 0, 12, 21));
+			}
+		}
+
 
 		// STATIC ANIMATIONS
 		if (IN_STARTING_ROOM)
@@ -939,24 +964,24 @@ void Game::animation()
 
 		if (PLAYER_IDLE and PLAYER_FACING_RIGHT == false)
 		{
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.frame, 128, 64, 64));
+			this->player.sprite.setTextureRect(sf::IntRect(player.frame, 128, 64, 64));
 		}
 
 		if (PLAYER_IDLE and PLAYER_FACING_RIGHT)
 		{
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.frame, 192, 64, 64));
+			this->player.sprite.setTextureRect(sf::IntRect(player.frame, 192, 64, 64));
 		}
 
 		if (PLAYER_MOOVING_LEFT)
 		{	
 			this->PLAYER_FACING_RIGHT = false;
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.frame, 0, 64, 64));
+			this->player.sprite.setTextureRect(sf::IntRect(player.frame, 0, 64, 64));
 		}
 
 		if (PLAYER_MOOVING_RIGHT)
 		{
 			this->PLAYER_FACING_RIGHT = true;
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.frame, 64, 64, 64));
+			this->player.sprite.setTextureRect(sf::IntRect(player.frame, 64, 64, 64));
 		}
 
 		// PLAYER ATTACKING ANIMATION
@@ -977,11 +1002,11 @@ void Game::animation()
 
 		if (PLAYER_IS_ATTACKING and PLAYER_FACING_RIGHT == false)
 		{
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.attackFrame, 256, 120, 76));
+			this->player.sprite.setTextureRect(sf::IntRect(player.attackFrame, 256, 120, 76));
 		}
 		else if (PLAYER_IS_ATTACKING and PLAYER_FACING_RIGHT)
 		{
-			this->player.playerSprite.setTextureRect(sf::IntRect(player.attackFrame, 332, 120, 76));
+			this->player.sprite.setTextureRect(sf::IntRect(player.attackFrame, 332, 120, 76));
 		}
 
 		this->clock.restart();
@@ -1003,14 +1028,14 @@ void Game::createEnemies(int ile_enemy)
 
 void Game::updateEnemyMovement()
 {
-	sf::Vector2f gracz_size = sf::Vector2f(player.playerSprite.getGlobalBounds().width, player.playerSprite.getGlobalBounds().height);
-	sf::Vector2f gracz = sf::Vector2f(player.playerSprite.getPosition().x + gracz_size.x/2, player.playerSprite.getPosition().y + gracz_size.y/2);
+	sf::Vector2f gracz_size = sf::Vector2f(player.sprite.getGlobalBounds().width, player.sprite.getGlobalBounds().height);
+	sf::Vector2f gracz = sf::Vector2f(player.sprite.getPosition().x + gracz_size.x/2, player.sprite.getPosition().y + gracz_size.y/2);
 	for (int i = 0; i < this->enemies.size(); i++)
 	{
 		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].terror.getPosition().x + enemies[i].terrorRadius, enemies[i].terror.getPosition().y + enemies[i].terrorRadius);
 		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
 
-		if (!this->player.playerSprite.getGlobalBounds().intersects(this->enemies[i].enemySprite.getGlobalBounds()) and dystans < enemies[i].terrorRadius)
+		if (!this->player.sprite.getGlobalBounds().intersects(this->enemies[i].enemySprite.getGlobalBounds()) and dystans < enemies[i].terrorRadius)
 		{
 			if (gracz.x > przeciwnik.x)
 			{
@@ -1051,8 +1076,8 @@ void Game::updateEnemyMovement()
 
 void Game::updateEnemyAttack()
 {
-	sf::Vector2f gracz_size = sf::Vector2f(player.playerSprite.getGlobalBounds().width, player.playerSprite.getGlobalBounds().height);
-	sf::Vector2f gracz = sf::Vector2f(player.playerSprite.getPosition().x + gracz_size.x / 2, player.playerSprite.getPosition().y + gracz_size.y / 2);
+	sf::Vector2f gracz_size = sf::Vector2f(player.sprite.getGlobalBounds().width, player.sprite.getGlobalBounds().height);
+	sf::Vector2f gracz = sf::Vector2f(player.sprite.getPosition().x + gracz_size.x / 2, player.sprite.getPosition().y + gracz_size.y / 2);
 	for (int i = 0; i < this->enemies.size(); i++)
 	{
 		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].attack.getPosition().x + enemies[i].attackRadius, enemies[i].attack.getPosition().y + enemies[i].attackRadius);
@@ -1074,8 +1099,8 @@ void Game::updateEnemyAttack()
 
 void Game::updatePlayerAttack()
 {
-	sf::Vector2f gracz_size = sf::Vector2f(player.playerSprite.getGlobalBounds().width, player.playerSprite.getGlobalBounds().height);
-	sf::Vector2f gracz = sf::Vector2f(player.playerSprite.getPosition().x + gracz_size.x / 2, player.playerSprite.getPosition().y + gracz_size.y / 2);
+	sf::Vector2f gracz_size = sf::Vector2f(player.sprite.getGlobalBounds().width, player.sprite.getGlobalBounds().height);
+	sf::Vector2f gracz = sf::Vector2f(player.sprite.getPosition().x + gracz_size.x / 2, player.sprite.getPosition().y + gracz_size.y / 2);
 	for (int i = 0; i < this->enemies.size(); i++)
 	{
 		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].attack.getPosition().x + enemies[i].attackRadius, enemies[i].attack.getPosition().y + enemies[i].attackRadius);
@@ -1096,9 +1121,6 @@ void Game::updatePlayerAttack()
 
 				heart.create({ lastKnownEnemyPosition.x + 20, lastKnownEnemyPosition.y + 20 }, { 0.5f, 0.5f });
 				hearts.push_back(this->heart);
-
-				key.create({ lastKnownEnemyPosition.x - 30, lastKnownEnemyPosition.y + 20 }, { 0.5f, 0.5f });
-				keys.push_back(this->key);
 
 				enemies.erase(enemies.begin() + i);
 			}
@@ -1175,4 +1197,10 @@ void Game::endWave()
 	}
 
 	std::cout << "SHARDS VECTOR SIZE: " << shards.size() << '\n';
+}
+
+void Game::initShopDeals()
+{
+	key.create({ 100.f, 300.f }, { 2.f, 2.f });
+	keys.push_back(key);
 }

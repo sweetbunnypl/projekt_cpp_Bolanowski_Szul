@@ -165,7 +165,6 @@ public:
 	void createEnemies(int ile_enemy);
 
 	//WAVE
-
 	sf::Vector2f lastKnownEnemyPosition;
 	int currentWave = 0;
 	bool IS_WAVE_ACTIVE = false;
@@ -174,7 +173,9 @@ public:
 
 	std::vector<Coin> coins;
 	std::vector<Heart> hearts;
-	std::vector<Key> keys;
 	std::vector<Shard> shards;
+	std::vector<Key> keys;
+
+	void initShopDeals();
 };
 
