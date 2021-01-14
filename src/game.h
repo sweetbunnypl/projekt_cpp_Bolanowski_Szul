@@ -34,6 +34,8 @@ private:
 	// object objects
 	Object obj;
 	Bonfire bonfire;
+	Portal portal;
+	Portal shopPortal;
 
 	// collectible objects
 	Heart heart;
@@ -43,9 +45,6 @@ private:
 
 	// player object
 	Player player;
-
-	// sellers
-	Armorer armorer;
 
 	// end-screen object (etc.)
 
@@ -175,6 +174,9 @@ public:
 	std::vector<Heart> hearts;
 	std::vector<Shard> shards;
 	std::vector<Key> keys;
+
+	std::vector<int> randomShardPositionX;
+	std::vector<int> randomShardPositionY;
 
 	void initShopDeals();
 };

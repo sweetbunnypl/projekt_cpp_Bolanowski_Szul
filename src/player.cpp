@@ -2,13 +2,13 @@
 
 Player::Player()
 {
-    this->initTexture();
-    this->initSprite();
+    initTexture();
+    initSprite();
 }
 
 void Player::initTexture()
 {
-    if (!this->playerTexture.loadFromFile("res/textures/spritesheet.png"))
+    if (!playerTexture.loadFromFile("res/textures/spritesheet.png"))
     {
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
@@ -17,16 +17,16 @@ void Player::initTexture()
 void Player::initSprite()
 {
     // getting texture size and dividing it to separate parts
-    this->textureSize = playerTexture.getSize();
+    textureSize = playerTexture.getSize();
     textureSize.x /= 8;
 
-    this->sprite.setTexture(this->playerTexture);
+    sprite.setTexture(playerTexture);
 
     // setting scale, bc it's a little bit too small 
     //this->playerSprite.scale(2.f, 2.f);
 
     // setting starting position
-    this->sprite.setPosition(500.f, 500.f);
+    sprite.setPosition(500.f, 500.f);
 }
 
 void Player::render(sf::RenderTarget* target)

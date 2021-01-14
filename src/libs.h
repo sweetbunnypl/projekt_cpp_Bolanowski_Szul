@@ -14,8 +14,6 @@
 #include <string>
 #include <stdlib.h>
 #include <windows.h>
-#include <ctime>
-#include <cstdlib>
-#include <math.h>
+#include <random>
 
 #endif // LIBS_H

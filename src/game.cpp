@@ -168,13 +168,13 @@ void Game::updateSFMLEvents()
 					switch (event.mouseButton.button)
 					{
 					case sf::Mouse::Left:
-						this->PLAYER_MOOVING_RIGHT = false;
-						this->PLAYER_MOOVING_LEFT = false;
-						this->PLAYER_IDLE = false;
-						this->PLAYER_IS_ATTACKING = true;
+						PLAYER_MOOVING_RIGHT = false;
+						PLAYER_MOOVING_LEFT = false;
+						PLAYER_IDLE = false;
+						PLAYER_IS_ATTACKING = true;
 						
 						std::cout << "PRZYCZAJONY TYGRYS, UKRYTY SMOK!" << '\n';
-						this->updatePlayerAttack();
+						updatePlayerAttack();
 					}
 				}
 			}
@@ -291,13 +291,18 @@ void Game::update()
 	// update classes below
 	if (PLAYING_STATE)
 	{
-		this->animation();
+		animation();
 
 		if (IS_WAVE_ACTIVE) 
 		{
 			updateEnemyMovement();
 			waveTime = (int)(waveClock.getElapsedTime().asSeconds() * 100 + .5);
 			waveTime = waveTime / 100;
+		}
+
+		if (IN_STARTING_ROOM)
+		{
+			initShopDeals();
 		}
 
 		updatePlayerMovement();
@@ -370,7 +375,6 @@ void Game::render()
 			}
 		}
 
-		bonfire.create({ 435.f, 562.f }, { 1.2f, 1.2f });
 		bonfire.render(this->window);
 
 		gui.render(this->window);
@@ -382,8 +386,6 @@ void Game::render()
 
 	while (PLAYING_STATE and IN_SHOP)
 	{
-		initShopDeals();
-
 		this->window->clear(sf::Color(42, 33, 52, 255));
 
 		shop.renderMap(this->window);
@@ -433,14 +435,9 @@ void Game::run()
 
 	// screenshot iterable
 	screenshotNumber = 0;
-	
-	if (coins.size() != 0)
-	{
-		for (int i = 0; i < coins.size(); i++)
-		{
-			coins[i].sprite.setTextureRect(sf::IntRect(0, 0, 12, 17));
-		}
-	}
+	portal.create({ 435.f, 70.f }, { 0.5f, 0.5f });
+	shopPortal.create({ 435.f, 562.f }, { 1.2f, 1.2f });
+	bonfire.create({ 435.f, 562.f }, { 1.2f, 1.2f });
 
 	// main loop
 	while (this->window->isOpen())
@@ -674,8 +671,7 @@ void Game::updatePlayerMovement()
 		for (int i = 0; i <= 52; i++)
 		{
 			if (this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				(this->armorer.sprite.getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) and IN_SHOP))
+				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()))
 			{
 				this->player.sprite.move({ 0.f, 5.f });	
 			}
@@ -695,8 +691,8 @@ void Game::updatePlayerMovement()
 		for (int i = 0; i <= 52; i++)
 		{
 			if (this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				(this->armorer.sprite.getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) and IN_SHOP))
+				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds())
+				)
 			{
 				this->player.sprite.move({ 0.f, -5.f });
 			}
@@ -718,8 +714,8 @@ void Game::updatePlayerMovement()
 		for (int i = 0; i <= 52; i++)
 		{
 			if (this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				(this->armorer.sprite.getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) and IN_SHOP))
+				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds())
+				)
 			{
 				this->player.sprite.move({ 5.f, 0.f });
 			}
@@ -741,8 +737,8 @@ void Game::updatePlayerMovement()
 		for (int i = 0; i <= 52; i++)
 		{
 			if(this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				(this->armorer.sprite.getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) and IN_SHOP))
+				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds())
+				)
 			{
 				this->player.sprite.move({ -5.f, 0.f });
 			}
@@ -922,12 +918,8 @@ void Game::animation()
 				key.frame += 12;
 			}
 
-			for (int i = 0; i < keys.size(); i++)
-			{
-				keys[i].sprite.setTextureRect(sf::IntRect(key.frame, 0, 12, 21));
-			}
+			key.sprite.setTextureRect(sf::IntRect(key.frame, 0, 12, 21));
 		}
-
 
 		// STATIC ANIMATIONS
 		if (IN_STARTING_ROOM)
@@ -1030,46 +1022,40 @@ void Game::updateEnemyMovement()
 {
 	sf::Vector2f gracz_size = sf::Vector2f(player.sprite.getGlobalBounds().width, player.sprite.getGlobalBounds().height);
 	sf::Vector2f gracz = sf::Vector2f(player.sprite.getPosition().x + gracz_size.x/2, player.sprite.getPosition().y + gracz_size.y/2);
-	for (int i = 0; i < this->enemies.size(); i++)
+	for (int i = 0; i < enemies.size(); i++)
 	{
 		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].terror.getPosition().x + enemies[i].terrorRadius, enemies[i].terror.getPosition().y + enemies[i].terrorRadius);
 		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
 
-		if (!this->player.sprite.getGlobalBounds().intersects(this->enemies[i].enemySprite.getGlobalBounds()) and dystans < enemies[i].terrorRadius)
+		if (!player.sprite.getGlobalBounds().intersects(enemies[i].enemySprite.getGlobalBounds()) and dystans < enemies[i].terrorRadius)
 		{
 			if (gracz.x > przeciwnik.x)
 			{
-				this->enemies[i].enemySprite.move(sf::Vector2f(this->enemy.speed.x, 0.f));
-				this->enemies[i].terror.move(sf::Vector2f(this->enemy.speed.x, 0.f));
-				this->enemies[i].attack.move(sf::Vector2f(this->enemy.speed.x, 0.f));
-				//this->enemies[i].txtHealth.move(sf::Vector2f(this->enemy.speed.x, 0.f));
+				enemies[i].enemySprite.move(sf::Vector2f(enemy.speed.x, 0.f));
+				enemies[i].terror.move(sf::Vector2f(enemy.speed.x, 0.f));
+				enemies[i].attack.move(sf::Vector2f(enemy.speed.x, 0.f));
 			}
 
 			else if (gracz.x < przeciwnik.x)
 			{
-				this->enemies[i].enemySprite.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
-				this->enemies[i].terror.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
-				this->enemies[i].attack.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
-				//this->enemies[i].txtHealth.move(sf::Vector2f(-this->enemy.speed.x, 0.f));
+				enemies[i].enemySprite.move(sf::Vector2f(-enemy.speed.x, 0.f));
+				enemies[i].terror.move(sf::Vector2f(-enemy.speed.x, 0.f));
+				enemies[i].attack.move(sf::Vector2f(-enemy.speed.x, 0.f));
 			}
 
 			if (gracz.y > przeciwnik.y)
 			{
-				this->enemies[i].enemySprite.move(sf::Vector2f(0.f, this->enemy.speed.x));
-				this->enemies[i].terror.move(sf::Vector2f(0.f, this->enemy.speed.x));
-				this->enemies[i].attack.move(sf::Vector2f(0.f, this->enemy.speed.x));
-				//this->enemies[i].txtHealth.move(sf::Vector2f(0.f, this->enemy.speed.x));
+				enemies[i].enemySprite.move(sf::Vector2f(0.f, enemy.speed.x));
+				enemies[i].terror.move(sf::Vector2f(0.f, enemy.speed.x));
+				enemies[i].attack.move(sf::Vector2f(0.f, enemy.speed.x));
 			}
 
 			else if (gracz.y < przeciwnik.y)
 			{
-				this->enemies[i].enemySprite.move(sf::Vector2f(0.f, -this->enemy.speed.x));
-				this->enemies[i].terror.move(sf::Vector2f(0.f, -this->enemy.speed.x));
-				this->enemies[i].attack.move(sf::Vector2f(0.f, -this->enemy.speed.x));
-				//this->enemies[i].txtHealth.move(sf::Vector2f(0.f, -this->enemy.speed.x));
+				enemies[i].enemySprite.move(sf::Vector2f(0.f, -enemy.speed.x));
+				enemies[i].terror.move(sf::Vector2f(0.f, -enemy.speed.x));
+				enemies[i].attack.move(sf::Vector2f(0.f, -enemy.speed.x));
 			}
-			//this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x+(enemies[i].enemySprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].enemySprite.getPosition().y+(enemies[i].enemySprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
-			//this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x, enemies[i].enemySprite.getPosition().y-50);
 		}
 	}
 }
@@ -1078,7 +1064,7 @@ void Game::updateEnemyAttack()
 {
 	sf::Vector2f gracz_size = sf::Vector2f(player.sprite.getGlobalBounds().width, player.sprite.getGlobalBounds().height);
 	sf::Vector2f gracz = sf::Vector2f(player.sprite.getPosition().x + gracz_size.x / 2, player.sprite.getPosition().y + gracz_size.y / 2);
-	for (int i = 0; i < this->enemies.size(); i++)
+	for (int i = 0; i < enemies.size(); i++)
 	{
 		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].attack.getPosition().x + enemies[i].attackRadius, enemies[i].attack.getPosition().y + enemies[i].attackRadius);
 		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
@@ -1087,7 +1073,7 @@ void Game::updateEnemyAttack()
 		{
 			enemies[i].health = enemies[i].health - 5;
 			std::cout << "hit! health remaining: " << enemies[i].health << std::endl;
-			this->enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x+(enemies[i].enemySprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].enemySprite.getPosition().y+(enemies[i].enemySprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
+			enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x+(enemies[i].enemySprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].enemySprite.getPosition().y+(enemies[i].enemySprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
 			enemies[i].updateHealth(enemies[i].health);
 			if (enemies[i].health <= 0) 
 			{
@@ -1101,7 +1087,7 @@ void Game::updatePlayerAttack()
 {
 	sf::Vector2f gracz_size = sf::Vector2f(player.sprite.getGlobalBounds().width, player.sprite.getGlobalBounds().height);
 	sf::Vector2f gracz = sf::Vector2f(player.sprite.getPosition().x + gracz_size.x / 2, player.sprite.getPosition().y + gracz_size.y / 2);
-	for (int i = 0; i < this->enemies.size(); i++)
+	for (int i = 0; i < enemies.size(); i++)
 	{
 		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].attack.getPosition().x + enemies[i].attackRadius, enemies[i].attack.getPosition().y + enemies[i].attackRadius);
 		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
@@ -1114,13 +1100,13 @@ void Game::updatePlayerAttack()
 
 			if (enemies[i].health <= 0)
 			{	
-				lastKnownEnemyPosition = sf::Vector2f({ this->enemies[i].enemySprite.getPosition().x, this->enemies[i].enemySprite.getPosition().y });
-				std::cout << "LastKnownEnemyPosition X: " << this->enemies[i].enemySprite.getPosition().x << " Y: " << this->enemies[i].enemySprite.getPosition().y << '\n';
+				lastKnownEnemyPosition = sf::Vector2f({ enemies[i].enemySprite.getPosition().x, enemies[i].enemySprite.getPosition().y });
+				std::cout << "LastKnownEnemyPosition X: " << enemies[i].enemySprite.getPosition().x << " Y: " << enemies[i].enemySprite.getPosition().y << '\n';
 				coin.create({ lastKnownEnemyPosition.x, lastKnownEnemyPosition.y}, { 2.f, 2.f });
-				coins.push_back(this->coin);
+				coins.push_back(coin);
 
 				heart.create({ lastKnownEnemyPosition.x + 20, lastKnownEnemyPosition.y + 20 }, { 0.5f, 0.5f });
-				hearts.push_back(this->heart);
+				hearts.push_back(heart);
 
 				enemies.erase(enemies.begin() + i);
 			}
@@ -1151,6 +1137,11 @@ void Game::initWave()
 
 void Game::endWave()
 {
+	std::random_device rd;										// obtain a random number from hardware
+	std::mt19937 gen(rd());										// seed the generator
+	std::uniform_int_distribution<> randX(370, 560);			// define the range
+	std::uniform_int_distribution<> randY(240, 420);	
+
 	this->savedWaveTime = waveTime;
 	this->waveTime = 0;
 	this->waveClock.restart();
@@ -1164,8 +1155,10 @@ void Game::endWave()
 	{
 		for (int i = 0; i < 10; i++)
 		{
-			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 1.5f, 1.5f });
-			shards.push_back(this->shard);
+			float x = randX(gen);
+			float y = randY(gen);
+			shard.create({ x, y }, { 1.5f, 1.5f });
+			shards.push_back(shard);
 		}
 	}
 
@@ -1173,8 +1166,10 @@ void Game::endWave()
 	{
 		for (int i = 0; i < 6; i++)
 		{
-			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 1.5f, 1.5f });
-			shards.push_back(this->shard);
+			float x = randX(gen);
+			float y = randY(gen);
+			shard.create({ x, y }, { 1.5f, 1.5f });
+			shards.push_back(shard);
 		}
 	}
 
@@ -1182,8 +1177,10 @@ void Game::endWave()
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 1.5f, 1.5f });
-			shards.push_back(this->shard);
+			float x = randX(gen);
+			float y = randY(gen);
+			shard.create({ x, y }, { 1.5f, 1.5f });
+			shards.push_back(shard);
 		}
 	}
 
@@ -1191,8 +1188,10 @@ void Game::endWave()
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			shard.create({ 400.f + 10 * i, 400.f + 10 * i }, { 1.5f, 1.5f });
-			shards.push_back(this->shard);
+			float x = randX(gen);
+			float y = randY(gen);
+			shard.create({ x, y }, { 1.5f, 1.5f });
+			shards.push_back(shard);
 		}
 	}
 
