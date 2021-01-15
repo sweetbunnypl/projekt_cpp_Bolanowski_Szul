@@ -141,6 +141,9 @@ public:
 	bool PLAYER_IS_ATTACKING;
 	bool PLAYER_PICKING_UP;
 
+	// how much xp is required to level up
+	float xpRequired;
+
 	// ADITIONAL THINGS
 	sf::Texture screenshot;
 	unsigned int screenshotNumber;
@@ -162,6 +165,12 @@ public:
 	void updateEnemyMovement();
 	void updateEnemyAttack();
 	void createEnemies(int ile_enemy);
+
+	GreenFrog greenFrog;
+	std::vector<GreenFrog> greenFrogs;
+
+	RedFrog redFrog;
+	std::vector<RedFrog> redFrogs;
 
 	//WAVE
 	sf::Vector2f lastKnownEnemyPosition;

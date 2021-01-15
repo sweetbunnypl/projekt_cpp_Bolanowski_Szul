@@ -18,12 +18,13 @@ public:
 	int frame;
 	int attackFrame;
 
-	int hp;				// jak duzo ma zdrowia
-	float dmg;			// jak bardzo napierdala
-	float def;			// mnoznik obrony
-	float speed;		// jak bardzo zapierdala
-	int level;			// jaki ma poziom
-	float poisoning;	// jak bardzo sie uchalal miksturami
+	const float fullHP = 100.f;
+	float hp;				// jak duzo ma zdrowia
+	float dmg;				// jak bardzo napierdala
+	float def;				// mnoznik obrony
+	float speed;			// jak bardzo zapierdala
+	int level;				// jaki ma poziom
+	float poisoning;		// jak bardzo sie uchalal miksturami
 
 	int coins;			// ile zebral coinsow
 	int keys;			// ile zebral kluczy

@@ -32,6 +32,7 @@ Key::Key()
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
 
+    sprite.setTextureRect(sf::IntRect(0, 0, 12, 21));
     sprite.setTexture(texture);
 }
 
@@ -59,11 +60,6 @@ Coin::Coin()
     sprite.setTexture(texture);
 }
 
-Armorer::Armorer()
-{
-    sprite.setTexture(texture);
-}
-
 Bonfire::Bonfire()
 {
     if (!texture.loadFromFile("res/textures/objects.png"))
@@ -71,5 +67,16 @@ Bonfire::Bonfire()
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
 
+    sprite.setTexture(texture);
+}
+
+Portal::Portal()
+{
+    if (!texture.loadFromFile("res/textures/portal.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the portal sheet!" << "\n";
+    }
+
+    sprite.setTextureRect(sf::IntRect(0, 0, 202, 160));
     sprite.setTexture(texture);
 }

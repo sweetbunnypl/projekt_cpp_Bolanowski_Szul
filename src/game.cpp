@@ -310,7 +310,7 @@ void Game::update()
 		pickingUpObjects();
 		levelingUp();
 
-		gui.changeValues(player.coins, player.keys, player.level, currentWave, waveTime);
+		gui.changeValues(player.coins, player.keys, player.level, currentWave, waveTime, player.hp, player.fullHP, player.xp, xpRequired, player.poisoning);
 	}
 }
 
@@ -790,11 +790,6 @@ void Game::pickingUpObjects()
 
 void Game::levelingUp()
 {
-	// this should be in player class
-
-	// how much xp is required to level up
-	int xpRequired;
-
 	// 1-15 lvl
 	if (player.level > 0 and player.level <= 15)
 	{
@@ -921,6 +916,14 @@ void Game::animation()
 			key.sprite.setTextureRect(sf::IntRect(key.frame, 0, 12, 21));
 		}
 
+		// TUTAJ DAJ ANIMACJE ENEMY
+		// przyjzyj sie jak jest wyzej zrobione
+		// czyli jesli wektor nie jest pusty
+		// to zwiekszasz klatki
+		// po czym jak sie skoncza to wracasz do 0
+		// zrobilem ci w enemy zmienna int frame ktora wykorzystasz w ten sam sposob co ja wyzej
+
+
 		// STATIC ANIMATIONS
 		if (IN_STARTING_ROOM)
 		{
@@ -1027,32 +1030,32 @@ void Game::updateEnemyMovement()
 		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].terror.getPosition().x + enemies[i].terrorRadius, enemies[i].terror.getPosition().y + enemies[i].terrorRadius);
 		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
 
-		if (!player.sprite.getGlobalBounds().intersects(enemies[i].enemySprite.getGlobalBounds()) and dystans < enemies[i].terrorRadius)
+		if (!player.sprite.getGlobalBounds().intersects(enemies[i].sprite.getGlobalBounds()) and dystans < enemies[i].terrorRadius)
 		{
 			if (gracz.x > przeciwnik.x)
 			{
-				enemies[i].enemySprite.move(sf::Vector2f(enemy.speed.x, 0.f));
+				enemies[i].sprite.move(sf::Vector2f(enemy.speed.x, 0.f));
 				enemies[i].terror.move(sf::Vector2f(enemy.speed.x, 0.f));
 				enemies[i].attack.move(sf::Vector2f(enemy.speed.x, 0.f));
 			}
 
 			else if (gracz.x < przeciwnik.x)
 			{
-				enemies[i].enemySprite.move(sf::Vector2f(-enemy.speed.x, 0.f));
+				enemies[i].sprite.move(sf::Vector2f(-enemy.speed.x, 0.f));
 				enemies[i].terror.move(sf::Vector2f(-enemy.speed.x, 0.f));
 				enemies[i].attack.move(sf::Vector2f(-enemy.speed.x, 0.f));
 			}
 
 			if (gracz.y > przeciwnik.y)
 			{
-				enemies[i].enemySprite.move(sf::Vector2f(0.f, enemy.speed.x));
+				enemies[i].sprite.move(sf::Vector2f(0.f, enemy.speed.x));
 				enemies[i].terror.move(sf::Vector2f(0.f, enemy.speed.x));
 				enemies[i].attack.move(sf::Vector2f(0.f, enemy.speed.x));
 			}
 
 			else if (gracz.y < przeciwnik.y)
 			{
-				enemies[i].enemySprite.move(sf::Vector2f(0.f, -enemy.speed.x));
+				enemies[i].sprite.move(sf::Vector2f(0.f, -enemy.speed.x));
 				enemies[i].terror.move(sf::Vector2f(0.f, -enemy.speed.x));
 				enemies[i].attack.move(sf::Vector2f(0.f, -enemy.speed.x));
 			}
@@ -1073,7 +1076,7 @@ void Game::updateEnemyAttack()
 		{
 			enemies[i].health = enemies[i].health - 5;
 			std::cout << "hit! health remaining: " << enemies[i].health << std::endl;
-			enemies[i].txtHealth.setPosition(enemies[i].enemySprite.getPosition().x+(enemies[i].enemySprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].enemySprite.getPosition().y+(enemies[i].enemySprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
+			enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x+(enemies[i].sprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].sprite.getPosition().y+(enemies[i].sprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
 			enemies[i].updateHealth(enemies[i].health);
 			if (enemies[i].health <= 0) 
 			{
@@ -1100,8 +1103,8 @@ void Game::updatePlayerAttack()
 
 			if (enemies[i].health <= 0)
 			{	
-				lastKnownEnemyPosition = sf::Vector2f({ enemies[i].enemySprite.getPosition().x, enemies[i].enemySprite.getPosition().y });
-				std::cout << "LastKnownEnemyPosition X: " << enemies[i].enemySprite.getPosition().x << " Y: " << enemies[i].enemySprite.getPosition().y << '\n';
+				lastKnownEnemyPosition = sf::Vector2f({ enemies[i].sprite.getPosition().x, enemies[i].sprite.getPosition().y });
+				std::cout << "LastKnownEnemyPosition X: " << enemies[i].sprite.getPosition().x << " Y: " << enemies[i].sprite.getPosition().y << '\n';
 				coin.create({ lastKnownEnemyPosition.x, lastKnownEnemyPosition.y}, { 2.f, 2.f });
 				coins.push_back(coin);
 
@@ -1142,9 +1145,9 @@ void Game::endWave()
 	std::uniform_int_distribution<> randX(370, 560);			// define the range
 	std::uniform_int_distribution<> randY(240, 420);	
 
-	this->savedWaveTime = waveTime;
-	this->waveTime = 0;
-	this->waveClock.restart();
+	savedWaveTime = waveTime;
+	waveTime = 0;
+	waveClock.restart();
 	IS_WAVE_ACTIVE = false;
 
 	std::cout << "KONIEC FALI" << '\n';

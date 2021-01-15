@@ -22,84 +22,103 @@ void Gui::initGui()
 		std::cout << "ERROR::PLAYER::Could not load the font file!" << "\n";
 	}
 
-	this->heart.setTexture(this->guiTexture);
-	this->shard.setTexture(this->guiTexture);
-	this->skull.setTexture(this->guiTexture);
-	this->key.setTexture(this->guiTexture);
-	this->coin.setTexture(this->guiTexture);
+	heart.setTexture(guiTexture);
+	shard.setTexture(guiTexture);
+	skull.setTexture(guiTexture);
+	key.setTexture(guiTexture);
+	coin.setTexture(guiTexture);
+	healthBar.setTexture(guiTexture);
+	xpBar.setTexture(guiTexture);
+	drunkBar.setTexture(guiTexture);
+	emptyBar.setTexture(guiTexture);
 
-	this->heart.setTextureRect(sf::IntRect(0, 140, 60, 60));
-	this->shard.setTextureRect(sf::IntRect(60, 140, 60, 60));
-	this->skull.setTextureRect(sf::IntRect(120, 140, 60, 60));
-	this->key.setTextureRect(sf::IntRect(180, 140, 60, 60));
-	this->coin.setTextureRect(sf::IntRect(240, 140, 60, 60));
+	heart.setTextureRect(sf::IntRect(0, 140, 60, 60));
+	shard.setTextureRect(sf::IntRect(60, 140, 60, 60));
+	skull.setTextureRect(sf::IntRect(120, 140, 60, 60));
+	key.setTextureRect(sf::IntRect(180, 140, 60, 60));
+	coin.setTextureRect(sf::IntRect(240, 140, 60, 60));
+	healthBar.setTextureRect(sf::IntRect(242, 0, 242, 48));
+	xpBar.setTextureRect(sf::IntRect(242, 48, 242, 48));
+	drunkBar.setTextureRect(sf::IntRect(242, 96, 242, 48));
+	emptyBar.setTextureRect(sf::IntRect(0, 0, 242, 48));
 
-	this->heart.setPosition(940.f, 40.f);
-	this->shard.setPosition(940.f, 100.f);
-	this->skull.setPosition(940.f, 160.f);
-	this->coin.setPosition(940.f, 260.f);
-	this->key.setPosition(1090.f, 260.f);
+	heart.setPosition(940.f, 40.f);
+	shard.setPosition(940.f, 100.f);
+	skull.setPosition(940.f, 160.f);
+	coin.setPosition(940.f, 260.f);
+	key.setPosition(1090.f, 260.f);
+	healthBar.setPosition(1000.f, 47.f);
+	xpBar.setPosition(1000.f, 107.f);
+	drunkBar.setPosition(1000.f, 167.f);
 
-	this->text[0].setFont(this->font);
-	this->text[0].setCharacterSize(26);
-	this->text[0].setFillColor(sf::Color::White);
-	this->text[0].setString("level");
-	this->text[0].setPosition(950.f, 570.f);
+	for (int i = 0; i < 3; i++)
+	{
+		emptyBar.setPosition(1000.f, 47.f + i * 60);
+		emptyBars.push_back(emptyBar);
+	}
 
-	this->text[1].setFont(this->font);
-	this->text[1].setCharacterSize(26);
-	this->text[1].setFillColor(sf::Color::White);
-	this->text[1].setString("wave");
-	this->text[1].setPosition(950.f, 620.f);
+	text[0].setFont(font);
+	text[0].setCharacterSize(26);
+	text[0].setFillColor(sf::Color::White);
+	text[0].setString("level");
+	text[0].setPosition(950.f, 570.f);
 
-	this->text[2].setFont(this->font);
-	this->text[2].setCharacterSize(26);
-	this->text[2].setFillColor(sf::Color::White);
-	this->text[2].setString("time");
-	this->text[2].setPosition(950.f, 670.f);
+	text[1].setFont(font);
+	text[1].setCharacterSize(26);
+	text[1].setFillColor(sf::Color::White);
+	text[1].setString("wave");
+	text[1].setPosition(950.f, 620.f);
 
+	text[2].setFont(font);
+	text[2].setCharacterSize(26);
+	text[2].setFillColor(sf::Color::White);
+	text[2].setString("time");
+	text[2].setPosition(950.f, 670.f);
 }
 
-void Gui::changeValues(int& coins, int& keys, int& level, int& wave, float& time)
+void Gui::changeValues(int& coins, int& keys, int& level, int& wave, float& time, float& hp, const float& fullHP, float& xp, float& xpRequired, float& poison)
 {
 	std::string cN = std::to_string(coins);
-	this->number[0].setFont(this->font);
-	this->number[0].setCharacterSize(30);
-	this->number[0].setFillColor(sf::Color::White);
-	this->number[0].setString(cN);
-	this->number[0].setPosition(1020.f, 275.f);
+	number[0].setFont(font);
+	number[0].setCharacterSize(30);
+	number[0].setFillColor(sf::Color::White);
+	number[0].setString(cN);
+	number[0].setPosition(1020.f, 275.f);
 
 	std::string kN = std::to_string(keys);
-	this->number[1].setFont(this->font);
-	this->number[1].setCharacterSize(30);
-	this->number[1].setFillColor(sf::Color::White);
-	this->number[1].setString(kN);
-	this->number[1].setPosition(1170.f, 275.f);
+	number[1].setFont(font);
+	number[1].setCharacterSize(30);
+	number[1].setFillColor(sf::Color::White);
+	number[1].setString(kN);
+	number[1].setPosition(1170.f, 275.f);
 
 	std::string lN = std::to_string(level);
-	this->number[2].setFont(this->font);
-	this->number[2].setCharacterSize(30);
-	this->number[2].setFillColor(sf::Color::White);
-	this->number[2].setString(lN);
-	this->number[2].setPosition(1110.f, 570.f);
+	number[2].setFont(font);
+	number[2].setCharacterSize(30);
+	number[2].setFillColor(sf::Color::White);
+	number[2].setString(lN);
+	number[2].setPosition(1110.f, 570.f);
 
 	std::string wN = std::to_string(wave);
-	this->number[3].setFont(this->font);
-	this->number[3].setCharacterSize(30);
-	this->number[3].setFillColor(sf::Color::White);
-	this->number[3].setString(wN);
-	this->number[3].setPosition(1110.f, 620.f);
+	number[3].setFont(font);
+	number[3].setCharacterSize(30);
+	number[3].setFillColor(sf::Color::White);
+	number[3].setString(wN);
+	number[3].setPosition(1110.f, 620.f);
 
 	std::string tN = std::to_string(time);
-	this->number[4].setFont(this->font);
-	this->number[4].setCharacterSize(30);
-	this->number[4].setFillColor(sf::Color::White);
-	this->number[4].setString(tN);
-	this->number[4].setPosition(1110.f, 670.f);
+	number[4].setFont(font);
+	number[4].setCharacterSize(30);
+	number[4].setFillColor(sf::Color::White);
+	number[4].setString(tN);
+	number[4].setPosition(1110.f, 670.f);
 
 	test.setSize(sf::Vector2f(60.f, 30.f));
 	test.setFillColor(sf::Color(42, 30, 50));
 	test.setPosition(1223.f, 670.f);
+
+	healthBar.setTextureRect(sf::IntRect(242, 0, 11 + (hp / fullHP) * 221, 48));
+	xpBar.setTextureRect(sf::IntRect(242, 48, 11 + (xp/xpRequired) * 221, 48));
 }
 
 void Gui::render(sf::RenderTarget* target)
@@ -123,4 +142,13 @@ void Gui::render(sf::RenderTarget* target)
 	target->draw(this->text[2]);
 
 	target->draw(this->test);
+	
+	for (int i = 0; i < 3; i++)
+	{
+		target->draw(this->emptyBars[i]);
+	}
+
+	target->draw(this->healthBar);
+	target->draw(this->xpBar);
+	target->draw(this->drunkBar);
 }

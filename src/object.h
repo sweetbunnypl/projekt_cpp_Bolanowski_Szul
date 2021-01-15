@@ -47,14 +47,8 @@ public:
 	Bonfire();
 };
 
-class Seller : public Object
+class Portal : public Object
 {
 public:
-	void shop();
-};
-
-class Armorer : public Seller
-{
-public:
-	Armorer();
+	Portal();
 };

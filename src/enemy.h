@@ -9,21 +9,24 @@ public:
 
 	Enemy();
 	~Enemy();
-	int speedAtack;
+
+	int frame;
+
+	float speedAtack;
 	sf::Vector2f speed;
 	sf::Vector2f size;
-	int health;
-	int damage;
+	float health;
+	float damage;
 	int terrorRadius;
 	int attackRadius;
 
-	sf::Texture enemyTexture;
-	sf::Sprite enemySprite;
+	sf::Texture texture;
+	sf::Sprite sprite;
 	sf::Vector2u textureSize;
 
 	//sf::Sprite sprite;
-	sf::RectangleShape sprite;
-	sf::Texture texture;
+	//sf::RectangleShape sprite;
+	//sf::Texture texture;
 	sf::CircleShape terror;
 	sf::CircleShape attack;
 
@@ -33,4 +36,24 @@ public:
 	void initTexture();
 	void initSprite();
 	void updateHealth(int hp);
+};
+
+class GreenFrog : public Enemy
+{
+	GreenFrog();
+
+	// okej, robisz tak
+	// klasa enemy jest klas¹ ABSTRAKCYJNA - nie ma wizualizacji w klasie game
+	// wiêc musisz wszystkie enemy w game pozamieniac na red/green frog
+	
+	// tutaj sobie zmieniasz wartoœci np speed, dmg, speed attack itp
+	// jak cos to pisz
+	// ewentualnie odwoluj sie do tego jak napisana jest klasa obiekt (klasa abstrakcyjna)
+	// ze nie masz nigdzie dzialania na obiekcie klasy obiekt
+	// tylko sa dzialania na obiektach dziedziczacych z klasy obiekt takich jak coin/shard
+};
+
+class RedFrog : public Enemy
+{
+	RedFrog();
 };
