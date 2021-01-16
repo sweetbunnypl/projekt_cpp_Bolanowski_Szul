@@ -133,13 +133,21 @@ public:
 	void pickingUpObjects();
 	void levelingUp();
 
-	// PLAYER MOVEMENT
+	// PLAYER
 	bool PLAYER_MOOVING_LEFT;
 	bool PLAYER_MOOVING_RIGHT;
 	bool PLAYER_IDLE;
 	bool PLAYER_FACING_RIGHT;
 	bool PLAYER_IS_ATTACKING;
 	bool PLAYER_PICKING_UP;
+
+	// which sword or armor player has
+	bool RED_SWORD;
+	bool BLUE_SWORD;
+	bool CYAN_SWORD;
+	bool COPPER_ARMOR;
+	bool SILVER_ARMOR;
+	bool GOLDEN_ARMOR;
 
 	// how much xp is required to level up
 	float xpRequired;
@@ -166,11 +174,11 @@ public:
 	void updateEnemyAttack();
 	void createEnemies(int ile_enemy);
 
-	GreenFrog greenFrog;
-	std::vector<GreenFrog> greenFrogs;
+	//GreenFrog greenFrog;
+	//std::vector<GreenFrog> greenFrogs;
 
-	RedFrog redFrog;
-	std::vector<RedFrog> redFrogs;
+	//RedFrog redFrog;
+	//std::vector<RedFrog> redFrogs;
 
 	//WAVE
 	sf::Vector2f lastKnownEnemyPosition;

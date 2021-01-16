@@ -40,6 +40,7 @@ public:
 
 class GreenFrog : public Enemy
 {
+public:
 	GreenFrog();
 
 	// okej, robisz tak
@@ -55,5 +56,6 @@ class GreenFrog : public Enemy
 
 class RedFrog : public Enemy
 {
+public:
 	RedFrog();
 };

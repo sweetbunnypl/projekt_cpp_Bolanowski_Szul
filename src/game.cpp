@@ -311,6 +311,7 @@ void Game::update()
 		levelingUp();
 
 		gui.changeValues(player.coins, player.keys, player.level, currentWave, waveTime, player.hp, player.fullHP, player.xp, xpRequired, player.poisoning);
+		player.changePlayerEQ(RED_SWORD, BLUE_SWORD, CYAN_SWORD, COPPER_ARMOR, SILVER_ARMOR, GOLDEN_ARMOR);
 	}
 }
 
@@ -1128,6 +1129,8 @@ void Game::initWave()
 	}
 	else if (IS_WAVE_ACTIVE and currentWave == 2)
 	{
+		BLUE_SWORD = true;
+		GOLDEN_ARMOR = true;
 		enemies.clear();
 		createEnemies(3);
 	}
