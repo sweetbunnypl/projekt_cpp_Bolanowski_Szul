@@ -29,7 +29,7 @@ public:
 	sf::Texture guiTexture;
 
 	void initGui();
-	void changeValues(int& coins, int& keys, int& level, int& wave, float& time, float& hp, const float& fullHP, float& xp, float& xpRequired, float& poison);
+	void changeValues(int& coins, int& level, int& wave, float& time, float& hp, const float& fullHP, float& xp, float& xpRequired, float& poison);
 	void render(sf::RenderTarget* target);
 };
 

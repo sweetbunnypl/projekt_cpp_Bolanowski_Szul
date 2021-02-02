@@ -65,6 +65,7 @@ public:
 	bool IN_MENU_STATE;
 	bool GAME_STOPPED;
 	bool GAME_OPEN;
+	bool YOU_WON_STATE;
 
 	// ROOM VARIABLES
 	bool IN_STARTING_ROOM;
@@ -152,6 +153,17 @@ public:
 	bool SILVER_ARMOR;
 	bool GOLDEN_ARMOR;
 
+	bool CAN_I_BUY_SWORD;
+	bool CAN_I_BUY_ARMOR;
+	bool CAN_I_BUY_POTION;
+	int SwordNumer = 0;
+	int ArmorNumber = 0;
+	int whenIBuyPotion;
+
+	UNSword Un_Sword;
+	UNArmor Un_Armor;
+	UNPotion Un_Potion;
+
 	// how much xp is required to level up
 	float xpRequired;
 
@@ -196,11 +208,13 @@ public:
 	std::vector<Coin> coins;
 	std::vector<Heart> hearts;
 	std::vector<Shard> shards;
-	std::vector<Key> keys;
+	std::vector<Object> shop_deals;
 
 	std::vector<int> randomShardPositionX;
 	std::vector<int> randomShardPositionY;
 
 	void initShopDeals();
+
+	float CZAS_ROZGRYWKI;
 };
 

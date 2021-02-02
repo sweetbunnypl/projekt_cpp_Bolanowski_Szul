@@ -76,7 +76,7 @@ void Gui::initGui()
 	text[2].setPosition(950.f, 670.f);
 }
 
-void Gui::changeValues(int& coins, int& keys, int& level, int& wave, float& time, float& hp, const float& fullHP, float& xp, float& xpRequired, float& poison)
+void Gui::changeValues(int& coins, int& level, int& wave, float& time, float& hp, const float& fullHP, float& xp, float& xpRequired, float& poison)
 {
 	std::string cN = std::to_string(coins);
 	number[0].setFont(font);
@@ -84,13 +84,6 @@ void Gui::changeValues(int& coins, int& keys, int& level, int& wave, float& time
 	number[0].setFillColor(sf::Color::White);
 	number[0].setString(cN);
 	number[0].setPosition(1020.f, 275.f);
-
-	std::string kN = std::to_string(keys);
-	number[1].setFont(font);
-	number[1].setCharacterSize(30);
-	number[1].setFillColor(sf::Color::White);
-	number[1].setString(kN);
-	number[1].setPosition(1170.f, 275.f);
 
 	std::string lN = std::to_string(level);
 	number[2].setFont(font);
@@ -119,6 +112,7 @@ void Gui::changeValues(int& coins, int& keys, int& level, int& wave, float& time
 
 	healthBar.setTextureRect(sf::IntRect(242, 0, 11 + (hp / fullHP) * 221, 48));
 	xpBar.setTextureRect(sf::IntRect(242, 48, 11 + (xp/xpRequired) * 221, 48));
+	drunkBar.setTextureRect(sf::IntRect(242, 96, 11 + poison * 221, 48));
 }
 
 void Gui::render(sf::RenderTarget* target)
@@ -129,10 +123,8 @@ void Gui::render(sf::RenderTarget* target)
 	target->draw(this->shard);
 	target->draw(this->skull);
 	target->draw(this->coin);
-	target->draw(this->key);
 
 	target->draw(this->number[0]);
-	target->draw(this->number[1]);
 	target->draw(this->number[2]);
 	target->draw(this->number[3]);
 	target->draw(this->number[4]);

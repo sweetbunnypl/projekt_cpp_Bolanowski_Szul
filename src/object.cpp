@@ -21,7 +21,12 @@ void Object::render(sf::RenderTarget* target)
 
 Heart::Heart()
 {
-    sprite.setTextureRect(sf::IntRect(0, 140, 60, 60));
+    if (!texture.loadFromFile("res/textures/heart.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
+    }
+
+    sprite.setTextureRect(sf::IntRect(0, 0, 11, 16));
     sprite.setTexture(texture);
 }
 
@@ -78,5 +83,38 @@ Portal::Portal()
     }
 
     sprite.setTextureRect(sf::IntRect(0, 0, 202, 160));
+    sprite.setTexture(texture);
+}
+
+UNArmor::UNArmor()
+{
+    if (!texture.loadFromFile("res/textures/un_armor.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the portal sheet!" << "\n";
+    }
+
+    sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
+    sprite.setTexture(texture);
+}
+
+UNSword::UNSword()
+{
+    if (!texture.loadFromFile("res/textures/un_sword.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the portal sheet!" << "\n";
+    }
+
+    sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
+    sprite.setTexture(texture);
+}
+
+UNPotion::UNPotion()
+{
+    if (!texture.loadFromFile("res/textures/un_potion.png"))
+    {
+        std::cout << "ERROR::PLAYER::Could not load the portal sheet!" << "\n";
+    }
+
+    sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
     sprite.setTexture(texture);
 }

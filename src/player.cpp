@@ -171,12 +171,12 @@ void Player::changePlayerEQ(bool& red, bool& blue, bool& cyan, bool& copper, boo
         sprite.setTexture(copperCyan);
     }
 
-    if (red and !blue and cyan and !copper and silver and !golden)
+    if (!red and !blue and cyan and !copper and silver and !golden)
     {
         sprite.setTexture(silverCyan);
     }
 
-    if (red and !blue and cyan and !copper and !silver and golden)
+    if (!red and !blue and cyan and !copper and !silver and golden)
     {
         sprite.setTexture(goldenCyan);
     }

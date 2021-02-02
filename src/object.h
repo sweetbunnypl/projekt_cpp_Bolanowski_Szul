@@ -52,3 +52,21 @@ class Portal : public Object
 public:
 	Portal();
 };
+
+class UNArmor : public Object
+{
+public:
+	UNArmor();
+};
+
+class UNSword : public Object
+{
+public:
+	UNSword();
+};
+
+class UNPotion : public Object
+{
+public:
+	UNPotion();
+};

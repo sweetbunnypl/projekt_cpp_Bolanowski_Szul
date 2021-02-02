@@ -142,9 +142,29 @@ void Shop::renderPrices(sf::RenderTarget* target)
     text[0].setOutlineThickness(1);
     text[0].setStyle(sf::Text::Bold);
     text[0].setString("5c");
-    text[0].setPosition(190.f, 300.f);
+    text[0].setPosition(180.f, 300.f);
+
+    text[1].setFont(font);
+    text[1].setCharacterSize(40);
+    text[1].setFillColor(sf::Color::White);
+    text[1].setOutlineColor(sf::Color::Black);
+    text[1].setOutlineThickness(1);
+    text[1].setStyle(sf::Text::Bold);
+    text[1].setString("10c");
+    text[1].setPosition(435.f, 110.f);
+
+    text[2].setFont(font);
+    text[2].setCharacterSize(40);
+    text[2].setFillColor(sf::Color::White);
+    text[2].setOutlineColor(sf::Color::Black);
+    text[2].setOutlineThickness(1);
+    text[2].setStyle(sf::Text::Bold);
+    text[2].setString("3c");
+    text[2].setPosition(710.f, 300.f);
 
     target->draw(this->text[0]);
+    target->draw(this->text[1]);
+    target->draw(this->text[2]);
 }
 
 

@@ -297,7 +297,7 @@ void Game::updateSFMLEvents()
 void Game::update()
 {
 	//pozycja myszki, przydaje sie
-	//std::cout << sf::Mouse::getPosition(*window).x << "   " << sf::Mouse::getPosition(*window).y << std::endl;
+	std::cout << " X:  " << player.sprite.getPosition().x << "  Y: " << player.sprite.getPosition().y << std::endl;
 	updateSFMLEvents();
 	// update classes below
 	if (PLAYING_STATE and GAME_OPEN and !GAME_STOPPED)
@@ -316,6 +316,9 @@ void Game::update()
 		if (IN_STARTING_ROOM)
 		{
 			initShopDeals();
+			if (SwordNumer < 3) { shop_deals.push_back(Un_Sword); };
+			shop_deals.push_back(Un_Armor);
+			shop_deals.push_back(Un_Potion);
 		}
 
 		updatePlayerMovement();
@@ -323,8 +326,20 @@ void Game::update()
 		pickingUpObjects();
 		levelingUp();
 
-		gui.changeValues(player.coins, player.keys, player.level, currentWave, waveTime, player.hp, player.fullHP, player.xp, xpRequired, player.poisoning);
+		gui.changeValues(player.coins, player.level, currentWave, waveTime, player.hp, player.fullHP, player.xp, xpRequired, player.poisoning);
 		player.changePlayerEQ(RED_SWORD, BLUE_SWORD, CYAN_SWORD, COPPER_ARMOR, SILVER_ARMOR, GOLDEN_ARMOR);
+
+		if (player.poisoning == 1 and currentWave >= whenIBuyPotion + 2)
+		{
+			player.poisoning = 0;
+			whenIBuyPotion = 0;
+			CAN_I_BUY_POTION = true;
+		}
+
+		if (player.level == 20 and SwordNumer == 3 and ArmorNumber == 3)
+		{
+			YOU_WON_STATE = true;
+		}
 	}
 }
 
@@ -338,6 +353,7 @@ void Game::render()
 	{
 		newGame();
 		update();
+
 		// after entering the playing state music stops so it plays
 		// the music again when you go back to the menu
 		if (menu_music.getStatus() == 0)
@@ -363,6 +379,9 @@ void Game::render()
 
 		if (IS_WAVE_ACTIVE) 
 		{
+			CAN_I_BUY_SWORD = true;
+			CAN_I_BUY_ARMOR = true;
+
 			for(int i = 0; i < enemies.size(); i++)
 			{
 				//enemies[i].renderRadius(this->window);
@@ -375,6 +394,14 @@ void Game::render()
 			for (int i = 0; i < coins.size(); i++)
 			{
 				coins[i].render(this->window);
+			}
+		}
+
+		if (hearts.empty() == false)
+		{
+			for (int i = 0; i < hearts.size(); i++)
+			{
+				hearts[i].render(this->window);
 			}
 		}
 
@@ -398,13 +425,20 @@ void Game::render()
 	while (PLAYING_STATE and IN_SHOP and !GAME_STOPPED and !PLAYER_DIED)
 	{
 		update();
+
 		this->window->clear(sf::Color(42, 33, 52, 255));
 
 		shop.renderMap(this->window);
 		shop.renderObject(this->window);
 		shop.renderPrices(this->window);
 
-		key.render(this->window);
+		if (shop_deals.empty() == false)
+		{
+			for (int i = 0; i < shop_deals.size(); i++)
+			{
+				shop_deals[i].render(this->window);
+			}
+		}
 
 		gui.render(this->window);
 		player.render(this->window);
@@ -447,6 +481,12 @@ void Game::render()
 		PLAYING_STATE = false;
 		IN_MENU_STATE = true;
 	}
+
+	while (YOU_WON_STATE)
+	{
+		// bla bla bla gratulacje czy chcesz zagrac w nasza gre ponownie czy wyjsc (to samo co przy zatrzymywaniu gry)
+
+	}
 }
 
 void Game::run()
@@ -458,6 +498,10 @@ void Game::run()
 	PLAYING_STATE = false;
 	IN_MENU_STATE = true;
 	GAME_STOPPED = false;
+
+	CAN_I_BUY_ARMOR = true;
+	CAN_I_BUY_SWORD = true;
+	CAN_I_BUY_POTION = true;
 
 	// setting that idle animation is starting animation
 	PLAYER_MOOVING_RIGHT = false;
@@ -481,6 +525,8 @@ void Game::run()
 
 void Game::newGame()
 {
+	CZAS_ROZGRYWKI = 0;
+	YOU_WON_STATE = false;
 	IS_WAVE_ACTIVE = false;
 	currentWave = 0;
 	waveTime = 0.0;
@@ -490,20 +536,21 @@ void Game::newGame()
 	player.sprite.setPosition(500.f, 500.f);
 	PLAYER_DIED = false;
 	player.coins = 0;
-	player.keys = 0;
 	player.xp = 0;
 	player.drunk = false;
 	player.level = 1;
 	player.hp = 100;
+	player.fullHP = 100.f;
 	player.speed = 1;
-	player.poisoning = 1;
-	player.dmg = 1;
+	player.poisoning = 0;
+	player.dmg = 10;
 	player.def = 1;
 
 	enemyCooldown = 0.0;
 	enemies.clear();
 	coins.clear();
 	shards.clear();
+	hearts.clear();
 }
 
 // MENU METHODS
@@ -842,9 +889,118 @@ void Game::pickingUpObjects()
 					coins.erase(coins.begin() + i);
 				}
 			}
-
 		}
 
+		for (int i = 0; i < hearts.size(); i++)
+		{
+			if (hearts.empty() == false)
+			{
+				if (player.fullHP - player.hp <= player.fullHP - 5)
+				{
+					if (player.sprite.getGlobalBounds().intersects(hearts[i].sprite.getGlobalBounds()))
+					{
+						picking_up_sound.play();
+						player.hp += 5;
+						hearts.erase(hearts.begin() + i);
+					}
+				}
+				
+			}
+		}
+
+		if (IN_SHOP)
+		{
+			for (int i = 0; i < shop_deals.size(); i++)
+			{
+				if (shop_deals.empty() == false)
+				{
+					if (CAN_I_BUY_SWORD)
+					{
+						if (player.sprite.getGlobalBounds().intersects(Un_Sword.sprite.getGlobalBounds()) and player.coins >= 5 and SwordNumer < 3)
+						{
+							picking_up_sound.play();
+							SwordNumer += 1;
+
+							if (SwordNumer == 1)
+							{
+								RED_SWORD = true;
+								BLUE_SWORD = false;
+								CYAN_SWORD = false;
+								player.dmg = 20;
+							}
+
+							if (SwordNumer == 2)
+							{
+								RED_SWORD = false;
+								BLUE_SWORD = true;
+								CYAN_SWORD = false;
+								player.dmg = 30;
+							}
+
+							if (SwordNumer == 3)
+							{
+								RED_SWORD = false;
+								BLUE_SWORD = false;
+								CYAN_SWORD = true;
+								player.dmg = 50;
+							}
+
+							player.coins -= 5;
+							CAN_I_BUY_SWORD = false;
+						}
+					}
+
+					if (CAN_I_BUY_ARMOR)
+					{
+						if (player.sprite.getGlobalBounds().intersects(Un_Armor.sprite.getGlobalBounds()) and player.coins >= 10 and ArmorNumber < 3)
+						{
+							picking_up_sound.play();
+							ArmorNumber += 1;
+
+							if (ArmorNumber == 1)
+							{
+								COPPER_ARMOR = true;
+								SILVER_ARMOR = false;
+								GOLDEN_ARMOR = false;
+								player.def = 0.8;
+							}
+
+							if (ArmorNumber == 2)
+							{
+								COPPER_ARMOR = false;
+								SILVER_ARMOR = true;
+								GOLDEN_ARMOR = false;
+								player.def = 0.5;
+							}
+
+							if (ArmorNumber == 3)
+							{
+								COPPER_ARMOR = false;
+								SILVER_ARMOR = false;
+								GOLDEN_ARMOR = true;
+								player.def = 0.1;
+							}
+
+							player.coins -= 10;
+							CAN_I_BUY_ARMOR = false;
+						}
+					}
+					if (CAN_I_BUY_POTION)
+					{
+						if (player.sprite.getGlobalBounds().intersects(Un_Potion.sprite.getGlobalBounds()) and player.coins >= 3)
+						{
+							picking_up_sound.play();
+							player.coins -= 3;
+							player.hp += ((int)player.fullHP - (int)player.hp) * 0.7;
+							player.poisoning = 1;
+							CAN_I_BUY_POTION = false;
+							whenIBuyPotion = currentWave;
+						}
+					}
+				}
+			}
+		}
+		
 		// shards
 		/*
 		for (int i = 0; i < shards.size(); i++)
@@ -878,6 +1034,7 @@ void Game::levelingUp()
 			leveling_up_sound.play();
 			player.level += 1;
 			player.xp = 0;
+			player.fullHP += 2;
 		}
 	}
 
@@ -891,6 +1048,7 @@ void Game::levelingUp()
 			leveling_up_sound.play();
 			player.level += 1;
 			player.xp = 0;
+			player.fullHP += 5;
 		}
 	}
 
@@ -904,6 +1062,7 @@ void Game::levelingUp()
 			leveling_up_sound.play();
 			player.level += 1;
 			player.xp = 0;
+			player.fullHP += 10;
 		}
 	}
 }
@@ -964,35 +1123,35 @@ void Game::animation()
 		// heart animation
 		if (hearts.size() != 0)
 		{
-			if (heart.frame > 12 * 4)
+			if (heart.frame > 11 * 4)
 			{
 				heart.frame = 0;
 			}
 			else
 			{
-				heart.frame += 12;
+				heart.frame += 11;
 			}
 
 			for (int i = 0; i < hearts.size(); i++)
 			{
-				hearts[i].sprite.setTextureRect(sf::IntRect(heart.frame, 0, 12, 30));
+				hearts[i].sprite.setTextureRect(sf::IntRect(heart.frame, 0, 11, 16));
 			}
 		}
 
 		// key animation
-		if (keys.size() != 0)
-		{
-			if (key.frame > 12 * 4)
-			{
-				key.frame = 0;
-			}
-			else
-			{
-				key.frame += 12;
-			}
+		//if (keys.size() != 0)
+		//{
+		//	if (key.frame > 12 * 4)
+		//	{
+		//		key.frame = 0;
+		//	}
+		//	else
+		//	{
+		//		key.frame += 12;
+		//	}
 
-			key.sprite.setTextureRect(sf::IntRect(key.frame, 0, 12, 21));
-		}
+		//	key.sprite.setTextureRect(sf::IntRect(key.frame, 0, 12, 21));
+		//}
 
 
 		// TUTAJ DAJ ANIMACJE ENEMY
@@ -1191,7 +1350,7 @@ void Game::updateEnemyMovement()
 				enemies[i].attack.move(sf::Vector2f(0.f, -enemy.speed.x));
 			}
 
-			enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
+			//enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
 		}
 		else enemies[i].ENEMY_IDLE = true;
 	}
@@ -1208,10 +1367,10 @@ void Game::updateEnemyAttack()
 		//std::cout << dystans << "   " << przeciwnik.x << "   " << przeciwnik.y << std::endl;
 		if (dystans < enemies[i].attackRadius)
 		{
-			if (enemyCooldown >= 2)
+			if (enemyCooldown >= 4)
 			{
 				enemyInterval.restart();
-				player.hp = player.hp - 5*currentWave;
+				player.hp = player.hp - (4 * currentWave * player.def);
 			}
 
 			enemyCooldown = (int)(enemyInterval.getElapsedTime().asSeconds() * 100 + .5);
@@ -1238,9 +1397,9 @@ void Game::updatePlayerAttack()
 
 		if (dystans < enemies[i].attackRadius)
 		{
-			enemies[i].health = enemies[i].health - player.level*20;
+			enemies[i].health = enemies[i].health - player.dmg;
 			//std::cout << i << "# enemy got hit! health remaining: " << enemies[i].health << std::endl;
-			enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
+			//enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
 			enemies[i].updateHealth(enemies[i].health);
 
 			if (enemies[i].health <= 0)
@@ -1250,8 +1409,14 @@ void Game::updatePlayerAttack()
 				coin.create({ lastKnownEnemyPosition.x, lastKnownEnemyPosition.y}, { 2.f, 2.f });
 				coins.push_back(coin);
 
-				heart.create({ lastKnownEnemyPosition.x + 20, lastKnownEnemyPosition.y + 20 }, { 0.5f, 0.5f });
-				hearts.push_back(heart);
+				if (enemies[i].color == 1)
+				{
+					lastKnownEnemyPosition = sf::Vector2f({ enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - (coin.sprite.getGlobalBounds().width / 2), enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (coin.sprite.getGlobalBounds().height / 2) });
+					heart.create({ lastKnownEnemyPosition.x + 20, lastKnownEnemyPosition.y + 20 }, { 2.f, 2.f });
+					hearts.push_back(heart);
+					coin.create({ lastKnownEnemyPosition.x - 20, lastKnownEnemyPosition.y + 2 }, { 2.f, 2.f });
+					coins.push_back(coin);
+				}
 
 				enemies.erase(enemies.begin() + i);
 			}
@@ -1278,8 +1443,6 @@ void Game::initWave()
 		}
 		else if (IS_WAVE_ACTIVE and currentWave == 2)
 		{
-			BLUE_SWORD = true;
-			GOLDEN_ARMOR = true;
 			enemies.clear();
 			createEnemies(3);
 		}
@@ -1352,11 +1515,15 @@ void Game::endWave()
 		}
 	}
 
+	CZAS_ROZGRYWKI += savedWaveTime;
+
 	//std::cout << "SHARDS VECTOR SIZE: " << shards.size() << '\n';
 }
 
 void Game::initShopDeals()
 {
-	key.create({ 100.f, 300.f }, { 2.f, 2.f });
-	keys.push_back(key);
+
+	Un_Sword.create({ 220.f, 300.f }, { 1.f, 1.f });
+	Un_Armor.create({ 430.f, 165.f }, { 1.f, 1.f });
+	Un_Potion.create({ 650.f, 300.f }, { 1.f, 1.f });
 }
