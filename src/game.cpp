@@ -81,11 +81,12 @@ void Game::updateSFMLEvents()
 		// HANDLING WINDOW ACTIONS
 		if (this->event.type == sf::Event::Closed)
 		{
+			GAME_OPEN = false;
 			window->close();
 		}
 
 		// HANDLING KEY PRESSING IN MENU
-		if (this->IN_MENU_STATE and this->PLAYING_STATE == false)
+		if (IN_MENU_STATE and PLAYING_STATE == false)
 		{
 			switch (event.type)
 			{
@@ -110,8 +111,10 @@ void Game::updateSFMLEvents()
 				case sf::Keyboard::Escape:
 					quit_sound.play();
 					Sleep(500);
+					GAME_OPEN = false;
 					this->window->close();
 					break;
+
 				}
 				break;
 
@@ -122,7 +125,7 @@ void Game::updateSFMLEvents()
 		}
 
 		// HANDLING KEY PRESSING WHILE PLAYING
-		if (this->IN_MENU_STATE == false and this->PLAYING_STATE)
+		if (!IN_MENU_STATE and PLAYING_STATE and !GAME_STOPPED)
 		{
 			//std::cout << player.playerSprite.getPosition().y << std::endl;
 			switch (event.type)
@@ -132,12 +135,17 @@ void Game::updateSFMLEvents()
 				switch (event.key.code)
 				{
 
+				case sf::Keyboard::R:
+					waveTimeResume = waveTime;
+					//std::cout << "Zatrzymany czas:" << waveTimeResume <<std::endl;
+					GAME_STOPPED = true;
+					std::cout << "ZATRZYMUJE GRE" << '\n';
+					break;
+				/*
 				case sf::Keyboard::Backspace:
-					PLAYING_STATE = false;
-					IN_MENU_STATE = false;
 					GAME_STOPPED = true;
 					break;
-
+				*/
 				case sf::Keyboard::E:
 					PLAYER_PICKING_UP = true;
 					break;
@@ -145,6 +153,7 @@ void Game::updateSFMLEvents()
 				case sf::Keyboard::Escape:
 					quit_sound.play();
 					Sleep(500);
+					GAME_OPEN = false;
 					this->window->close();
 					break;
 				
@@ -152,7 +161,7 @@ void Game::updateSFMLEvents()
 					screenshotNumber += 1;
 					std::string filename_core = "SCREENSHOT_";
 					std::string filename_number = std::to_string(screenshotNumber);
-					std::string filename_path = "files/";
+					std::string filename_path = "";//"files/";
 					std::string filename_format = ".png";
 					std::string filename = filename_path + filename_core + filename_number + filename_format;
 					takeScreenshot(*window, filename);
@@ -173,7 +182,7 @@ void Game::updateSFMLEvents()
 						PLAYER_IDLE = false;
 						PLAYER_IS_ATTACKING = true;
 						
-						std::cout << "PRZYCZAJONY TYGRYS, UKRYTY SMOK!" << '\n';
+						//std::cout << "PRZYCZAJONY TYGRYS, UKRYTY SMOK!" << '\n';
 						updatePlayerAttack();
 					}
 				}
@@ -197,7 +206,7 @@ void Game::updateSFMLEvents()
 						std::cout << "IN_SHOP: " << IN_SHOP << '\n';
 						
 						//PLAYER_TELEPORTATION = true;
-						this->player.sprite.setPosition({ 440.f, 580.f });
+						player.sprite.setPosition({ 440.f, 580.f });
 					}
 				}
 			}
@@ -219,7 +228,7 @@ void Game::updateSFMLEvents()
 						std::cout << "IN_SHOP: " << IN_SHOP << '\n';
 
 						//PLAYER_TELEPORTATION = true;
-						this->player.sprite.setPosition({ 440.f, 65.f });
+						player.sprite.setPosition({ 440.f, 65.f });
 					}
 				}
 			}
@@ -244,14 +253,13 @@ void Game::updateSFMLEvents()
 
 							initWave();
 
-							this->waveClock.restart();
+							waveClock.restart();
 						}
 					}
 				}
 			}
 		}
-
-		if (this->GAME_STOPPED)
+		else if (GAME_STOPPED)
 		{
 			switch (event.type)
 			{
@@ -267,6 +275,7 @@ void Game::updateSFMLEvents()
 					break;
 
 				case sf::Keyboard::R:
+					waveClock.restart();
 					PLAYING_STATE = true;
 					IN_MENU_STATE = false;
 					GAME_STOPPED = false;
@@ -276,6 +285,7 @@ void Game::updateSFMLEvents()
 				case sf::Keyboard::Escape:
 					quit_sound.play();
 					Sleep(500);
+					GAME_OPEN = false;
 					this->window->close();
 					break;
 				}
@@ -286,18 +296,21 @@ void Game::updateSFMLEvents()
 
 void Game::update()
 {
+	//pozycja myszki, przydaje sie
+	//std::cout << sf::Mouse::getPosition(*window).x << "   " << sf::Mouse::getPosition(*window).y << std::endl;
 	updateSFMLEvents();
-
 	// update classes below
-	if (PLAYING_STATE)
+	if (PLAYING_STATE and GAME_OPEN and !GAME_STOPPED)
 	{
 		animation();
 
 		if (IS_WAVE_ACTIVE) 
 		{
 			updateEnemyMovement();
-			waveTime = (int)(waveClock.getElapsedTime().asSeconds() * 100 + .5);
+			updateEnemyAttack();
+			waveTime = (int)(waveClock.getElapsedTime().asSeconds()*100 + .5);
 			waveTime = waveTime / 100;
+			waveTime = waveTime + waveTimeResume;
 		}
 
 		if (IN_STARTING_ROOM)
@@ -323,39 +336,36 @@ void Game::render()
 
 	while (IN_MENU_STATE)
 	{
-		this->newGame();
-
+		newGame();
+		update();
 		// after entering the playing state music stops so it plays
 		// the music again when you go back to the menu
-		if (this->menu_music.getStatus() == 0)
+		if (menu_music.getStatus() == 0)
 		{
-			this->menu_music.play();
+			menu_music.play();
 		}
 
-		this->menuDrawMenu(this->window);
+		menuDrawMenu(this->window);
+		
 		this->window->display();
-		this->update();
 		IN_STARTING_ROOM = true;
 
 		break;
 	}
 
-	while (PLAYING_STATE and IN_STARTING_ROOM)
+	while (PLAYING_STATE and IN_STARTING_ROOM and !GAME_STOPPED and !PLAYER_DIED)
 	{
 		menu_music.stop();
-
+		update();
 		window->clear(sf::Color(42, 33, 52, 255));
 		room1.renderMap(this->window);
 		room1.renderObject(this->window);
 
 		if (IS_WAVE_ACTIVE) 
 		{
-			/*for (int i = 0; i < this->enemies.size(); i++)
-			{
-				this->enemies[i].renderRadius(this->window);
-			}*/
 			for(int i = 0; i < enemies.size(); i++)
 			{
+				//enemies[i].renderRadius(this->window);
 				enemies[i].render(this->window);
 			}
 		}
@@ -380,13 +390,14 @@ void Game::render()
 
 		gui.render(this->window);
 		player.render(this->window);
-
-		update();
+		
 		this->window->display();
+		if(!GAME_OPEN) break;
 	}
 
-	while (PLAYING_STATE and IN_SHOP)
+	while (PLAYING_STATE and IN_SHOP and !GAME_STOPPED and !PLAYER_DIED)
 	{
+		update();
 		this->window->clear(sf::Color(42, 33, 52, 255));
 
 		shop.renderMap(this->window);
@@ -398,12 +409,13 @@ void Game::render()
 		gui.render(this->window);
 		player.render(this->window);
 
-		update();
 		this->window->display();
+		if (!GAME_OPEN) break;
 	}
 
 	while (GAME_STOPPED)
 	{	
+		update();
 		testText.setFont(font);
 		testText.setCharacterSize(40);
 		testText.setFillColor(sf::Color::White);
@@ -411,11 +423,29 @@ void Game::render()
 		testText.setOutlineThickness(2);
 		testText.setStyle(sf::Text::Bold);
 		testText.setString("> Click R to RESUME or Q to go back to the MENU <");
-		testText.setPosition(300.f, 300.f);
-		this->window->draw(this->testText);
-
-		update();
+		testText.setPosition((windowWidth-testText.getGlobalBounds().width)/2, (windowHeight-testText.getGlobalBounds().height)/2);
+		this->window->draw(testText);
 		this->window->display();
+		if (!GAME_OPEN) break;
+	}
+
+	if (PLAYER_DIED)
+	{
+		update();
+		testText.setFont(font);
+		testText.setCharacterSize(100);
+		testText.setFillColor(sf::Color::Red);
+		testText.setOutlineColor(sf::Color::Black);
+		testText.setOutlineThickness(2);
+		testText.setStyle(sf::Text::Bold);
+		std::string currentWaveStr = "zaliczyles zgona na "+std::to_string(currentWave)+" fali byczq";
+		testText.setString(currentWaveStr);
+		testText.setPosition((windowWidth-testText.getGlobalBounds().width)/2, (windowHeight-testText.getGlobalBounds().height)/2);
+		this->window->draw(testText);
+		this->window->display();
+		Sleep(5000);
+		PLAYING_STATE = false;
+		IN_MENU_STATE = true;
 	}
 }
 
@@ -424,6 +454,7 @@ void Game::run()
 	// variables that should be defined only once and before the game start
 
 	// game states
+	GAME_OPEN = true;
 	PLAYING_STATE = false;
 	IN_MENU_STATE = true;
 	GAME_STOPPED = false;
@@ -450,20 +481,29 @@ void Game::run()
 
 void Game::newGame()
 {
-	this->waveTime = 0.0;
+	IS_WAVE_ACTIVE = false;
+	currentWave = 0;
+	waveTime = 0.0;
+	waveTimeResume = 0.0;
+	waveClock.restart();
 
-	this->player.coins = 0;
-	this->player.keys = 0;
-	this->player.xp = 0;
+	player.sprite.setPosition(500.f, 500.f);
+	PLAYER_DIED = false;
+	player.coins = 0;
+	player.keys = 0;
+	player.xp = 0;
+	player.drunk = false;
+	player.level = 1;
+	player.hp = 100;
+	player.speed = 1;
+	player.poisoning = 1;
+	player.dmg = 1;
+	player.def = 1;
 
-	this->player.drunk = false;
-
-	this->player.level = 1;
-	this->player.hp = 100;
-	this->player.speed = 1;
-	this->player.poisoning = 1;
-	this->player.dmg = 1;
-	this->player.def = 1;
+	enemyCooldown = 0.0;
+	enemies.clear();
+	coins.clear();
+	shards.clear();
 }
 
 // MENU METHODS
@@ -487,9 +527,9 @@ void Game::initMenu()
 	};
 
 	//background do tekstu
-	rectangle.setSize(sf::Vector2f(400, this->windowHeight));
+	rectangle.setSize(sf::Vector2f(400, windowHeight));
 	rectangle.setFillColor(sf::Color(0, 0, 0, 170));
-	rectangle.setPosition(this->windowWidth / 2 - 200, 0);
+	rectangle.setPosition(windowWidth / 2 - 200, 0);
 }
 
 void Game::menuMoveUp()
@@ -558,8 +598,8 @@ void Game::menuRenderButtons(sf::RenderTarget* target)
 		case 0:
 			std::cout << "Ktos nacisnal Play" << '\n';
 			enter_sound.play();
-			this->IN_MENU_STATE = false;
-			this->PLAYING_STATE = true;
+			IN_MENU_STATE = false;
+			PLAYING_STATE = true;
 			break;
 		case 1:
 			std::cout << "Ktos nacisnal Creators" << '\n';
@@ -572,8 +612,8 @@ void Game::menuRenderButtons(sf::RenderTarget* target)
 			std::cout << "Ktos nacisnal Help" << '\n';
 			enter_sound.play();
 			MAIN_MENU = false;
-			//CREATORS = false;
 			HELP = true;
+			menuRenderButtons2(help_menu_txt, help_menu_txt2);
 			break;
 		case 3:
 			quit_sound.play();
@@ -599,11 +639,32 @@ void Game::menuRenderButtons(sf::RenderTarget* target)
 			system("start https://github.com/SonOfGrabarz");
 			break;
 		case 2:
-			std::cout << "Ktos nacisnal nic" << '\n';
 			break;
 		case 3:
 			MAIN_MENU = true;
 			CREATORS = false;
+			menuRenderButtons2(main_menu_txt, main_menu_txt2);
+			quit_sound.play();
+		default:
+			break;
+		}
+	}
+	else if (not MAIN_MENU and not CREATORS and HELP) {
+		switch (menuGetPressedItem())
+		{
+		case 0:
+			std::cout << "Ktos nacisnal Poradnik i info" << '\n';
+			enter_sound.play();
+			//link otwiera sie tylko pod windowsem
+			system("start https://github.com/sweetbunnypl/projekt_cpp_Bolanowski_Szul/blob/main/README.md");
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			MAIN_MENU = true;
+			HELP = false;
 			menuRenderButtons2(main_menu_txt, main_menu_txt2);
 			quit_sound.play();
 		default:
@@ -616,6 +677,7 @@ void Game::menuRenderButtons2(std::string menu_string[MAX_NUMBER_OF_ITEMS], std:
 {
 	MenuIndex = 0;
 	menuCreateButton(menu_string2[0], 0, MAX_NUMBER_OF_ITEMS, 80);
+	//for (int i = 1; i<= value; i++) menuCreateButton(menu_string[i], i, MAX_NUMBER_OF_ITEMS, 60);
 	menuCreateButton(menu_string[1], 1, MAX_NUMBER_OF_ITEMS, 60);
 	menuCreateButton(menu_string[2], 2, MAX_NUMBER_OF_ITEMS, 60);
 	menuCreateButton(menu_string[3], 3, MAX_NUMBER_OF_ITEMS, 60);
@@ -628,7 +690,7 @@ void Game::menuCreateButton(std::string button_name, int which, int of_how_many,
 	text[which].setStyle(sf::Text::Regular);
 	text[which].setFillColor(sf::Color::White);
 	text[which].setString(button_name);
-	text[which].setPosition(sf::Vector2f((this->windowWidth / 2) - (text[which].getGlobalBounds().width / 2), (this->windowHeight / (of_how_many + 1) * (which + 1)) - (text[which].getGlobalBounds().height / 2)));
+	text[which].setPosition(sf::Vector2f((windowWidth / 2) - (text[which].getGlobalBounds().width / 2), (windowHeight / (of_how_many + 1) * (which + 1)) - (text[which].getGlobalBounds().height / 2)));
 }
 
 void Game::menuDrawMenu(sf::RenderTarget* target)
@@ -659,6 +721,19 @@ void Game::menuDrawMenu(sf::RenderTarget* target)
 // PLAYER METHODS
 void Game::updatePlayerMovement()
 {
+	for (int i = 0; i < shards.size(); i++)
+	{
+		if (shards.empty() == false)
+		{
+			if (player.sprite.getGlobalBounds().intersects(shards[i].sprite.getGlobalBounds()))
+			{
+				picking_up_sound.play();
+				player.xp += 2;
+				shards.erase(shards.begin() + i);
+				std::cout << "XP: " << player.xp << '\n';
+			}
+		}
+	}
 	// player position -> console
 	//std::cout << "X: " << player.playerSprite.getPosition().x << '\n';
 	//std::cout << "Y: " << player.playerSprite.getPosition().y << '\n';
@@ -666,15 +741,15 @@ void Game::updatePlayerMovement()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{
 		// moving up
-		this->player.sprite.move({ 0.f, -5.f });
+		player.sprite.move({ 0.f, -5.f });
 
 		// collision with upper side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()))
+			if (room1.object[i].getGlobalBounds().intersects(player.sprite.getGlobalBounds()) or
+				shop.object[i].getGlobalBounds().intersects(player.sprite.getGlobalBounds()))
 			{
-				this->player.sprite.move({ 0.f, 5.f });	
+				player.sprite.move({ 0.f, 5.f });	
 			}
 		}	
 	}
@@ -686,16 +761,16 @@ void Game::updatePlayerMovement()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 	{
 		// moving bottom
-		this->player.sprite.move({ 0.f, 5.f });
+		player.sprite.move({ 0.f, 5.f });
 
 		// collision with bottom side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds())
+			if (room1.object[i].getGlobalBounds().intersects(player.sprite.getGlobalBounds()) or
+				shop.object[i].getGlobalBounds().intersects(player.sprite.getGlobalBounds())
 				)
 			{
-				this->player.sprite.move({ 0.f, -5.f });
+				player.sprite.move({ 0.f, -5.f });
 			}
 		}	
 	}
@@ -707,47 +782,47 @@ void Game::updatePlayerMovement()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
 		// moving left
-		this->PLAYER_MOOVING_LEFT = true;
-		this->PLAYER_IDLE = false;
-		this->player.sprite.move({ -5.f, 0.f });
+		PLAYER_MOOVING_LEFT = true;
+		PLAYER_IDLE = false;
+		player.sprite.move({ -5.f, 0.f });
 
 		// collision with left side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if (this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds())
+			if (room1.object[i].getGlobalBounds().intersects(player.sprite.getGlobalBounds()) or
+				shop.object[i].getGlobalBounds().intersects(player.sprite.getGlobalBounds())
 				)
 			{
-				this->player.sprite.move({ 5.f, 0.f });
+				player.sprite.move({ 5.f, 0.f });
 			}
 		}
 	}
 	else
 	{
-		this->PLAYER_MOOVING_LEFT = false;
+		PLAYER_MOOVING_LEFT = false;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 	{
 		// moving right
-		this->PLAYER_MOOVING_RIGHT = true;
-		this->PLAYER_IDLE = false;
-		this->player.sprite.move({ 5.f, 0.f });
+		PLAYER_MOOVING_RIGHT = true;
+		PLAYER_IDLE = false;
+		player.sprite.move({ 5.f, 0.f });
 
 		// collision with right side of object
 		for (int i = 0; i <= 52; i++)
 		{
-			if(this->room1.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds()) or
-				this->shop.object[i].getGlobalBounds().intersects(this->player.sprite.getGlobalBounds())
+			if(room1.object[i].getGlobalBounds().intersects(player.sprite.getGlobalBounds()) or
+				shop.object[i].getGlobalBounds().intersects(player.sprite.getGlobalBounds())
 				)
 			{
-				this->player.sprite.move({ -5.f, 0.f });
+				player.sprite.move({ -5.f, 0.f });
 			}
 		}
 	}
 	else
 	{
-		this->PLAYER_MOOVING_RIGHT = false;
+		PLAYER_MOOVING_RIGHT = false;
 	}
 }
 
@@ -760,17 +835,18 @@ void Game::pickingUpObjects()
 		{
 			if (coins.empty() == false)
 			{
-				if (this->player.sprite.getGlobalBounds().intersects(this->coins[i].sprite.getGlobalBounds()))
+				if (player.sprite.getGlobalBounds().intersects(coins[i].sprite.getGlobalBounds()))
 				{
 					picking_up_sound.play();
-					this->player.coins += 1;
-					this->coins.erase(coins.begin() + i);
+					player.coins += 1;
+					coins.erase(coins.begin() + i);
 				}
 			}
 
 		}
 
 		// shards
+		/*
 		for (int i = 0; i < shards.size(); i++)
 		{
 			if (shards.empty() == false)
@@ -784,6 +860,7 @@ void Game::pickingUpObjects()
 				}
 			}
 		}
+		*/
 
 		PLAYER_PICKING_UP = false;
 	}
@@ -917,12 +994,49 @@ void Game::animation()
 			key.sprite.setTextureRect(sf::IntRect(key.frame, 0, 12, 21));
 		}
 
+
 		// TUTAJ DAJ ANIMACJE ENEMY
 		// przyjzyj sie jak jest wyzej zrobione
 		// czyli jesli wektor nie jest pusty
 		// to zwiekszasz klatki
 		// po czym jak sie skoncza to wracasz do 0
 		// zrobilem ci w enemy zmienna int frame ktora wykorzystasz w ten sam sposob co ja wyzej
+
+		// ENEMY MOVING ANIMATION
+		for (int i = 0; i < enemies.size(); i++)
+		{
+			int dc = 0;
+			if (enemies[i].color) dc = 559;
+
+			if (enemies[i].frame >= 13)
+			{
+				enemies[i].frame = 0;
+			}
+			else
+			{
+				enemies[i].frame += 1;
+			}
+
+			if (enemies[i].ENEMY_IDLE and enemies[i].ENEMY_FACING_RIGHT == false)
+			{
+				enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame*96, dc+280, 96, 64));
+			}
+
+			if (enemies[i].ENEMY_IDLE and enemies[i].ENEMY_FACING_RIGHT)
+			{
+				enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame*96, dc+0, 96, 64));
+			}
+
+			if (enemies[i].ENEMY_MOOVING_LEFT and !enemies[i].ENEMY_IDLE)
+			{
+				enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame*100, dc+346, 100, 68));
+			}
+
+			if (enemies[i].ENEMY_MOOVING_RIGHT and !enemies[i].ENEMY_IDLE)
+			{
+				enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame*100, dc+68, 100, 68));
+			}
+		}
 
 
 		// STATIC ANIMATIONS
@@ -951,61 +1065,61 @@ void Game::animation()
 		// PLAYER MOVING ANIMATION
 		if (player.frame > 384)
 		{
-			this->player.frame = 0;
+			player.frame = 0;
 		}
 		else
 		{
-			this->player.frame += 64;
+			player.frame += 64;
 		}
 
 		if (PLAYER_IDLE and PLAYER_FACING_RIGHT == false)
 		{
-			this->player.sprite.setTextureRect(sf::IntRect(player.frame, 128, 64, 64));
+			player.sprite.setTextureRect(sf::IntRect(player.frame, 128, 64, 64));
 		}
 
 		if (PLAYER_IDLE and PLAYER_FACING_RIGHT)
 		{
-			this->player.sprite.setTextureRect(sf::IntRect(player.frame, 192, 64, 64));
+			player.sprite.setTextureRect(sf::IntRect(player.frame, 192, 64, 64));
 		}
 
 		if (PLAYER_MOOVING_LEFT)
 		{	
-			this->PLAYER_FACING_RIGHT = false;
-			this->player.sprite.setTextureRect(sf::IntRect(player.frame, 0, 64, 64));
+			PLAYER_FACING_RIGHT = false;
+			player.sprite.setTextureRect(sf::IntRect(player.frame, 0, 64, 64));
 		}
 
 		if (PLAYER_MOOVING_RIGHT)
 		{
-			this->PLAYER_FACING_RIGHT = true;
-			this->player.sprite.setTextureRect(sf::IntRect(player.frame, 64, 64, 64));
+			PLAYER_FACING_RIGHT = true;
+			player.sprite.setTextureRect(sf::IntRect(player.frame, 64, 64, 64));
 		}
 
 		// PLAYER ATTACKING ANIMATION
 		if (player.attackFrame > 720 and PLAYER_IS_ATTACKING)
 		{
-			this->player.attackFrame = 0;
+			player.attackFrame = 0;
 
 			if (PLAYER_IS_ATTACKING)
 			{
-				this->PLAYER_IS_ATTACKING = false;
-				this->PLAYER_IDLE = true;
+				PLAYER_IS_ATTACKING = false;
+				PLAYER_IDLE = true;
 			}	
 		}
 		else if (player.attackFrame <= 720 and PLAYER_IS_ATTACKING)
 		{
-			this->player.attackFrame += 120;
+			player.attackFrame += 120;
 		}
 
 		if (PLAYER_IS_ATTACKING and PLAYER_FACING_RIGHT == false)
 		{
-			this->player.sprite.setTextureRect(sf::IntRect(player.attackFrame, 256, 120, 76));
+			player.sprite.setTextureRect(sf::IntRect(player.attackFrame, 256, 120, 76));
 		}
 		else if (PLAYER_IS_ATTACKING and PLAYER_FACING_RIGHT)
 		{
-			this->player.sprite.setTextureRect(sf::IntRect(player.attackFrame, 332, 120, 76));
+			player.sprite.setTextureRect(sf::IntRect(player.attackFrame, 332, 120, 76));
 		}
 
-		this->clock.restart();
+		clock.restart();
 	}
 }
 
@@ -1017,8 +1131,16 @@ void Game::createEnemies(int ile_enemy)
 {
 	for(int i = 0; i < ile_enemy; i++)
 	{
-		this->enemy.create(sf::Vector2f(100+100*i, 100), sf::Vector2f(1, 1), sf::Vector2f(3, 3));
-		this->enemies.push_back(this->enemy);
+		int delta_x = 20;
+		float delta_y = (windowWidth - gui.size.x - delta_x*2 - ile_enemy * enemy.sprite.getGlobalBounds().width) / (ile_enemy + 1);
+		float x_enemy = abs(delta_x+(delta_y*(i+1))+i*enemy.sprite.getGlobalBounds().width);
+		enemy.create(sf::Vector2f(x_enemy, 200), sf::Vector2f(1, 1), sf::Vector2f(1, 1), 50 + 25 * currentWave);
+		float color = (float)rand() / RAND_MAX;
+		//std::cout << color << std::endl;
+		if (color >= 0.5) enemy.color = 1;
+		else enemy.color = 0;
+		//enemy.create(sf::Vector2f(20+(((windowWidth-200)/ile_enemy)*i), 100), sf::Vector2f(1, 1), sf::Vector2f(3, 3), 50+25*currentWave);
+		enemies.push_back(enemy);
 	}
 }
 
@@ -1030,14 +1152,19 @@ void Game::updateEnemyMovement()
 	{
 		sf::Vector2f przeciwnik = sf::Vector2f(enemies[i].terror.getPosition().x + enemies[i].terrorRadius, enemies[i].terror.getPosition().y + enemies[i].terrorRadius);
 		float dystans = sqrt(pow((przeciwnik.x - gracz.x), 2) + pow((przeciwnik.y - gracz.y), 2));
+		//std::cout << "dystans dla przeciwnika" << i << ":" << dystans << std::endl;
 
 		if (!player.sprite.getGlobalBounds().intersects(enemies[i].sprite.getGlobalBounds()) and dystans < enemies[i].terrorRadius)
 		{
+			enemies[i].ENEMY_IDLE = false;
 			if (gracz.x > przeciwnik.x)
 			{
 				enemies[i].sprite.move(sf::Vector2f(enemy.speed.x, 0.f));
 				enemies[i].terror.move(sf::Vector2f(enemy.speed.x, 0.f));
 				enemies[i].attack.move(sf::Vector2f(enemy.speed.x, 0.f));
+				enemies[i].ENEMY_MOOVING_RIGHT = true;
+				enemies[i].ENEMY_FACING_RIGHT = true;
+				enemies[i].ENEMY_MOOVING_LEFT = false;
 			}
 
 			else if (gracz.x < przeciwnik.x)
@@ -1045,6 +1172,9 @@ void Game::updateEnemyMovement()
 				enemies[i].sprite.move(sf::Vector2f(-enemy.speed.x, 0.f));
 				enemies[i].terror.move(sf::Vector2f(-enemy.speed.x, 0.f));
 				enemies[i].attack.move(sf::Vector2f(-enemy.speed.x, 0.f));
+				enemies[i].ENEMY_MOOVING_RIGHT = false;
+				enemies[i].ENEMY_FACING_RIGHT = false;
+				enemies[i].ENEMY_MOOVING_LEFT = true;
 			}
 
 			if (gracz.y > przeciwnik.y)
@@ -1060,7 +1190,10 @@ void Game::updateEnemyMovement()
 				enemies[i].terror.move(sf::Vector2f(0.f, -enemy.speed.x));
 				enemies[i].attack.move(sf::Vector2f(0.f, -enemy.speed.x));
 			}
+
+			enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
 		}
+		else enemies[i].ENEMY_IDLE = true;
 	}
 }
 
@@ -1075,14 +1208,21 @@ void Game::updateEnemyAttack()
 		//std::cout << dystans << "   " << przeciwnik.x << "   " << przeciwnik.y << std::endl;
 		if (dystans < enemies[i].attackRadius)
 		{
-			enemies[i].health = enemies[i].health - 5;
-			std::cout << "hit! health remaining: " << enemies[i].health << std::endl;
-			enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x+(enemies[i].sprite.getGlobalBounds().width/2)-enemies[i].txtHealth.getGlobalBounds().width/2, enemies[i].sprite.getPosition().y+(enemies[i].sprite.getGlobalBounds().height/2)-(enemies[i].txtHealth.getGlobalBounds().height/2)-40);
-			enemies[i].updateHealth(enemies[i].health);
-			if (enemies[i].health <= 0) 
+			if (enemyCooldown >= 2)
 			{
-				enemies.erase(enemies.begin() + i);
+				enemyInterval.restart();
+				player.hp = player.hp - 5*currentWave;
 			}
+
+			enemyCooldown = (int)(enemyInterval.getElapsedTime().asSeconds() * 100 + .5);
+			enemyCooldown = enemyCooldown / 100;
+
+			//std::cout << enemyCooldown << std::endl;
+
+			if (player.hp <= 0)
+				PLAYER_DIED = true;
+				//std::cout << "zaliczyles zgona byczq, liczba fal, ktora przezyles:" << std::endl;
+			//std::cout << "twoje hp: " << player.hp << std::endl;
 		}
 	}
 }
@@ -1098,14 +1238,15 @@ void Game::updatePlayerAttack()
 
 		if (dystans < enemies[i].attackRadius)
 		{
-			enemies[i].health = enemies[i].health - 35;
-			std::cout << i << "# enemy got hit! health remaining: " << enemies[i].health << std::endl;
+			enemies[i].health = enemies[i].health - player.level*20;
+			//std::cout << i << "# enemy got hit! health remaining: " << enemies[i].health << std::endl;
+			enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
 			enemies[i].updateHealth(enemies[i].health);
 
 			if (enemies[i].health <= 0)
 			{	
-				lastKnownEnemyPosition = sf::Vector2f({ enemies[i].sprite.getPosition().x, enemies[i].sprite.getPosition().y });
-				std::cout << "LastKnownEnemyPosition X: " << enemies[i].sprite.getPosition().x << " Y: " << enemies[i].sprite.getPosition().y << '\n';
+				lastKnownEnemyPosition = sf::Vector2f({ enemies[i].sprite.getPosition().x+(enemies[i].sprite.getGlobalBounds().width/2)-(coin.sprite.getGlobalBounds().width/2), enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (coin.sprite.getGlobalBounds().height / 2) });
+				//std::cout << "LastKnownEnemyPosition X: " << enemies[i].sprite.getPosition().x << " Y: " << enemies[i].sprite.getPosition().y << '\n';
 				coin.create({ lastKnownEnemyPosition.x, lastKnownEnemyPosition.y}, { 2.f, 2.f });
 				coins.push_back(coin);
 
@@ -1122,22 +1263,32 @@ void Game::updatePlayerAttack()
 
 void Game::initWave()
 {
-	if (IS_WAVE_ACTIVE and currentWave == 1)
-	{
-		enemies.clear();
-		createEnemies(2);
-	}
-	else if (IS_WAVE_ACTIVE and currentWave == 2)
-	{
-		BLUE_SWORD = true;
-		GOLDEN_ARMOR = true;
-		enemies.clear();
-		createEnemies(3);
-	}
-	else if (IS_WAVE_ACTIVE and currentWave == 3)
-	{
-		enemies.clear();
-		createEnemies(5);
+	for (int i = 0; i < 10; i++) {
+		if (i == currentWave and IS_WAVE_ACTIVE) {
+			enemies.clear();
+			waveTimeResume = 0.0;
+			createEnemies(i*2);
+		}
+		/*
+		}
+		if (IS_WAVE_ACTIVE and currentWave == 1)
+		{
+			enemies.clear();
+			createEnemies(2);
+		}
+		else if (IS_WAVE_ACTIVE and currentWave == 2)
+		{
+			BLUE_SWORD = true;
+			GOLDEN_ARMOR = true;
+			enemies.clear();
+			createEnemies(3);
+		}
+		else if (IS_WAVE_ACTIVE and currentWave == 3)
+		{
+			enemies.clear();
+			createEnemies(5);
+		}
+		*/
 	}
 }
 
@@ -1201,7 +1352,7 @@ void Game::endWave()
 		}
 	}
 
-	std::cout << "SHARDS VECTOR SIZE: " << shards.size() << '\n';
+	//std::cout << "SHARDS VECTOR SIZE: " << shards.size() << '\n';
 }
 
 void Game::initShopDeals()

@@ -11,6 +11,12 @@ public:
 	~Enemy();
 
 	int frame;
+	bool ENEMY_MOOVING_LEFT;
+	bool ENEMY_MOOVING_RIGHT;
+	bool ENEMY_IDLE;
+	bool ENEMY_FACING_RIGHT;
+	bool ENEMY_IS_ATTACKING;
+	bool color;
 
 	float speedAtack;
 	sf::Vector2f speed;
@@ -30,7 +36,7 @@ public:
 	sf::CircleShape terror;
 	sf::CircleShape attack;
 
-	void create(sf::Vector2f position, sf::Vector2f scale, sf::Vector2f textureScale);
+	void create(sf::Vector2f position, sf::Vector2f scale, sf::Vector2f textureScale, int enemyHealth);
 	void render(sf::RenderTarget* target);
 	void renderRadius(sf::RenderTarget* target);
 	void initTexture();

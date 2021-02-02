@@ -2,23 +2,23 @@
 
 Enemy::Enemy()
 {
-    health = 100;
+    health = 1;
     //TERROR
-    terrorRadius = 200;
+    terrorRadius = 300;
     terror.setRadius(terrorRadius);
     terror.setFillColor(sf::Color::Red);
     terror.setPosition(0, 0);
     //ATTACK
-    attackRadius = 75;
+    attackRadius = 100;
     attack.setRadius(attackRadius);
     attack.setFillColor(sf::Color::Blue);
     attack.setPosition(0, 0);
     //SPRITE
-    //sprite.setPosition(0, 0);
+    sprite.setPosition(0, 0);
     //sprite.setFillColor(sf::Color::Green);
     //size = sf::Vector2f(30.f, 30.f);
     //sprite.setSize(size);
-    //speed = sf::Vector2f(2.f, 2.f);
+    speed = sf::Vector2f(2.f, 2.f);
 
     if (!font.loadFromFile("res/fonts/dogica.ttf"))
     {
@@ -28,10 +28,9 @@ Enemy::Enemy()
 
 Enemy::~Enemy()
 {
-
 }
 
-void Enemy::create(sf::Vector2f position, sf::Vector2f scale, sf::Vector2f textureScale)
+void Enemy::create(sf::Vector2f position, sf::Vector2f scale, sf::Vector2f textureScale, int enemyHealth)
 {
     this->initTexture();
     this->initSprite();
@@ -42,14 +41,15 @@ void Enemy::create(sf::Vector2f position, sf::Vector2f scale, sf::Vector2f textu
     terror.setScale(scale);
     attack.setPosition(sf::Vector2f(position.x+(sprite.getGlobalBounds().width/2)-attackRadius, position.y+(sprite.getGlobalBounds().height/2)-attackRadius));
     attack.setScale(scale);
-
-    txtHealth.setPosition(position.x+(sprite.getGlobalBounds().width/2)-txtHealth.getGlobalBounds().width/2, position.y+(sprite.getGlobalBounds().width/2)-(txtHealth.getGlobalBounds().width/2)-40);
+    health = enemyHealth;
+    updateHealth(health);
+    txtHealth.setPosition(sprite.getPosition().x + (sprite.getGlobalBounds().width / 2) - txtHealth.getGlobalBounds().width / 2, sprite.getPosition().y + (sprite.getGlobalBounds().height / 2) - (txtHealth.getGlobalBounds().height / 2) - 50);
 }
 
 void Enemy::render(sf::RenderTarget* target)
 {
     target->draw(this->sprite);
-    //target->draw(this->txtHealth);
+    target->draw(this->txtHealth);
 }
 
 void Enemy::renderRadius(sf::RenderTarget* target)
@@ -62,7 +62,7 @@ void Enemy::initTexture()
 {
     // tu musisz zmienic nazwe png'a
 
-    if (!texture.loadFromFile("res/textures/frog.png"))
+    if (!texture.loadFromFile("res/textures/frogs.png"))
     {
         std::cout << "ERROR::PLAYER::Could not load the player sheet!" << "\n";
     }
@@ -71,8 +71,9 @@ void Enemy::initTexture()
 void Enemy::initSprite()
 {
     // getting texture size and dividing it to separate parts
-    textureSize = texture.getSize();
-    textureSize.x /= 6;
+    sprite.setTextureRect(sf::IntRect(0, 0, 96, 64));
+    //textureSize = texture.getSize();
+    //textureSize.x /= 14;
 
     sprite.setTexture(texture);
 

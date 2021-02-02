@@ -17,6 +17,7 @@ private:
 	sf::Clock clock;
 	sf::Clock waveClock;
 	float waveTime;
+	float waveTimeResume;
 	int savedWaveTime;
 
 	// CREATING OBJECTS WHEN WINDOW IS READY
@@ -63,6 +64,7 @@ public:
 	bool PLAYING_STATE;
 	bool IN_MENU_STATE;
 	bool GAME_STOPPED;
+	bool GAME_OPEN;
 
 	// ROOM VARIABLES
 	bool IN_STARTING_ROOM;
@@ -100,8 +102,8 @@ public:
 	std::string main_menu_txt2[4] = { "- PLAY -", "- CREATORS -", "- HELP -", "- EXIT -" };
 	std::string creators_menu_txt[4] = { "K.Bolanowski", "M.Szul", "ISSP III", "BACK" };
 	std::string creators_menu_txt2[4] = { "- K.Bolanowski -", "- M.Szul -", "- ISSP III -", "- BACK -" };
-	std::string help_menu_txt[4] = { " ", " ", " ", "BACK" };
-	std::string help_menu_txt2[4] = { " ", " ", " ", "- BACK -" };
+	std::string help_menu_txt[4] = { "PORADNIK", " ", " ", "BACK" };
+	std::string help_menu_txt2[4] = { "- PORADNIK -", " ", " ", "- BACK -" };
 
 	sf::Text text[MAX_NUMBER_OF_ITEMS];
 	sf::RectangleShape rectangle;
@@ -140,6 +142,7 @@ public:
 	bool PLAYER_FACING_RIGHT;
 	bool PLAYER_IS_ATTACKING;
 	bool PLAYER_PICKING_UP;
+	bool PLAYER_DIED;
 
 	// which sword or armor player has
 	bool RED_SWORD;
@@ -173,6 +176,9 @@ public:
 	void updateEnemyMovement();
 	void updateEnemyAttack();
 	void createEnemies(int ile_enemy);
+
+	sf::Clock enemyInterval;
+	float enemyCooldown;
 
 	//GreenFrog greenFrog;
 	//std::vector<GreenFrog> greenFrogs;
