@@ -380,7 +380,7 @@ void Game::update()
 			CAN_I_BUY_POTION = true;
 		}
 
-		if (player.level >= 15 and SwordNumer >= 3 and ArmorNumber >= 3)
+		if (player.level >= 12 and SwordNumer >= 3 and ArmorNumber >= 3)
 		{
 			YOU_WON_STATE = true;
 		}
@@ -404,6 +404,7 @@ void Game::render()
 		shop_music.stop();
 		combat_music.stop();
 		notcombat_music.stop();
+
 		newGame();
 		update();
 
@@ -427,11 +428,13 @@ void Game::render()
 	{
 		menu_music.stop();
 		shop_music.stop();
+
 		if (notcombat_music.getStatus() == 0 and !IS_WAVE_ACTIVE)
 		{
 			notcombat_music.play();
 			notcombat_music.setVolume(10.f);
 		}
+
 		update();
 		window->clear(sf::Color(42, 33, 52, 255));
 		room1.renderMap(this->window);
@@ -446,9 +449,7 @@ void Game::render()
 				combat_music.play();
 				combat_music.setVolume(10.f);
 			}
-			else {
-				combat_music.stop();
-			}
+
 			CAN_I_BUY_SWORD = true;
 			CAN_I_BUY_ARMOR = true;
 
@@ -457,6 +458,10 @@ void Game::render()
 				//enemies[i].renderRadius(this->window);
 				enemies[i].render(this->window);
 			}
+		}
+		else
+		{
+			combat_music.stop();
 		}
 
 		if (coins.empty() == false)
@@ -501,6 +506,7 @@ void Game::render()
 			shop_music.play();
 			shop_music.setVolume(10.f);
 		}
+
 		update();
 
 		this->window->clear(sf::Color(42, 33, 52, 255));
@@ -534,6 +540,7 @@ void Game::render()
 			shop_music.play();
 			shop_music.setVolume(10.f);
 		}
+
 		update();
 		testText.setFont(font);
 		testText.setCharacterSize(40);
@@ -579,6 +586,7 @@ void Game::render()
 			win_song.play();
 			win_song.setVolume(50.f);
 		}
+
 		update();
 		testText.setFont(font);
 		testText.setCharacterSize(100);
@@ -1040,12 +1048,12 @@ void Game::pickingUpObjects()
 		{
 			if (hearts.empty() == false)
 			{
-				if (player.fullHP - player.hp <= player.fullHP - 5)
+				if (player.hp > 0 and player.fullHP - player.hp <= player.fullHP - 15)
 				{
 					if (player.sprite.getGlobalBounds().intersects(hearts[i].sprite.getGlobalBounds()))
 					{
 						picking_up_sound.play();
-						player.hp += 5*currentWave;
+						player.hp += 15;
 						hearts.erase(hearts.begin() + i);
 					}
 				}
@@ -1145,23 +1153,6 @@ void Game::pickingUpObjects()
 				}
 			}
 		}
-		
-		// shards
-		/*
-		for (int i = 0; i < shards.size(); i++)
-		{
-			if (shards.empty() == false)
-			{
-				if (this->player.sprite.getGlobalBounds().intersects(this->shards[i].sprite.getGlobalBounds()))
-				{
-					picking_up_sound.play();
-					this->player.xp += 2;
-					this->shards.erase(shards.begin() + i);
-					std::cout << "XP: " << player.xp << '\n';
-				}
-			}
-		}
-		*/
 
 		PLAYER_PICKING_UP = false;
 	}
@@ -1283,29 +1274,6 @@ void Game::animation()
 			}
 		}
 
-		// key animation
-		//if (keys.size() != 0)
-		//{
-		//	if (key.frame > 12 * 4)
-		//	{
-		//		key.frame = 0;
-		//	}
-		//	else
-		//	{
-		//		key.frame += 12;
-		//	}
-
-		//	key.sprite.setTextureRect(sf::IntRect(key.frame, 0, 12, 21));
-		//}
-
-
-		// TUTAJ DAJ ANIMACJE ENEMY
-		// przyjzyj sie jak jest wyzej zrobione
-		// czyli jesli wektor nie jest pusty
-		// to zwiekszasz klatki
-		// po czym jak sie skoncza to wracasz do 0
-		// zrobilem ci w enemy zmienna int frame ktora wykorzystasz w ten sam sposob co ja wyzej
-
 		// ENEMY MOVING ANIMATION
 		for (int i = 0; i < enemies.size(); i++)
 		{
@@ -1380,7 +1348,6 @@ void Game::animation()
 				}
 			}
 		}
-
 
 		// STATIC ANIMATIONS
 		if (IN_STARTING_ROOM)
@@ -1572,7 +1539,7 @@ void Game::updateEnemyAttack()
 			{
 				enemies[i].ATTACKING = true;
 				enemyInterval.restart();
-				player.hp = player.hp - (enemies[i].damage * currentWave * player.def);
+				player.hp = player.hp - (enemies[i].damage * 0.8 * currentWave * player.def);
 				std::cout << i << "# enemy hit!  your health: " << player.hp << std::endl;
 			}
 
@@ -1603,7 +1570,7 @@ void Game::updatePlayerAttack()
 
 		if (dystans < enemies[i].attackRadius)
 		{
-			enemies[i].health = enemies[i].health - player.dmg;
+			enemies[i].health = enemies[i].health - player.dmg + player.level;
 			std::cout << i << "# enemy got hit! health remaining: " << enemies[i].health << std::endl;
 			//enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
 			enemies[i].updateHealth(enemies[i].health);
@@ -1621,7 +1588,7 @@ void Game::updatePlayerAttack()
 					lastKnownEnemyPosition = sf::Vector2f({ enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - (coin.sprite.getGlobalBounds().width / 2), enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (coin.sprite.getGlobalBounds().height / 2) });
 					heart.create({ lastKnownEnemyPosition.x + 20, lastKnownEnemyPosition.y + 20 }, { 2.f, 2.f });
 					hearts.push_back(heart);
-					coin.create({ lastKnownEnemyPosition.x - 20, lastKnownEnemyPosition.y + 2 }, { 2.f, 2.f });
+					coin.create({ lastKnownEnemyPosition.x, lastKnownEnemyPosition.y }, { 2.f, 2.f });
 					coins.push_back(coin);
 				}
 				//if (enemies[i].DIED) enemies.erase(enemies.begin() + i);
@@ -1634,35 +1601,41 @@ void Game::updatePlayerAttack()
 
 void Game::initWave()
 {
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 12; i++) 
+	{
 		if (i <= 5 and i == currentWave and IS_WAVE_ACTIVE) {
 			enemies.clear();
 			waveTimeResume = 0.0;
 			createEnemies(i);
 		}
-		else if (i >= 5 and i == currentWave and IS_WAVE_ACTIVE){
+
+		if (i >= 5 and i < 9 and i == currentWave and IS_WAVE_ACTIVE)
+		{
 			enemies.clear();
 			waveTimeResume = 0.0;
-			createEnemies(i-3);
+			createEnemies(i-4);
 		}
-		/*
-		}
-		if (IS_WAVE_ACTIVE and currentWave == 1)
+
+		if (i == 9 and i == currentWave and IS_WAVE_ACTIVE)
 		{
 			enemies.clear();
-			createEnemies(2);
+			waveTimeResume = 0.0;
+			createEnemies(i - 5);
 		}
-		else if (IS_WAVE_ACTIVE and currentWave == 2)
+
+		if (i == 10 and  i == currentWave and IS_WAVE_ACTIVE) 
 		{
 			enemies.clear();
-			createEnemies(3);
+			waveTimeResume = 0.0;
+			createEnemies(i - 5);
 		}
-		else if (IS_WAVE_ACTIVE and currentWave == 3)
+
+		if (i > 10 and i < 12 and i == currentWave and IS_WAVE_ACTIVE) 
 		{
 			enemies.clear();
-			createEnemies(5);
+			waveTimeResume = 0.0;
+			createEnemies(i - 8);
 		}
-		*/
 	}
 }
 
@@ -1685,7 +1658,7 @@ void Game::endWave()
 
 	if (savedWaveTime > 0 and savedWaveTime <= 10)
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 13; i++)
 		{
 			float x = randX(gen);
 			float y = randY(gen);
@@ -1696,7 +1669,7 @@ void Game::endWave()
 
 	if (savedWaveTime > 10 and savedWaveTime <= 30)
 	{
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 11; i++)
 		{
 			float x = randX(gen);
 			float y = randY(gen);
@@ -1707,7 +1680,7 @@ void Game::endWave()
 
 	if (savedWaveTime >= 30 and savedWaveTime <= 50)
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 8; i++)
 		{
 			float x = randX(gen);
 			float y = randY(gen);
@@ -1718,7 +1691,7 @@ void Game::endWave()
 
 	if (savedWaveTime > 50)
 	{
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			float x = randX(gen);
 			float y = randY(gen);
@@ -1733,7 +1706,6 @@ void Game::endWave()
 
 void Game::initShopDeals()
 {
-
 	Un_Sword.create({ 220.f, 300.f }, { 1.f, 1.f });
 	Un_Armor.create({ 430.f, 165.f }, { 1.f, 1.f });
 	Un_Potion.create({ 650.f, 300.f }, { 1.f, 1.f });
