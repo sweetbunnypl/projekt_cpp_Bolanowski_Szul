@@ -74,6 +74,11 @@ public:
 
 	// MENU VARIABLES
 	sf::Music menu_music;
+	sf::Music shop_music;
+	sf::Music combat_music;
+	sf::Music notcombat_music;
+	sf::Music win_song;
+
 	sf::SoundBuffer change_buffer;
 	sf::Sound change_sound;
 	sf::SoundBuffer enter_buffer;
@@ -85,10 +90,10 @@ public:
 	sf::Sound picking_up_sound;
 	sf::SoundBuffer leveling_up;
 	sf::Sound leveling_up_sound;
-	sf::SoundBuffer boom;
-	sf::Sound boom_sound;
 	sf::SoundBuffer wave_active;
 	sf::Sound wave_active_sound;
+	sf::SoundBuffer sword;
+	sf::Sound sword_sound;
 
 	void initSounds();
 

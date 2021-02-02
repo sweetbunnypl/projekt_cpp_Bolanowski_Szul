@@ -31,6 +31,34 @@ void Game::initSounds()
 	// looping menu music
 	menu_music.setLoop(true);
 
+	// menu music
+	if (!shop_music.openFromFile("res/sounds/shop_music.wav")) {
+		printf("nie wczytano shop_music.ogg");
+	}
+	// looping menu music
+	shop_music.setLoop(true);
+
+	// menu music
+	if (!win_song.openFromFile("res/sounds/win_song.wav")) {
+		printf("nie wczytano win_music.ogg");
+	}
+	// looping menu music
+	win_song.setLoop(true);
+	
+	// menu music
+	if (!combat_music.openFromFile("res/sounds/combat_music.wav")) {
+		printf("nie wczytano combat_music.ogg");
+	}
+	// looping menu music
+	combat_music.setLoop(true);
+
+	// menu music
+	if (!notcombat_music.openFromFile("res/sounds/notcombat_music.wav")) {
+		printf("nie wczytano notcombat_musicogg");
+	}
+	// looping menu music
+	notcombat_music.setLoop(true);
+
 	// change music
 	if (!change_buffer.loadFromFile("res/sounds/menu_change.wav")) {
 		printf("nie wczytano menu_change.wav");
@@ -61,18 +89,19 @@ void Game::initSounds()
 	}
 	leveling_up_sound.setBuffer(leveling_up);
 
-	// kaboom! music
-	if (!boom.loadFromFile("res/sounds/boom.wav")) {
-		printf("nie wczytano levelingup.wav");
-	}
-	boom_sound.setBuffer(boom);
-
 	// activating enemies wave music
 	if (!wave_active.loadFromFile("res/sounds/waveactive.wav")) {
 		printf("nie wczytano levelingup.wav");
 	}
 	wave_active_sound.setBuffer(wave_active);
+
+	// sword sound
+	if (!sword.loadFromFile("res/sounds/sword_sound.wav")) {
+		printf("nie wczytano levelingup.wav");
+	}
+	sword_sound.setBuffer(sword);
 }
+
 
 void Game::updateSFMLEvents()
 {
@@ -177,6 +206,7 @@ void Game::updateSFMLEvents()
 					switch (event.mouseButton.button)
 					{
 					case sf::Mouse::Left:
+						sword_sound.play();
 						PLAYER_MOOVING_RIGHT = false;
 						PLAYER_MOOVING_LEFT = false;
 						PLAYER_IDLE = false;
@@ -189,6 +219,7 @@ void Game::updateSFMLEvents()
 					switch (event.key.code) 
 					{
 					case sf::Keyboard::K:
+						sword_sound.play();
 						PLAYER_MOOVING_RIGHT = false;
 						PLAYER_MOOVING_LEFT = false;
 						PLAYER_IDLE = false;
@@ -370,6 +401,9 @@ void Game::render()
 
 	while (IN_MENU_STATE)
 	{
+		shop_music.stop();
+		combat_music.stop();
+		notcombat_music.stop();
 		newGame();
 		update();
 
@@ -378,6 +412,7 @@ void Game::render()
 		if (menu_music.getStatus() == 0)
 		{
 			menu_music.play();
+			menu_music.setVolume(50.f);
 		}
 
 		menuDrawMenu(this->window);
@@ -391,6 +426,12 @@ void Game::render()
 	while (PLAYING_STATE and IN_STARTING_ROOM and !GAME_STOPPED and !PLAYER_DIED and !YOU_WON_STATE)
 	{
 		menu_music.stop();
+		shop_music.stop();
+		if (notcombat_music.getStatus() == 0 and !IS_WAVE_ACTIVE)
+		{
+			notcombat_music.play();
+			notcombat_music.setVolume(10.f);
+		}
 		update();
 		window->clear(sf::Color(42, 33, 52, 255));
 		room1.renderMap(this->window);
@@ -398,6 +439,16 @@ void Game::render()
 
 		if (IS_WAVE_ACTIVE) 
 		{
+			notcombat_music.stop();
+
+			if (combat_music.getStatus() == 0)
+			{
+				combat_music.play();
+				combat_music.setVolume(10.f);
+			}
+			else {
+				combat_music.stop();
+			}
 			CAN_I_BUY_SWORD = true;
 			CAN_I_BUY_ARMOR = true;
 
@@ -443,6 +494,13 @@ void Game::render()
 
 	while (PLAYING_STATE and IN_SHOP and !GAME_STOPPED and !PLAYER_DIED and !YOU_WON_STATE)
 	{
+		notcombat_music.stop();
+
+		if (shop_music.getStatus() == 0)
+		{
+			shop_music.play();
+			shop_music.setVolume(10.f);
+		}
 		update();
 
 		this->window->clear(sf::Color(42, 33, 52, 255));
@@ -468,6 +526,14 @@ void Game::render()
 
 	while (GAME_STOPPED)
 	{	
+		notcombat_music.stop();
+		combat_music.stop();
+
+		if (shop_music.getStatus() == 0)
+		{
+			shop_music.play();
+			shop_music.setVolume(10.f);
+		}
 		update();
 		testText.setFont(font);
 		testText.setCharacterSize(40);
@@ -503,6 +569,16 @@ void Game::render()
 
 	if (YOU_WON_STATE)
 	{
+		notcombat_music.stop();
+		combat_music.stop();
+		menu_music.stop();
+		shop_music.stop();
+
+		if (win_song.getStatus() == 0)
+		{
+			win_song.play();
+			win_song.setVolume(50.f);
+		}
 		update();
 		testText.setFont(font);
 		testText.setCharacterSize(100);
@@ -516,7 +592,8 @@ void Game::render()
 		testText.setPosition((windowWidth - testText.getGlobalBounds().width) / 2, (windowHeight - testText.getGlobalBounds().height) / 2);
 		this->window->draw(testText);
 		this->window->display();
-		Sleep(10000);
+		Sleep(15000);
+		win_song.stop();
 		PLAYING_STATE = false;
 		IN_MENU_STATE = true;
 	}
