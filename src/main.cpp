@@ -2,9 +2,9 @@
 
 int main()
 {
-    Game game;
+	Game game;
 
-    game.run();
-
-    return 0;
+	game.run();
+	
+	return 0;
 }

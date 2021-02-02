@@ -1,47 +1,61 @@
-#ifndef PLAYER_H
-#define PLAYER_H
-
+#pragma once
 #include "libs.h"
-
-//class Player
-//{
-//private:
-//    sf::RectangleShape body;
-
-//    // never gets below zero
-//    unsigned int row;
-//    float playerSpeed;
-
-//    // true or false
-//    bool faceRight;
-
-//public:
-//    Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float playerSpeed);
-//    ~Player();
-
-//    void Update(float deltaTime);
-//    void Draw(sf::RenderWindow &window);
-
-//};
 
 class Player
 {
-private:
-    sf::RectangleShape playerShape;
-    sf::Texture playerTexture;
-    sf::Sprite playerSprite;
-    sf::Vector2u textureSize;
-
-    void initVariables();
-    void initShape();
-
 public:
-    Player();
-    virtual ~Player();
+	// constructor and destructor
+	Player();
 
-    void update();
-    void render(sf::RenderTarget* target);
+	// SFML objects
+	sf::Texture playerTexture;
+	sf::Sprite sprite;
+	sf::Vector2u textureSize;
+
+	sf::Texture goldenRed;
+	sf::Texture goldenBlue;
+	sf::Texture goldenCyan;
+
+	sf::Texture silverRed;
+	sf::Texture silverBlue;
+	sf::Texture silverCyan;
+
+	sf::Texture copperRed;
+	sf::Texture copperBlue;
+	sf::Texture copperCyan;
+
+	sf::Texture copperArmor;
+	sf::Texture silverArmor;
+	sf::Texture goldenArmor;
+
+	sf::Texture redSword;
+	sf::Texture blueSword;
+	sf::Texture cyanSword;
+
+	sf::Vector2f size;
+	sf::Vector2f position;
+
+	int frame;
+	int attackFrame;
+
+	float fullHP = 100.f;
+	float hp;				// jak duzo ma zdrowia
+	float dmg;				// jak bardzo napierdala
+	float def;				// mnoznik obrony
+	float speed;			// jak bardzo zapierdala
+	int level;				// jaki ma poziom
+	float poisoning;		// jak bardzo sie uchalal miksturami
+
+	int coins;			// ile zebral coinsow
+	int keys;			// ile zebral kluczy
+	float xp;			// ile zebral lvl shardsow
+
+	bool drunk;			// czy sie uchlal miksturami
+
+	void initTexture();
+	void initSprite();
+	void changePlayerEQ(bool& red, bool& blue, bool& cyan, bool& copper, bool& silver, bool& golden);
+	void render(sf::RenderTarget* target);
 
 };
 
-#endif // PLAYER_H
