@@ -16,7 +16,7 @@ Game::~Game()
 void Game::initWindow()
 {
 	// all variables associated with window
-	std::string title = "WERSJA PRE-ALPHA";
+	std::string title = "WERSJA BETA";
 	sf::VideoMode windowBunds(windowWidth, windowHeight);
 	this->window = new sf::RenderWindow(windowBunds, title, sf::Style::Close | sf::Style::Resize);
 	this->window->setFramerateLimit(30);
@@ -185,6 +185,19 @@ void Game::updateSFMLEvents()
 						//std::cout << "PRZYCZAJONY TYGRYS, UKRYTY SMOK!" << '\n';
 						updatePlayerAttack();
 					}
+				case sf::Event::KeyReleased:
+					switch (event.key.code) 
+					{
+					case sf::Keyboard::K:
+						PLAYER_MOOVING_RIGHT = false;
+						PLAYER_MOOVING_LEFT = false;
+						PLAYER_IDLE = false;
+						PLAYER_IS_ATTACKING = true;
+
+						//std::cout << "PRZYCZAJONY TYGRYS, UKRYTY SMOK!" << '\n';
+						updatePlayerAttack();
+
+					}
 				}
 			}
 
@@ -297,7 +310,7 @@ void Game::updateSFMLEvents()
 void Game::update()
 {
 	//pozycja myszki, przydaje sie
-	std::cout << " X:  " << player.sprite.getPosition().x << "  Y: " << player.sprite.getPosition().y << std::endl;
+	//std::cout << " X:  " << player.sprite.getPosition().x << "  Y: " << player.sprite.getPosition().y << std::endl;
 	updateSFMLEvents();
 	// update classes below
 	if (PLAYING_STATE and GAME_OPEN and !GAME_STOPPED)
@@ -336,10 +349,16 @@ void Game::update()
 			CAN_I_BUY_POTION = true;
 		}
 
-		if (player.level == 20 and SwordNumer == 3 and ArmorNumber == 3)
+		if (player.level >= 15 and SwordNumer >= 3 and ArmorNumber >= 3)
 		{
 			YOU_WON_STATE = true;
 		}
+
+		for (int i = 0; i < enemies.size(); i++)
+		{
+			if(enemies[i].DIED) enemies.erase(enemies.begin() + i);
+		}
+		if (enemies.empty() == true and IS_WAVE_ACTIVE) endWave();
 	}
 }
 
@@ -369,7 +388,7 @@ void Game::render()
 		break;
 	}
 
-	while (PLAYING_STATE and IN_STARTING_ROOM and !GAME_STOPPED and !PLAYER_DIED)
+	while (PLAYING_STATE and IN_STARTING_ROOM and !GAME_STOPPED and !PLAYER_DIED and !YOU_WON_STATE)
 	{
 		menu_music.stop();
 		update();
@@ -422,7 +441,7 @@ void Game::render()
 		if(!GAME_OPEN) break;
 	}
 
-	while (PLAYING_STATE and IN_SHOP and !GAME_STOPPED and !PLAYER_DIED)
+	while (PLAYING_STATE and IN_SHOP and !GAME_STOPPED and !PLAYER_DIED and !YOU_WON_STATE)
 	{
 		update();
 
@@ -482,10 +501,24 @@ void Game::render()
 		IN_MENU_STATE = true;
 	}
 
-	while (YOU_WON_STATE)
+	if (YOU_WON_STATE)
 	{
-		// bla bla bla gratulacje czy chcesz zagrac w nasza gre ponownie czy wyjsc (to samo co przy zatrzymywaniu gry)
-
+		update();
+		testText.setFont(font);
+		testText.setCharacterSize(100);
+		testText.setFillColor(sf::Color::Red);
+		testText.setOutlineColor(sf::Color::Black);
+		testText.setOutlineThickness(2);
+		testText.setStyle(sf::Text::Bold);
+		CZAS_ROZGRYWKI = (float) CZAS_ROZGRYWKI;
+		std::string currentWaveStr = "Brawo byczq, wygrales w "+std::to_string(currentWave)+" rundzie!\nTwoj czas: "+std::to_string(CZAS_ROZGRYWKI)+" s";
+		testText.setString(currentWaveStr);
+		testText.setPosition((windowWidth - testText.getGlobalBounds().width) / 2, (windowHeight - testText.getGlobalBounds().height) / 2);
+		this->window->draw(testText);
+		this->window->display();
+		Sleep(10000);
+		PLAYING_STATE = false;
+		IN_MENU_STATE = true;
 	}
 }
 
@@ -533,18 +566,24 @@ void Game::newGame()
 	waveTimeResume = 0.0;
 	waveClock.restart();
 
-	player.sprite.setPosition(500.f, 500.f);
+	player.initSprite();
 	PLAYER_DIED = false;
 	player.coins = 0;
 	player.xp = 0;
 	player.drunk = false;
 	player.level = 1;
-	player.hp = 100;
-	player.fullHP = 100.f;
+	player.hp = 250;
+	player.fullHP = 250;
 	player.speed = 1;
 	player.poisoning = 0;
-	player.dmg = 10;
+	player.dmg = 20;
 	player.def = 1;
+	RED_SWORD = false;
+	BLUE_SWORD = false;
+	CYAN_SWORD = false;
+	COPPER_ARMOR = false;
+	SILVER_ARMOR = false;
+	GOLDEN_ARMOR = false;
 
 	enemyCooldown = 0.0;
 	enemies.clear();
@@ -606,6 +645,18 @@ void Game::menuMoveUp()
 			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 	}
+	else if (not MAIN_MENU and not CREATORS and HELP) {
+		if (MenuIndex - 1 >= 0) {
+			menuCreateButton(help_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
+			MenuIndex = MenuIndex - 3;
+			menuCreateButton(help_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
+		}
+		else {
+			menuCreateButton(help_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
+			MenuIndex = MAX_NUMBER_OF_ITEMS - 1;
+			menuCreateButton(help_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
+		}
+	}
 }
 
 void Game::menuMoveDown()
@@ -635,6 +686,18 @@ void Game::menuMoveDown()
 			menuCreateButton(creators_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
 		}
 	}
+	else if (not MAIN_MENU and not CREATORS and HELP) {
+		if (MenuIndex + 1 < MAX_NUMBER_OF_ITEMS) {
+			menuCreateButton(help_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
+			MenuIndex = MenuIndex + 3;
+			menuCreateButton(help_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
+		}
+		else {
+			menuCreateButton(help_menu_txt[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 60);
+			MenuIndex = 0;
+			menuCreateButton(help_menu_txt2[MenuIndex], MenuIndex, MAX_NUMBER_OF_ITEMS, 80);
+		}
+	}
 }
 
 void Game::menuRenderButtons(sf::RenderTarget* target)
@@ -647,6 +710,7 @@ void Game::menuRenderButtons(sf::RenderTarget* target)
 			enter_sound.play();
 			IN_MENU_STATE = false;
 			PLAYING_STATE = true;
+			newGame();
 			break;
 		case 1:
 			std::cout << "Ktos nacisnal Creators" << '\n';
@@ -686,6 +750,10 @@ void Game::menuRenderButtons(sf::RenderTarget* target)
 			system("start https://github.com/SonOfGrabarz");
 			break;
 		case 2:
+			std::cout << "Ktos nacisnal ISSP" << '\n';
+			enter_sound.play();
+			//link otwiera sie tylko pod windowsem
+			system("start https://wfa.uni.wroc.pl/pl/informatyka-stosowana-isystemy-pomiarowe/");
 			break;
 		case 3:
 			MAIN_MENU = true;
@@ -900,7 +968,7 @@ void Game::pickingUpObjects()
 					if (player.sprite.getGlobalBounds().intersects(hearts[i].sprite.getGlobalBounds()))
 					{
 						picking_up_sound.play();
-						player.hp += 5;
+						player.hp += 5*currentWave;
 						hearts.erase(hearts.begin() + i);
 					}
 				}
@@ -926,7 +994,7 @@ void Game::pickingUpObjects()
 								RED_SWORD = true;
 								BLUE_SWORD = false;
 								CYAN_SWORD = false;
-								player.dmg = 20;
+								player.dmg += 20;
 							}
 
 							if (SwordNumer == 2)
@@ -934,7 +1002,7 @@ void Game::pickingUpObjects()
 								RED_SWORD = false;
 								BLUE_SWORD = true;
 								CYAN_SWORD = false;
-								player.dmg = 30;
+								player.dmg += 30;
 							}
 
 							if (SwordNumer == 3)
@@ -942,7 +1010,7 @@ void Game::pickingUpObjects()
 								RED_SWORD = false;
 								BLUE_SWORD = false;
 								CYAN_SWORD = true;
-								player.dmg = 50;
+								player.dmg += 50;
 							}
 
 							player.coins -= 5;
@@ -978,7 +1046,7 @@ void Game::pickingUpObjects()
 								COPPER_ARMOR = false;
 								SILVER_ARMOR = false;
 								GOLDEN_ARMOR = true;
-								player.def = 0.1;
+								player.def = 0.3;
 							}
 
 							player.coins -= 10;
@@ -991,7 +1059,7 @@ void Game::pickingUpObjects()
 						{
 							picking_up_sound.play();
 							player.coins -= 3;
-							player.hp += ((int)player.fullHP - (int)player.hp) * 0.7;
+							player.hp += ((int)player.fullHP - (int)player.hp) * 0.8;
 							player.poisoning = 1;
 							CAN_I_BUY_POTION = false;
 							whenIBuyPotion = currentWave;
@@ -1166,34 +1234,73 @@ void Game::animation()
 		{
 			int dc = 0;
 			if (enemies[i].color) dc = 559;
+			if (!enemies[i].ATTACKING and !enemies[i].DYING)
+			{
+				if (enemies[i].frame >= 13)
+				{
+					enemies[i].frame = 0;
+				}
+				else
+				{
+					enemies[i].frame += 1;
+				}
 
-			if (enemies[i].frame >= 13)
-			{
-				enemies[i].frame = 0;
-			}
-			else
-			{
-				enemies[i].frame += 1;
-			}
+				if (enemies[i].ENEMY_IDLE and enemies[i].ENEMY_FACING_RIGHT == false)
+				{
+					enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame * 96, dc + 280, 96, 64));
+				}
+				else if (enemies[i].ENEMY_IDLE and enemies[i].ENEMY_FACING_RIGHT)
+				{
+					enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame * 96, dc + 0, 96, 64));
+				}
 
-			if (enemies[i].ENEMY_IDLE and enemies[i].ENEMY_FACING_RIGHT == false)
-			{
-				enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame*96, dc+280, 96, 64));
+				if (enemies[i].ENEMY_MOOVING_LEFT and !enemies[i].ENEMY_IDLE)
+				{
+					enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame * 100, dc + 346, 100, 68));
+				}
+				else if (enemies[i].ENEMY_MOOVING_RIGHT and !enemies[i].ENEMY_IDLE)
+				{
+					enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame * 100, dc + 68, 100, 68));
+				}
 			}
+			else if (enemies[i].ATTACKING and !enemies[i].DYING) {
+				if (enemies[i].attackFrame >= 13)
+				{
+					enemies[i].attackFrame = 0;
+				}
+				else
+				{
+					enemies[i].attackFrame += 1;
+				}
 
-			if (enemies[i].ENEMY_IDLE and enemies[i].ENEMY_FACING_RIGHT)
-			{
-				enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame*96, dc+0, 96, 64));
+				if (enemies[i].ENEMY_FACING_RIGHT == false)
+				{
+					enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].attackFrame * 136, dc + 416, 136, 72));
+				}
+				else if (enemies[i].ENEMY_FACING_RIGHT)
+				{
+					enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].attackFrame * 136, dc + 136, 136, 72));
+				}
 			}
+			else if (enemies[i].DYING) {
+				if (enemies[i].dyingFrame >= 13)
+				{
+					enemies[i].dyingFrame = 0;
+					enemies[i].DIED = true;
+				}
+				else
+				{
+					enemies[i].dyingFrame += 1;
+				}
 
-			if (enemies[i].ENEMY_MOOVING_LEFT and !enemies[i].ENEMY_IDLE)
-			{
-				enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame*100, dc+346, 100, 68));
-			}
-
-			if (enemies[i].ENEMY_MOOVING_RIGHT and !enemies[i].ENEMY_IDLE)
-			{
-				enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].frame*100, dc+68, 100, 68));
+				if (enemies[i].ENEMY_FACING_RIGHT == false)
+				{
+					enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].dyingFrame * 100, dc + 488, 100, 72));
+				}
+				else if (enemies[i].ENEMY_FACING_RIGHT)
+				{
+					enemies[i].sprite.setTextureRect(sf::IntRect(enemies[i].dyingFrame * 100, dc + 210, 100, 72));
+				}
 			}
 		}
 
@@ -1290,14 +1397,31 @@ void Game::createEnemies(int ile_enemy)
 {
 	for(int i = 0; i < ile_enemy; i++)
 	{
-		int delta_x = 20;
+		int delta_x = 30;
 		float delta_y = (windowWidth - gui.size.x - delta_x*2 - ile_enemy * enemy.sprite.getGlobalBounds().width) / (ile_enemy + 1);
 		float x_enemy = abs(delta_x+(delta_y*(i+1))+i*enemy.sprite.getGlobalBounds().width);
-		enemy.create(sf::Vector2f(x_enemy, 200), sf::Vector2f(1, 1), sf::Vector2f(1, 1), 50 + 25 * currentWave);
 		float color = (float)rand() / RAND_MAX;
 		//std::cout << color << std::endl;
-		if (color >= 0.5) enemy.color = 1;
-		else enemy.color = 0;
+		if (color >= 0.5) 
+		{
+			enemy.color = 1;
+			enemy.ATTACKING = false;
+			enemy.DYING = false;
+			enemy.DIED = false;
+			enemy.sprite.setTextureRect(sf::IntRect(0, 559, 96, 64));
+			enemy.create(sf::Vector2f(x_enemy, 200), sf::Vector2f(1, 1), sf::Vector2f(1, 1), 50 + 25 * currentWave);
+			enemy.damage = 5+(currentWave^2)/4;
+		}
+		else 
+		{
+			enemy.color = 0;
+			enemy.ATTACKING = false;
+			enemy.DYING = false;
+			enemy.DIED = false;
+			enemy.sprite.setTextureRect(sf::IntRect(0, 0, 96, 64));
+			enemy.damage = 3+(currentWave^2)/5;
+			enemy.create(sf::Vector2f(x_enemy, 200), sf::Vector2f(1, 1), sf::Vector2f(1, 1), 25 + 15 * currentWave);
+		}
 		//enemy.create(sf::Vector2f(20+(((windowWidth-200)/ile_enemy)*i), 100), sf::Vector2f(1, 1), sf::Vector2f(3, 3), 50+25*currentWave);
 		enemies.push_back(enemy);
 	}
@@ -1367,10 +1491,12 @@ void Game::updateEnemyAttack()
 		//std::cout << dystans << "   " << przeciwnik.x << "   " << przeciwnik.y << std::endl;
 		if (dystans < enemies[i].attackRadius)
 		{
-			if (enemyCooldown >= 4)
+			if (enemyCooldown >= 5)
 			{
+				enemies[i].ATTACKING = true;
 				enemyInterval.restart();
-				player.hp = player.hp - (4 * currentWave * player.def);
+				player.hp = player.hp - (enemies[i].damage * currentWave * player.def);
+				std::cout << i << "# enemy hit!  your health: " << player.hp << std::endl;
 			}
 
 			enemyCooldown = (int)(enemyInterval.getElapsedTime().asSeconds() * 100 + .5);
@@ -1382,6 +1508,9 @@ void Game::updateEnemyAttack()
 				PLAYER_DIED = true;
 				//std::cout << "zaliczyles zgona byczq, liczba fal, ktora przezyles:" << std::endl;
 			//std::cout << "twoje hp: " << player.hp << std::endl;
+		}
+		else {
+			enemies[i].ATTACKING = false;
 		}
 	}
 }
@@ -1398,12 +1527,13 @@ void Game::updatePlayerAttack()
 		if (dystans < enemies[i].attackRadius)
 		{
 			enemies[i].health = enemies[i].health - player.dmg;
-			//std::cout << i << "# enemy got hit! health remaining: " << enemies[i].health << std::endl;
+			std::cout << i << "# enemy got hit! health remaining: " << enemies[i].health << std::endl;
 			//enemies[i].txtHealth.setPosition(enemies[i].sprite.getPosition().x + (enemies[i].sprite.getGlobalBounds().width / 2) - enemies[i].txtHealth.getGlobalBounds().width / 2, enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (enemies[i].txtHealth.getGlobalBounds().height / 2) - 40);
 			enemies[i].updateHealth(enemies[i].health);
 
 			if (enemies[i].health <= 0)
 			{	
+				enemies[i].DYING = true;
 				lastKnownEnemyPosition = sf::Vector2f({ enemies[i].sprite.getPosition().x+(enemies[i].sprite.getGlobalBounds().width/2)-(coin.sprite.getGlobalBounds().width/2), enemies[i].sprite.getPosition().y + (enemies[i].sprite.getGlobalBounds().height / 2) - (coin.sprite.getGlobalBounds().height / 2) });
 				//std::cout << "LastKnownEnemyPosition X: " << enemies[i].sprite.getPosition().x << " Y: " << enemies[i].sprite.getPosition().y << '\n';
 				coin.create({ lastKnownEnemyPosition.x, lastKnownEnemyPosition.y}, { 2.f, 2.f });
@@ -1417,22 +1547,26 @@ void Game::updatePlayerAttack()
 					coin.create({ lastKnownEnemyPosition.x - 20, lastKnownEnemyPosition.y + 2 }, { 2.f, 2.f });
 					coins.push_back(coin);
 				}
-
-				enemies.erase(enemies.begin() + i);
+				//if (enemies[i].DIED) enemies.erase(enemies.begin() + i);
 			}
 		}
 	}
 
-	if (enemies.empty() == true) endWave();
+	//if (enemies.empty() == true and IS_WAVE_ACTIVE) endWave();
 }
 
 void Game::initWave()
 {
 	for (int i = 0; i < 10; i++) {
-		if (i == currentWave and IS_WAVE_ACTIVE) {
+		if (i <= 5 and i == currentWave and IS_WAVE_ACTIVE) {
 			enemies.clear();
 			waveTimeResume = 0.0;
-			createEnemies(i*2);
+			createEnemies(i);
+		}
+		else if (i >= 5 and i == currentWave and IS_WAVE_ACTIVE){
+			enemies.clear();
+			waveTimeResume = 0.0;
+			createEnemies(i-3);
 		}
 		/*
 		}
@@ -1463,6 +1597,7 @@ void Game::endWave()
 	std::uniform_int_distribution<> randY(240, 420);	
 
 	savedWaveTime = waveTime;
+	CZAS_ROZGRYWKI += waveTime;
 	waveTime = 0;
 	waveClock.restart();
 	IS_WAVE_ACTIVE = false;
@@ -1515,7 +1650,6 @@ void Game::endWave()
 		}
 	}
 
-	CZAS_ROZGRYWKI += savedWaveTime;
 
 	//std::cout << "SHARDS VECTOR SIZE: " << shards.size() << '\n';
 }

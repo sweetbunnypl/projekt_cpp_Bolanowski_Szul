@@ -76,7 +76,7 @@ void Gui::initGui()
 	text[2].setPosition(950.f, 670.f);
 }
 
-void Gui::changeValues(int& coins, int& level, int& wave, float& time, float& hp, const float& fullHP, float& xp, float& xpRequired, float& poison)
+void Gui::changeValues(int& coins, int& level, int& wave, float& time, float &hp, const float &fullHP, float& xp, float& xpRequired, float& poison)
 {
 	std::string cN = std::to_string(coins);
 	number[0].setFont(font);
@@ -110,7 +110,7 @@ void Gui::changeValues(int& coins, int& level, int& wave, float& time, float& hp
 	test.setFillColor(sf::Color(42, 30, 50));
 	test.setPosition(1223.f, 670.f);
 
-	healthBar.setTextureRect(sf::IntRect(242, 0, 11 + (hp / fullHP) * 221, 48));
+	healthBar.setTextureRect(sf::IntRect(242, 0, 11 + (hp/fullHP) * 221, 48));
 	xpBar.setTextureRect(sf::IntRect(242, 48, 11 + (xp/xpRequired) * 221, 48));
 	drunkBar.setTextureRect(sf::IntRect(242, 96, 11 + poison * 221, 48));
 }

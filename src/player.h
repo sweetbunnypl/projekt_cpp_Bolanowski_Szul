@@ -38,7 +38,7 @@ public:
 	int frame;
 	int attackFrame;
 
-	float fullHP = 100.f;
+	float fullHP;
 	float hp;				// jak duzo ma zdrowia
 	float dmg;				// jak bardzo napierdala
 	float def;				// mnoznik obrony

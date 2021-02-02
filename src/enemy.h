@@ -11,12 +11,17 @@ public:
 	~Enemy();
 
 	int frame;
+	int attackFrame;
+	int dyingFrame;
 	bool ENEMY_MOOVING_LEFT;
 	bool ENEMY_MOOVING_RIGHT;
 	bool ENEMY_IDLE;
 	bool ENEMY_FACING_RIGHT;
 	bool ENEMY_IS_ATTACKING;
 	bool color;
+	bool ATTACKING;
+	bool DYING;
+	bool DIED;
 
 	float speedAtack;
 	sf::Vector2f speed;

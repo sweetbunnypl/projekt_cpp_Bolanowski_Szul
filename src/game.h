@@ -101,8 +101,8 @@ public:
 
 	std::string main_menu_txt[4] = { "PLAY", "CREATORS", "HELP", "EXIT" };
 	std::string main_menu_txt2[4] = { "- PLAY -", "- CREATORS -", "- HELP -", "- EXIT -" };
-	std::string creators_menu_txt[4] = { "K.Bolanowski", "M.Szul", "ISSP III", "BACK" };
-	std::string creators_menu_txt2[4] = { "- K.Bolanowski -", "- M.Szul -", "- ISSP III -", "- BACK -" };
+	std::string creators_menu_txt[4] = { "K.Bolanowski", "M.Szul", "ISSP", "BACK" };
+	std::string creators_menu_txt2[4] = { "- K.Bolanowski -", "- M.Szul -", "- ISSP -", "- BACK -" };
 	std::string help_menu_txt[4] = { "PORADNIK", " ", " ", "BACK" };
 	std::string help_menu_txt2[4] = { "- PORADNIK -", " ", " ", "- BACK -" };
 

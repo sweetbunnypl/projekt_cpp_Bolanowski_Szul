@@ -36,14 +36,13 @@ void Enemy::create(sf::Vector2f position, sf::Vector2f scale, sf::Vector2f textu
     this->initSprite();
     sprite.setPosition(position);
     sprite.setScale(textureScale);
-    sprite.setTextureRect(sf::IntRect(0, 0, textureSize.x, textureSize.y));
     terror.setPosition(sf::Vector2f(position.x+(sprite.getGlobalBounds().width/2)-terrorRadius, position.y+(sprite.getGlobalBounds().height/2)-terrorRadius));
     terror.setScale(scale);
     attack.setPosition(sf::Vector2f(position.x+(sprite.getGlobalBounds().width/2)-attackRadius, position.y+(sprite.getGlobalBounds().height/2)-attackRadius));
     attack.setScale(scale);
     health = enemyHealth;
-    updateHealth(health);
-    txtHealth.setPosition(sprite.getPosition().x + (sprite.getGlobalBounds().width / 2) - txtHealth.getGlobalBounds().width / 2, sprite.getPosition().y + (sprite.getGlobalBounds().height / 2) - (txtHealth.getGlobalBounds().height / 2) - 50);
+    //updateHealth(health);
+    //txtHealth.setPosition(sprite.getPosition().x + (sprite.getGlobalBounds().width / 2) - txtHealth.getGlobalBounds().width / 2, sprite.getPosition().y + (sprite.getGlobalBounds().height / 2) - (txtHealth.getGlobalBounds().height / 2) - 50);
 }
 
 void Enemy::render(sf::RenderTarget* target)
