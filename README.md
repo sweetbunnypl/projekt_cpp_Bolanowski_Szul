@@ -1,4 +1,6 @@
+--------
 # projekt_cpp_Bolanowski_Szul
+
 Projekt zaliczeniowy napisany w C++
 
 --------
@@ -18,8 +20,8 @@ STEROWANIE W GRZE:
 - lewy przycisk myszki lub K - te przyciski odpowiadają za walkę z przeciwnikami;
 - esc - zzamyka program;
 
-
 --------
+# OPIS
 
 Gra typu "rougelike" w połączeniu z elementami RPG, oparta o grafikę dwuwymiarową z kamerą top-down. Gracz pokonując kolejne fale przeciwników będzie miał możliwość rozwoju swojej postaci oraz dokonywania wymian w sklepie. Wraz z kolejnymi falami przeciwników wzrastać będzie również poziom trudności.
 Naszymi inspiracjami są gry The Binding of Issac oraz Enter the Gungeon
@@ -44,6 +46,7 @@ Naszym założeniem jest oparcie projektu w głównej mierze o bibliotekę SFML,
 2020/12/01 - rozszerzenie projektu o bibliotekę Thor, opartą o SFML i poszerzającą jego możliwości.
 
 --------
+# RAPORTY 
 
 
 
