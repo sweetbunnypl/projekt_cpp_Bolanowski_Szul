@@ -2,6 +2,24 @@
 Projekt zaliczeniowy napisany w C++
 
 --------
+# HELP - STEROWANIE
+
+STEROWANIE W MENU:
+- górna i dolna strzałka - odpowiada za nawigację w menu;
+- enter - odpowiada za zatwierdzanie, rozpoczynanie gry lub otwieranie linka;
+- esc - zamyka program; 
+
+STEROWANIE W GRZE:
+- R - zatrzymuje gre podczas rozgrywki, wciskajac je ponownie można kontynuować rozgrywke;
+- Q - odpowiada za wyjscie do menu podczas zatrzymania gry;
+- sterowanie postacią typowe: W - idziemy do góry, A - idziemy w lewo, S - idziemy w dół, D - idziemy w prawo;
+- G - za pomocą tego klawisza podchodząc do ogniska możemy odpalić falę lub podchodząc do górnego brzegu mapy możemy się przenieść do sklepu, w drugą stronę działa to podobnie, tylko że trzeba podejsc do dolnego brzegu mapy;
+- E - jest u nas klawiszem wiekszosci interakcji, za jego pomocą można zbierać pieniądze i życie, które wypadają z przeciwników, kupować elementy ekwipunku w sklepie;
+- lewy przycisk myszki lub K - te przyciski odpowiadają za walkę z przeciwnikami;
+- esc - zzamyka program;
+
+
+--------
 
 Gra typu "rougelike" w połączeniu z elementami RPG, oparta o grafikę dwuwymiarową z kamerą top-down. Gracz pokonując kolejne fale przeciwników będzie miał możliwość rozwoju swojej postaci oraz dokonywania wymian w sklepie. Wraz z kolejnymi falami przeciwników wzrastać będzie również poziom trudności.
 Naszymi inspiracjami są gry The Binding of Issac oraz Enter the Gungeon
@@ -85,17 +103,10 @@ PROTOTYP - 2021/01/12
 
 
 
-[2021/01/13]
+DEADLINE - 2021/02/02
 - system levelowania postaci
-- loot z przeciwnikow
-
-
-DEADLINE - 2021/02/02 (DO ZROBIENIA):
 - loot z przeciwników
-- atakujący przeciwnicy
+- atakujący przeciwnicy wraz z wieloma animacjami
 - sklep (system wymiany przedmiotów i inne mechaniki)
-- dalsze usprawnianie stanów gry
+- wiele usprawnien i popraw błędów
 
---------
-- 02.02.2021 - deadline
---------
